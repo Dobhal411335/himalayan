@@ -83,19 +83,24 @@ const AboutUsSection = () => {
         <section className="bg-[url('/aboutUsBanner.jpg')] bg-no-repeat bg-cover bg-center relative py-10 w-full px-10 md:px-5 overflow-hidden max-w-screen overflow-x-hidden">
             <div className="w-full">
                 <h2 className="font-bold text-2xl md:text-4xl text-center mt-2 md:mt-7 uppercase">
-                    <span className="italic">Crafted by Hand,</span>
-                    <span> Cherished by Heart.</span>
-
+                    <span className="italic">Experience the Soul of Himalayan Wellness in Rishikesh,</span>
                 </h2>
                 <p className=" text-xl font-lg md:text-xl text-center mt-2">
                     emphasizes uniqueness, tradition, artistry, and authentic
                 </p>
-                <hr className="h-[2px] w-[50%] mx-auto bg-black"/>
+                <hr className="h-[2px] w-[50%] mx-auto bg-black" />
 
                 <p className="text-gray-600 md:py-8 py-4 text-center font-barlow md:w-[50%] w-full mx-auto">
-                    Welcome to Rishikesh Handmade — your gateway to the soulful artistry of the Himalayan foothills. Rooted in the spiritual heart of India, our collection brings together timeless handicrafts handcrafted by local artisans of Rishikesh. Every item is a reflection of our rich cultural heritage, made with love, care, and generations of tradition. From eco-friendly décor and handwoven textiles to sacred spiritual items and unique wooden carvings, each piece tells a story of craftsmanship and connection. By supporting Rishikesh Handmade,
-                    <br />
-                     you’re not just buying a product — you’re preserving tradition, empowering local artisans, and bringing home a piece of authentic India.
+                    Experience the Soul of Himalayan Wellness in Rishikesh
+                    Himalayan Wellness Retreats invites you to a transformative journey nestled in the spiritual heartland of Tapovan, Rishikesh — where the charm of the sacred city meets the serene rhythm of the Ganges. Known as the Yoga Capital of the World, Rishikesh offers the perfect backdrop for inner healing, mindful living, and soulful exploration.
+
+                    Our thoughtfully curated retreats are designed to rejuvenate your body, mind, and spirit amidst the majestic Himalayan landscape. Each day begins with revitalizing yoga and meditation sessions led by experienced instructors, followed by nourishing yogic meals prepared from fresh, organic ingredients.
+
+                    Immerse yourself in the local lifestyle as you explore ancient temples, vibrant artisan markets, and the awe-inspiring Ganga Aarti — all just steps away from our peaceful retreat in Tapovan. Guests enjoy serene accommodations with stunning views, nature walks, and spiritual excursions that connect you deeply with the essence of the region.
+
+                    Whether you seek inner peace, spiritual growth, or simply a conscious escape, Himalayan Wellness Retreats in Rishikesh offers a sacred space to reconnect—with yourself, with nature, and with the divine flow of life.
+
+                    Explore the Spirit of Rishikesh — Where Every Breath is a Step Toward Wholeness.
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-auto">
                     {loading ? (

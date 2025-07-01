@@ -83,17 +83,17 @@ const Footer = () => {
                     <h1 className="font-semibold text-xl flex items-center gap-2"> More Inquiry</h1>
                     <Link href={'tel:+917351009107'} className="my-2 block rounded-full py-1 font-barlow text-black flex items-center">
                         <Phone size={20} className="text-blue-600" />
-                        +91 7351009107
+                        +91 9897515305,7060340176
                     </Link>
-                    <Link href={'mailto:support@rishikeshhandmade.com'} className="my-2 block rounded-full font-barlow text-black flex items-center">
+                    <Link href={'mailto:himalayanwellnessretreats@gmail.com'} className="my-2 block rounded-full font-barlow text-black flex items-center">
                         <Send className="text-blue-600" size={20} />
-                        support@rishikeshhandmade.com
+                        himalayanwellnessretreats@gmail.com
                     </Link>
                     <p className="my-2 font-barlow text-black mb-5 flex items-center">
                         <MapPin className="text-blue-600" size={20} />
-                        Upper Road Dhalwala (Rishikesh)
+                        Balak Nath Temple Street, Upper Tapovan,
                         <br />
-                        Tehri Garhwal,Uttarakhand 249201
+                        Tehri Garhwal Rishikesh,Uttarakhand 249201
                     </p>
                 </div>
             </div>
@@ -104,7 +104,54 @@ const Footer = () => {
                         <AccordionItem value="item-1">
                             <AccordionTrigger className="text-black px-6 py-4 text-base ">IMPORTANT NOTICE</AccordionTrigger>
                             <AccordionContent className="text-gray-900 px-6 pb-6 pt-1 text-sm">
-                                All our handicraft products are handcrafted by skilled artisans, which means each item is unique and may have slight variations in color, texture, or finish. These differences are a mark of authenticity and not defects. We ensure quality checks before dispatch, but due to the delicate nature of handmade goods, please handle them with care. Product images may slightly differ from actual items due to lighting or screen settings. Kindly review our return, shipping, and customization policies before placing an order. For any queries or special requests, feel free to contact our support team.</AccordionContent>
+                                Terms & House Rules – Himalayan Wellness Retreats
+                                To ensure a peaceful and fulfilling experience for all our guests, we kindly request you to read and follow our terms and house rules:
+
+                                1. Booking & Payment
+                                All bookings must be confirmed with a minimum advance deposit (as per package).
+
+                                The remaining balance is payable upon arrival/check-in.
+
+                                We accept payments via bank transfer, UPI, or cash.
+
+                                2. Cancellation Policy
+                                Cancellations made 15 days prior to arrival are eligible for a full refund.
+
+                                Cancellations within 7–14 days will receive a 50% refund.
+
+                                No refunds for cancellations made less than 7 days before arrival.
+
+                                In case of emergencies or natural disruptions, we may offer date rescheduling.
+
+                                3. Check-In / Check-Out
+                                Check-In: 12:00 PM | Check-Out: 10:00 AM
+
+                                Early check-in or late check-out is subject to availability and additional charges.
+
+                                4. House Rules
+                                This is a wellness and mindful living space — silence is appreciated during yoga, meditation, and evening hours.
+
+                                Alcohol, smoking, and non-vegetarian food are strictly prohibited on the retreat premises.
+
+                                Guests are expected to treat the space, staff, and fellow participants with respect and kindness.
+
+                                Please inform us in advance about any allergies or dietary restrictions.
+
+                                Modest and comfortable attire is recommended, especially during spiritual or outdoor activities.
+
+                                5. Health & Safety
+                                Guests are responsible for their own health and safety; kindly inform us of any medical conditions at the time of booking.
+
+                                We follow eco-friendly practices — please help us conserve water, electricity, and avoid plastic use.
+
+                                First aid is available on-site; for medical emergencies, the nearest clinic is accessible within 15 minutes.
+
+                                6. Photography & Privacy
+                                Kindly seek permission before taking photos of staff, other guests, or during ceremonies.
+
+                                We respect your privacy and will never share your information without consent.
+
+                                By booking with Himalayan Wellness Retreats, you agree to these terms and support our mission to provide a peaceful, nurturing environment for all.</AccordionContent>
                         </AccordionItem>
                     </Accordion>
                 </div>
@@ -114,8 +161,13 @@ const Footer = () => {
                 <CardContent className="flex flex-col lg:flex-row items-start justify-between">
                     <div className="text-justify">
                         <Image src="/logo.png" width={200} height={100} alt="footer" />
-                        <p className="text-black text-sm lg:w-[40vw] xl:w-[35vw] font-barlow mt-6">Rishikesh Handmade Craft is a platform that celebrates the traditional art and culture of Rishikesh. It showcases eco-friendly, handcrafted items like wooden carvings, paintings, jewelry, and home decor made by skilled local artisans. By supporting this platform, you help preserve age-old crafts and empower local communitiess.</p>
-                        <p className="text-black text-sm lg:w-[40vw] xl:w-[35vw] font-barlow mt-6">Our website is your gateway to the heart of Rishikesh, offering rich and soulful handmade creations crafted by local artisans.</p>
+                        <p className="text-black text-sm lg:w-[40vw] xl:w-[35vw] font-barlow mt-6">Experience the Essence of Himalayan Wellness
+                            Our wellness retreat packages are thoughtfully designed to rejuvenate your body, mind, and spirit amidst the tranquil beauty of the Himalayas. Each retreat offers a holistic blend of daily yoga and meditation sessions led by experienced instructors, nourishing yogic meals prepared with local, organic ingredients, and immersive experiences that let you explore the simple, soulful lifestyle of the region.
+
+                            Guests enjoy comfortable, serene accommodations with scenic views, nature walks, and guided excursions to nearby temples, waterfalls, and cultural landmarks. Witness the spiritual grandeur of the Ganga Aarti, engage in mindful practices, connect with local artisans, and embrace a slower, more meaningful way of living.
+
+                            Whether you seek inner peace, healing, or just a break from the noise of modern life, our retreats offer a sacred space to reset and reconnect — naturally and soulfully.</p>
+                        {/* <p className="text-black text-sm lg:w-[40vw] xl:w-[35vw] font-barlow mt-6">Our website is your gateway to the heart of Rishikesh, offering rich and soulful handmade creations crafted by local artisans.</p> */}
                     </div>
                     <div className="font-barlow mt-10 lg:mt-0">
                         <h1 className="font-semibold text-xl ">Subscribe to our newsletter</h1>
@@ -153,7 +205,7 @@ const Footer = () => {
             </Card>
             <div className="flex flex-col lg:flex-row items-center justify-center max-w-[25rem] md:max-w-[60rem] xl:max-w-6xl mx-auto font-barlow">
                 <p className="text-black font-bold text-center my-4">
-                    &copy; <CurrentYear /> <Link href={'/'} className="font-bold text-black">Rishikesh Handmade</Link>. All rights reserved
+                    &copy; <CurrentYear /> <Link href={'/'} className="font-bold text-black">Himalayan Wellness Retreat</Link>. All rights reserved
                 </p>
             </div>
         </footer >
