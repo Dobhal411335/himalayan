@@ -15,9 +15,9 @@ const Team = () => {
   return (
     <div className="w-full min-h-screen bg-[#fcf7f1]">
       {/* Banner */}
-      <div className="relative w-full h-[250px] flex items-center justify-center">
+      <div className="relative w-full h-[350px] flex items-center justify-center">
         <Image
-          src="/bg1.jpg"
+          src="/bg2.jpg"
           alt="Team Banner"
           layout="fill"
           objectFit="cover"
@@ -25,7 +25,7 @@ const Team = () => {
           priority
         />
         <div className="relative z-10 text-center text-white">
-          <h1 className="text-4xl md:text-5xl font-bold mb-2 drop-shadow-lg">Team of Experts</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-2 drop-shadow-lg">Our Experienced Gurus</h1>
           {/* <nav aria-label="breadcrumb" className="flex justify-center">
             <ul className="flex gap-2 text-lg">
               <li>
@@ -44,9 +44,10 @@ const Team = () => {
           <div className="flex flex-col lg:flex-row gap-8 mb-10 items-start">
             {/* Left: Heading and Paragraph */}
             <div className="w-full lg:w-[57%]">
-              <h2 className="text-3xl md:text-5xl font-semibold mb-4 text-gray-800 leading-tight">Behind Rishikesh Handmade Craft is a dedicated team of experienced professionals and industry veterans who share a deep passion for traditional Indian craftsmanship.</h2>
+              <h2 className="text-3xl md:text-5xl font-semibold mb-4 text-gray-800 leading-tight">Experience You Can Trust. Where Expertise Meets Himalayan Spirit.</h2>
               <p className="text-xl text-gray-700 mb-4">
-                Our core team includes expert artisans, designers, curators, and community leaders — many of whom have over 20 years of hands-on experience in the handicraft and cottage industry.
+              At Himalayan Wellness Retreats, our strength lies in the wisdom and dedication of our core team — a collective of experienced teachers, compassionate healers, and inspiring mentors. Each expert brings years of training in traditional practices such as yoga, meditation, Ayurveda, and holistic therapies, rooted in the sacred traditions of the Himalayas. More than instructors, they are soulful guides committed to your personal growth and well-being. With a deep understanding of ancient knowledge and a modern approach to healing, they create a nurturing environment where transformation begins — mindfully, gently, and authentically.
+
               </p>
             </div>
             {/* Right: Two Images in a row */}
@@ -99,18 +100,20 @@ const Team = () => {
           </div>
 
           <div className="mb-10 text-base text-gray-700">
-            These individuals have not only mastered their craft but have also played a pivotal role in shaping the future of local artisans. Through years of dedication, they have created opportunities, launched training initiatives, and set new benchmarks in quality and innovation. Their deep understanding of cultural artistry, sustainable practices, and market trends ensures that every product we offer meets the highest standards while staying true to its roots.
+          These individuals have not only mastered the ancient science of yoga but have also played a pivotal role in nurturing the spiritual and personal growth of others. With years of dedicated practice and teaching, they have created transformative experiences, launched community-based wellness initiatives, and inspired a new generation of mindful living. Their deep understanding of yogic philosophy, holistic wellness, and sustainable practices ensures that every session goes beyond physical postures — offering a journey into balance, awareness, and inner peace, while staying true to the Himalayan spirit.
           </div>
 
           {/* Contributions Section */}
           <div className="rounded-xl p-8 border border-gray-400">
-            <h2 className="text-3xl font-bold mb-4 text-gray-800">Our Team’s Contributions Include:</h2>
+            <h2 className="text-3xl font-bold mb-4 text-gray-800">Our Team’s Impact – Nurturing Wellness & Uplifting Communities:</h2>
             <ul className="list-decimal pl-6 text-base text-gray-700 space-y-2">
-              <li><span className="font-bold">Mentoring and Training:</span> Providing skill development and mentorship to hundreds of young and emerging artisans in and around Rishikesh.</li>
-              <li><span className="font-bold">Empowering Communities:</span> Helping local craftspeople access fair markets, increase income, and gain financial independence.</li>
-              <li><span className="font-bold">Innovation with Tradition:</span> Blending ancient techniques with contemporary design to make traditional products appealing to modern audiences.</li>
-              <li><span className="font-bold">Creating Global Milestones:</span> Leading successful exhibitions, collaborations, and export initiatives that brought Rishikesh’s art to global recognition.</li>
-              <li><span className="font-bold">Sustainable Future:</span> Our team is committed to continuing this journey — one that not only preserves heritage but also builds a sustainable future for the artisan community. With their guidance and expertise, Rishikesh Handmade Craft continues to be a trusted bridge between tradition and the global marketplace.</li>
+              <span className="">At Himalayan Yoga Wellness Retreats, our team’s work extends far beyond the mat. Rooted in service and community upliftment, their contributions have helped shape a more holistic and sustainable wellness experience for all:</span>
+              <li><span className="font-bold"> Mentoring and Training:</span> Our yoga experts have guided and mentored hundreds of aspiring practitioners and wellness facilitators, empowering the next generation through focused training and authentic teachings in and around Rishikesh.</li>
+              <li><span className="font-bold"> Empowering Communities:</span> Through collaborative wellness programs, our team has supported local artisans and wellness workers — helping them access ethical markets, increase their income, and achieve greater financial independence.</li>
+              <li><span className="font-bold"> Innovation with Tradition: </span> By blending ancient yogic wisdom with contemporary wellness needs, our team ensures that every retreat remains both spiritually rooted and globally relevant.
+              </li>
+              <li><span className="font-bold">Creating Global Milestones:</span>From hosting international retreats to participating in cross-cultural collaborations, our team has played a key role in bringing Rishikesh’s soulful wellness traditions to a global audience.</li>
+              <li><span className="font-bold">Committed to a Sustainable Future:</span>More than just experts, they are changemakers. With their vision and dedication, our retreats not only preserve Himalayan heritage but also create meaningful opportunities for local communities to thrive.</li>
             </ul>
           </div>
         </div>

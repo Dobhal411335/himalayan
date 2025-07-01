@@ -85,7 +85,7 @@ const Header = () => {
          ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
     >
       <div className="md:flex hidden items-center justify-between gap-8 border-b py-1 border-gray-400 md:px-8 ">
-        <p className="text-md">Crafted by Hand, Cherished by Heart</p>
+        <p className="text-md">Inner Peace is Trending – Find Yours Today</p>
         <div className="flex flex-row justify-center items-center gap-4">
           <div className="items-center z-50 gap-4 flex">
             <div className="flex items-center gap-3">

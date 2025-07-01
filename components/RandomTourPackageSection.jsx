@@ -56,7 +56,7 @@ const RandomTourPackageSection = () => {
       price: Math.round(discountedPrice),
       size: item?.quantity?.variants[0].size,
       weight: item?.quantity?.variants[0].weight,
-      color:item?.quantity?.variants[0].color,
+      color: item?.quantity?.variants[0].color,
       originalPrice: price,
       qty: 1,
       couponApplied,
@@ -203,13 +203,11 @@ const RandomTourPackageSection = () => {
         {/* Product Section */}
         <div className="w-full py-10 px-1 bg-blue-100">
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mt-10 uppercase">
-            Trending Products: The Best, Today
+          Wellness That’s In – Experience the Best, Today.
           </h1>
           <p className=" text-gray-600 py-4 text-center font-barlow md:w-[50%] w-full mx-auto">
-            Discover the hottest deals with our Trending Products! Curated
-            daily, these top-rated picks offer the best value and quality —
-            handpicked for professionals who demand the best, today. Don’t miss
-            out — elevate your experience now!
+          Wellness That’s In – Experience the Best, Today
+          Discover the essence of mindful living in the heart of Rishikesh. At Himalayan Wellness Retreats, our curated experiences blend ancient yoga, serene surroundings, and soul-nourishing practices designed for modern well-being. Whether you're seeking clarity, calm, or connection — your journey to feeling your best starts today.
           </p>
           <Carousel
             className={`w-full md:w-[95%] mx-auto my-4 ${products.length > 0 ? "block" : "hidden"}`}
@@ -287,7 +285,7 @@ const RandomTourPackageSection = () => {
                                   price: Math.round(discountedPrice),
                                   size: item?.quantity?.variants[0].size,
                                   weight: item?.quantity?.variants[0].weight,
-                                  color:item?.quantity?.variants[0].color,
+                                  color: item?.quantity?.variants[0].color,
                                   originalPrice: price,
                                   qty: 1,
                                   couponApplied,
@@ -403,12 +401,11 @@ const RandomTourPackageSection = () => {
             <div className="flex flex-col md:flex-row items-start gap-5">
               {/* Left: Heading and description */}
               <div className="flex-1 flex flex-col justify-center md:pr-8">
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-start mb-5 uppercase">Meet Our Artisans</h2>
-                <h2 className="text-xl font-bold mb-2">Celebrating the Art of Craftsmanship. Honoring the Hands That Shape Beauty</h2>
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-start mb-5 uppercase">Who We Are</h2>
+                <h2 className="text-xl font-bold mb-2">Guided Yoga & Meditation with Experienced Instructors      ----------    yoga and meditation sessions led by experienced instructors</h2>
                 <div className="text-md text-gray-700 text-justify mb-6">
-                  We are proud to recognize and celebrate your exceptional talent and dedication as a skilled handicraft artisan. Your ability to transform raw materials into beautiful, meaningful works of art speaks to your creativity, precision, and passion for the craft. Each piece you create is a testament to the enduring value of handmade artistry and the cultural richness it preserves. With deep appreciation, we commend you for achieving this milestone and look forward to witnessing your continued journey of artistic excellence.
+                At Himalayan Wellness Retreats, each day begins with soul-soothing yoga and meditation sessions guided by experienced and certified instructors. Rooted in ancient yogic traditions, our sessions are thoughtfully designed to suit all levels — from beginners to seasoned practitioners. With a focus on breath, alignment, and inner awareness, these practices help release stress, restore balance, and deepen your connection to self. Whether on the mat or in quiet stillness, our instructors gently guide you toward physical vitality and mental clarity in the peaceful energy of Rishikesh.
                 </div>
-                <Link href="/allArtisans" className="bg-black text-white py-3 px-6 rounded-lg font-semibold text-lg w-fit mb-6">View All Artisans</Link>
               </div>
               {/* Right: Top 2 artisan cards in new style */}
               <div className="hidden md:flex flex-row gap-4 justify-end">

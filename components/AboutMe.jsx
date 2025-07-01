@@ -6,23 +6,25 @@ import Link from "next/link";
 const accordionData = [
   {
     title: "What Makes Us Unique?",
-    content: `Authentic Handcrafted Products. Every item featured on our platform is 100% handmade, ensuring uniqueness and individuality. No two pieces are exactly the same, making your purchase truly special.`
+    content: `Nestled in the serene foothills of the Himalayas, our wellness retreats offer more than just a break — they provide a deep journey into holistic healing and self-discovery. What sets us apart is our blend of traditional Himalayan wisdom and modern wellness practices. From yoga and meditation guided by experienced gurus to Ayurvedic therapies using locally sourced herbs, every experience is rooted in authenticity. Located in the spiritual heart of Rishikesh, our retreats offer peaceful surroundings, organic meals, and personalized care — creating a sanctuary where mind, body, and soul reconnect in harmony.`
   },
   {
     title: "Sustainable & Eco-Friendly",
-    content: `We prioritize natural, locally sourced materials and environmentally conscious production techniques that minimize waste and reduce our carbon footprint.`
+    content: `At Himalayan Wellness Retreats, sustainability is not just a practice — it's a way of life. Our retreats are designed to harmonize with nature, using eco-friendly infrastructure, locally sourced organic food, and zero-plastic policies. We support local artisans and communities, ensuring that your stay contributes to the region’s well-being. Every guest is welcomed like family, with warm hospitality and personalized care that reflects the spirit of the Himalayas. Here, your journey to wellness is gentle on the earth and deeply enriching for the soul.`
   },
   {
     title: "Empowering Local Artisans",
-    content: `By eliminating middlemen, we ensure fair compensation to our artisans, helping them build sustainable livelihoods and encouraging the younger generation to continue their cultural legacy.`
+    content: `At Himalayan Wellness Retreats, we believe that wellness is a journey for everyone — whether you're just beginning or have years of experience. Our programs are thoughtfully designed to meet you where you are. Beginners are gently guided with patience and clarity, while seasoned practitioners are offered deeper insights and advanced practices. Through expert instruction, mindful support, and an inclusive atmosphere, we empower every individual to grow, heal, and reconnect with their inner self at their own pace — all in the nurturing embrace of the Himalayas.`
   },
   {
     title: "Cultural Preservation",
-    content: `Each product is a piece of Rishikesh’s heritage — infused with spiritual symbolism, traditional techniques, and cultural stories. We aim to keep these traditions alive by providing a platform where they are celebrated and valued.`
+    content: `At Himalayan Wellness Retreats, cultural preservation is at the heart of our mission. We are deeply rooted in the traditions of the Himalayas, and we strive to keep this rich heritage alive through every experience we offer. From ancient yoga and meditation practices to Ayurvedic healing, Vedic rituals, and local art forms, we embrace and share the timeless wisdom of our ancestors. By collaborating with local communities, healers, and artisans, we not only protect these traditions but also empower the people who carry them forward — ensuring they thrive for generations to come.`
   },
   {
     title: "Global Accessibility with Local Roots",
-    content: `Whether you’re shopping from India or abroad, our platform brings the soul of Rishikesh to your doorstep with a seamless online shopping experience and reliable worldwide shipping.\n\nAt Rishikesh Handmade Craft, we envision a world where conscious consumerism supports tradition, where handmade replaces mass-produced, and where every purchase carries purpose. When you choose us, you don’t just buy a product — you become a part of a larger story: one of culture, compassion, and community.\n\nThank you for supporting our mission to preserve heritage and empower artisans, one handmade piece at a time.`
+    content: `Himalayan Wellness Retreats bridges the gap between ancient traditions and modern lifestyles, offering globally accessible wellness experiences deeply rooted in local Himalayan culture. Whether you’re joining us from across the world or nearby, our retreats are designed to be inclusive, welcoming, and easy to access. While we open our doors to international seekers of peace and balance, we remain firmly connected to our local roots — celebrating regional wisdom, supporting indigenous communities, and preserving the authenticity that makes our retreats truly unique.
+
+We sincerely thank you for being part of our journey to preserve Himalayan heritage and empower both seasoned practitioners and those just beginning their wellness path. Your support helps us sustain ancient traditions, uplift local communities, and create an inclusive space where everyone can heal, grow, and thrive — rooted in authenticity, guided by purpose.`
   }
 ];
 const teamMembers = [
@@ -49,7 +51,7 @@ const AboutMe = () => {
           priority
         />
         <div className="relative z-10 text-center text-white">
-          <h1 className="text-4xl md:text-5xl font-bold mb-2 drop-shadow-lg">About Rishikesh Handmade</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-2 drop-shadow-lg">Himalayan Wellness Retreats</h1>
           {/* <nav aria-label="breadcrumb" className="flex justify-center"> */}
           {/* <ul className="flex gap-2 text-lg">
               <li>
@@ -69,12 +71,11 @@ const AboutMe = () => {
             {/* Left: Text and Accordion */}
             <div className="lg:w-1/2 flex flex-col justify-center overflow-y-auto">
               <div className="mb-8">
-                <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-800">“Rooted in Nature, Crafted by Tradition.”</h2>
+                <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-800">"Breathe. Stretch. Transform. Find Your Flow, Feel Your Peace."</h2>
                 <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                  Welcome to Rishikesh Handmade Craft — your gateway to the timeless art and culture of Rishikesh. Our platform is dedicated to preserving and promoting the rich heritage of this sacred region by showcasing an exclusive collection of eco-friendly, handcrafted items. From intricate wooden carvings and traditional paintings to artisanal jewelry and elegant home décor, each piece is thoughtfully created by skilled local artisans who carry forward generations of craftsmanship.<br /><br />
-                  At Rishikesh Handmade Craft, we believe in more than just selling products — we believe in telling stories. Every item on our platform embodies the soul of Rishikesh, blending natural materials with artistic traditions to create something truly unique and meaningful. By supporting our initiative, you contribute to the empowerment of local communities, the preservation of ancient skills, and the promotion of sustainable living.<br /><br />
-                  At Rishikesh Handmade Craft, we are more than just an e-commerce platform — we are a movement to revive, support, and celebrate the timeless heritage of Rishikesh through handcrafted art. Nestled in the foothills of the Himalayas, Rishikesh is a land known not only for its spiritual aura but also for its deeply rooted artistic traditions. Our mission is to bring these soulful creations to a global audience while uplifting the lives of the skilled artisans behind them.<br /><br />
-                  We partner directly with local craftsmen and women from Rishikesh and nearby villages who specialize in traditional art forms passed down through generations. These artisans pour their heart and soul into every product — whether it's an intricately carved wooden artifact, a hand-painted canvas, ethically made jewelry, or eco-friendly home décor. Each piece reflects the essence of Indian culture, spirituality, and sustainability.
+                  Himalayan Wellness Retreats invites you to a transformative journey nestled in the spiritual heartland of Tapovan, Rishikesh — where the charm of the sacred city meets the serene rhythm of the Ganges. Known as the Yoga Capital of the World, Rishikesh offers the perfect backdrop for inner healing, mindful living, and soulful exploration. Our thoughtfully curated retreats are designed to rejuvenate your body, mind, and spirit amidst the majestic Himalayan landscape. Each day begins with revitalizing yoga and meditation sessions led by experienced instructors, followed by nourishing yogic meals prepared from fresh, organic ingredients.<br /><br />
+                  Immerse yourself in the local lifestyle as you explore ancient temples, vibrant artisan markets, and the awe-inspiring Ganga Aarti — all just steps away from our peaceful retreat in Tapovan. Guests enjoy serene accommodations with stunning views, nature walks, and spiritual excursions that connect you deeply with the essence of the region. Whether you seek inner peace, spiritual growth, or simply a conscious escape, Himalayan Wellness Retreats in Rishikesh offers a sacred space to reconnect—with yourself, with nature, and with the divine flow of life.<br /><br />
+                  Explore the Spirit of Rishikesh — Where Every Breath is a Step Toward Wholeness.<br /><br />
                 </p>
               </div>
 
@@ -127,7 +128,7 @@ const AboutMe = () => {
             <div className="lg:w-1/2 min-h-[600px] h-full flex ">
               <div className="grid grid-cols-5 gap-4 w-full ">
                 <div className="col-span-3">
-                  <Image src="/A1.jpg" alt="A1" width={900} height={400} className="rounded-lg shadow-lg object-cover w-full h-full" />
+                  <Image src="/A1.jpg" alt="A1" width={900} height={600} className="rounded-lg shadow-lg object-cover w-full h-full" />
                 </div>
                 <div className="col-span-2">
                   <Image src="/A2.jpg" alt="A2" width={300} height={400} className="rounded-lg shadow-lg object-cover w-full h-full" />
@@ -155,10 +156,10 @@ const AboutMe = () => {
         <Link href="/contact" className="btn bg-white text-black font-bold px-8 py-3 rounded-lg shadow transition">Get In Touch</Link>
       </section>
 
-      <section className="content-inner py-16">
+      {/* <section className="content-inner py-16">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-8 mb-10 items-center">
-            {/* Left: Heading and Paragraph */}
+          
             <div className="w-full lg:w-[57%]">
               <h2 className="text-3xl md:text-5xl font-bold mb-4 text-black leading-tight">Our Team of Experts</h2>
               <p className="text-md text-gray-700 mb-4">
@@ -168,26 +169,21 @@ const AboutMe = () => {
                 These individuals have not only mastered their craft but have also played a pivotal role in shaping the future of local artisans. Through years of dedication, they have created opportunities, launched training initiatives, and set new benchmarks in quality and innovation. Their deep understanding of cultural artistry, sustainable practices, and market trends ensures that every product we offer meets the highest standards while staying true to its roots.
               </p>
             </div>
-            {/* Right: Two Images in a row */}
+            
             <div className="w-full lg:w-[57%] flex flex-row gap-8 justify-center">
-              {/* First Team Member */}
+             
               <div className="flex flex-col items-center">
                 <div className="relative w-72 h-72 rounded-2xl overflow-hidden shadow-lg flex items-center justify-center">
                   <Image src="/pic1_1.jpg" alt="John Doe" width={224} height={224} className="object-cover w-full h-full" />
-                  {/* Social Icons Overlay */}
-                  {/* <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-4 bg-white/80 px-4 py-2 rounded-full shadow">
-                            <a href="#" className="text-gray-700 hover:text-blue-600"><i className="fab fa-facebook-f" /></a>
-                            <a href="#" className="text-gray-700 hover:text-blue-400"><i className="fab fa-twitter" /></a>
-                            <a href="#" className="text-gray-700 hover:text-pink-500"><i className="fab fa-instagram" /></a>
-                            <a href="#" className="text-gray-700 hover:text-blue-700"><i className="fab fa-linkedin-in" /></a>
-                          </div> */}
+                
+                 
                 </div>
                 <div className="mt-3 text-center">
                   <div className="font-bold text-lg">John Doe</div>
                   <div className="text-xs text-gray-600">CEO & Founder</div>
                 </div>
               </div>
-              {/* Second Team Member */}
+             
               <div className="flex flex-col items-center">
                 <div className="w-72 h-72 rounded-2xl overflow-hidden shadow-lg flex items-center justify-center">
                   <Image src="/pic1_1.jpg" alt="Ivan Mathews" width={224} height={224} className="object-cover w-full h-full" />
@@ -200,7 +196,7 @@ const AboutMe = () => {
             </div>
           </div>
 
-          {/* Team Grid */}
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-8 mb-10">
             {teamMembers.slice(2).map((member, idx) => (
               <div key={idx} className="flex flex-col items-center">
@@ -222,16 +218,16 @@ const AboutMe = () => {
           </div>
 
 
-          {/* Testimonial Section Start */}
+         
           <section className="w-full py-16 flex flex-col md:flex-row items-center justify-center gap-8 relative overflow-hidden">
-            {/* Left Side - Background Image with overlay badge */}
+          
             <div className="relative flex-1 flex items-center justify-center min-h-[400px]">
               <img
                 src="/pic1_1.jpg" // Place your image in public folder or update the path
                 alt="Happy Client"
                 className="object-contain h-[420px] z-10 relative"
               />
-              {/* Overlay badge */}
+              
               <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-lg flex items-center gap-3 px-4 py-2 z-20">
                 <div className="flex -space-x-2">
                   <img src="/pic1_1.jpg" alt="user1" className="w-8 h-8 rounded-full border-2 border-white" />
@@ -242,11 +238,10 @@ const AboutMe = () => {
                   <span className="text-gray-500">+12K</span>
                 </div>
               </div>
-              {/* Decorative background shape */}
-              {/* <div className="absolute -top-10 -left-20 w-[350px] h-[350px] bg-[#FEEAD3] rounded-full opacity-80 z-0"></div> */}
+         
             </div>
 
-            {/* Right Side - Testimonial Card */}
+           
             <div className="flex-1 flex items-center justify-center">
               <div className="bg-white rounded-2xl shadow-lg p-8 max-w-xl w-full relative">
                 <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
@@ -277,9 +272,9 @@ const AboutMe = () => {
               </div>
             </div>
           </section>
-          {/* Testimonial Section End */}
+         
         </div>
-      </section>
+      </section> */}
     </div>
   );
 };

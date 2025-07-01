@@ -59,9 +59,9 @@ const Banner = () => {
             {promotinalBanner.length > 0 && (
                 <div className="w-full py-20 bg-blue-100">
                     <h2 className="text-2xl md:text-4xl font-bold text-center mb-5 uppercase">
-                        <span className="italic">Click</span>,
-                        <span >Collect</span>,
-                        <span>Checkout</span>
+                        <span className="italic">Balance is the New Luxury – Embrace It Today
+                        </span>
+                        
                     </h2>
                     <p className="font-barlow text-gray-600 mb-5 w-[50%] mx-auto text-center">From everyday essentials to the latest trends, we bring everything to your fingertips. Enjoy easy browsing, secure checkout, and doorstep delivery with exciting deals and free shipping.</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -100,7 +100,9 @@ const Banner = () => {
             {/* Featured Offer For You Section */}
             {featuredOffer.length > 0 && (
                 <div className="w-full my-20 px-10">
-                    <h2 className="text-2xl md:text-3xl font-bold text-center mb-5 uppercase">Featured Offer For You</h2>
+                    <h2 className="text-2xl md:text-3xl font-bold text-center mb-5 uppercase">Balance is the New Luxury – Embrace It Today
+                    </h2>
+                    <p className="font-barlow text-gray-600 mb-5 w-[50%] mx-auto text-center">Leave the chaos behind and embrace mindful simplicity. Nestled in the calm of Tapovan, our retreats offer expert-led sessions, soulful food, and Himalayan stillness for the ultimate reset.</p>
                     <Carousel className="w-full">
                         <CarouselContent>
                             {featuredOffer.map((item, idx) => (

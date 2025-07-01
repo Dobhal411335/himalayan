@@ -420,7 +420,7 @@ const InstaBlog = () => {
             )}
 
             {/* Reviews Section */}
-            <div className="w-full mx-auto relative min-h-[600px] flex items-center justify-end relative">
+            <div className="w-full mx-auto relative min-h-[650px] flex items-center justify-end relative">
                 {/* Background Image */}
                 <div className="hidden md:flex absolute inset-0 w-full h-full z-0">
                     <img
