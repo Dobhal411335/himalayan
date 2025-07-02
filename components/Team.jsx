@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-
+import './fonts/fonts.css';
 const teamMembers = [
   { name: "John Doe", role: "CEO & Founder" },
   { name: "Ivan Mathews", role: "iOS Developer" },
@@ -15,7 +15,7 @@ const Team = () => {
   return (
     <div className="w-full min-h-screen bg-[#fcf7f1]">
       {/* Banner */}
-      <div className="relative w-full h-[350px] flex items-center justify-center">
+      <div className="relative w-full h-[350px] flex items-center justify-center bg-secondary overlay-black-light">
         <Image
           src="/bg2.jpg"
           alt="Team Banner"
@@ -39,13 +39,13 @@ const Team = () => {
       </div>
 
       {/* Main Content */}
-      <section className="content-inner py-16">
-        <div className="container mx-auto px-4">
+      <section className="content-inner py-20">
+        <div className="container mx-auto px-10">
           <div className="flex flex-col lg:flex-row gap-8 mb-10 items-start">
             {/* Left: Heading and Paragraph */}
-            <div className="w-full lg:w-[57%]">
-              <h2 className="text-3xl md:text-5xl font-semibold mb-4 text-gray-800 leading-tight">Experience You Can Trust. Where Expertise Meets Himalayan Spirit.</h2>
-              <p className="text-xl text-gray-700 mb-4">
+            <div className="w-full lg:w-[60%]">
+              <h2 className="pacifico-h2 text-green-800 text-3xl md:text-5xl mb-4">Experience You Can Trust. Where Expertise Meets Himalayan Spirit.</h2>
+              <p className="text-xl text-gray-700 mb-4 w-full lg:w-[90%]">
               At Himalayan Wellness Retreats, our strength lies in the wisdom and dedication of our core team — a collective of experienced teachers, compassionate healers, and inspiring mentors. Each expert brings years of training in traditional practices such as yoga, meditation, Ayurveda, and holistic therapies, rooted in the sacred traditions of the Himalayas. More than instructors, they are soulful guides committed to your personal growth and well-being. With a deep understanding of ancient knowledge and a modern approach to healing, they create a nurturing environment where transformation begins — mindfully, gently, and authentically.
 
               </p>
@@ -105,10 +105,10 @@ const Team = () => {
 
           {/* Contributions Section */}
           <div className="rounded-xl p-8 border border-gray-400">
-            <h2 className="text-3xl font-bold mb-4 text-gray-800">Our Team’s Impact – Nurturing Wellness & Uplifting Communities:</h2>
+            <h2 className="pacifico-h2 text-green-800 text-3xl mb-4 text-gray-800">Our Team’s Impact – Nurturing Wellness & Uplifting Communities:</h2>
             <ul className="list-decimal pl-6 text-base text-gray-700 space-y-2">
               <span className="">At Himalayan Yoga Wellness Retreats, our team’s work extends far beyond the mat. Rooted in service and community upliftment, their contributions have helped shape a more holistic and sustainable wellness experience for all:</span>
-              <li><span className="font-bold"> Mentoring and Training:</span> Our yoga experts have guided and mentored hundreds of aspiring practitioners and wellness facilitators, empowering the next generation through focused training and authentic teachings in and around Rishikesh.</li>
+              <li><span className="font-bold"> Mentoring and Training:</span> Our yoga experts have guided and mentored hundreds of aspiring practitioners and wellness facilitators, empowering the next generation through focused `training and authentic teachings in and around Rishikesh.</li>
               <li><span className="font-bold"> Empowering Communities:</span> Through collaborative wellness programs, our team has supported local artisans and wellness workers — helping them access ethical markets, increase their income, and achieve greater financial independence.</li>
               <li><span className="font-bold"> Innovation with Tradition: </span> By blending ancient yogic wisdom with contemporary wellness needs, our team ensures that every retreat remains both spiritually rooted and globally relevant.
               </li>

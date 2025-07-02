@@ -10,6 +10,7 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import toast from "react-hot-toast"
 import { useSession } from "next-auth/react"
+import './fonts/fonts.css';
 const ContactUs = () => {
     const { data: session } = useSession();
     const [formData, setFormData] = useState({
@@ -98,11 +99,11 @@ const ContactUs = () => {
     };
     return (
         <div className="bg-[#fdf7f2] min-h-screen w-full flex flex-col items-center justify-start pt-5">
-            <div className="container mx-auto px-4">
+            <div className="container mx-auto px-10">
                 <div className="flex flex-col lg:flex-row gap-8 w-full justify-center mt-10">
                     {/* Contact Info */}
                     <div className="lg:w-1/2 w-full flex flex-col justify-center text-black">
-                        <h2 className="text-5xl font-bold mb-4">DISCOVER US</h2>
+                        <h2 className="pacifico-h2 text-5xl text-green-800 mb-4">DISCOVER US</h2>
                         <p className="mb-6 text-base w-[90%] ">
                             <span className="underline text-3xl">Rishikesh Handmade is here to help you.</span>
                             <br />
@@ -112,8 +113,8 @@ const ContactUs = () => {
                             <h3 className="font-bold text-2xl mb-2">Call Us</h3>
                             <ul className="mb-2">
                                 <li className='flex flex-row gap-2'>
-                                    <a href="tel:+917351009107" className="hover:underline text-xl">+91 7351009107</a>
-                                    <a href="tel:+919411571947" className="hover:underline text-xl">+91 9411571947</a>
+                                    <a href="tel:+917351009107" className="hover:underline text-xl">+91 9897515305</a>
+                                    <a href="tel:+919411571947" className="hover:underline text-xl">+91 7060340176</a>
                                 </li>
                             </ul>
                         </div>
@@ -121,16 +122,8 @@ const ContactUs = () => {
                             <h3 className="font-bold text-2xl mb-2 ">E-mail</h3>
                             <ul className="mb-2">
                                 <li className='text-xl'>
-                                    For Sales:
-                                    <a href="mailto:info@rishikeshhandmade.com" className="hover:underline text-xl"> Info@rishikeshhandmade.com</a>
-                                </li>
-                                <li className='text-xl'>
-                                    For Support:
-                                    <a href="mailto:care@rishikeshhandmade.com" className="hover:underline text-xl"> care@rishikeshhandmade.com</a>
-                                </li>
-                                <li className='text-xl'>
                                     For Official:
-                                    <a href="mailto:rishikeshhandmade@gmail.com" className="hover:underline text-xl"> rishikeshhandmade@gmail.com</a>
+                                    <a href="mailto:himalayanwellnessretreats@gmail.com" className="hover:underline text-xl"> himalayanwellnessretreats@gmail.com</a>
                                 </li>
                             </ul>
                         </div>

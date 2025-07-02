@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-
+import './fonts/fonts.css';
 const accordionData = [
   {
     title: "What Makes Us Unique?",
@@ -41,7 +41,7 @@ const AboutMe = () => {
   return (
     <div className="w-full min-h-screen bg-[#fcf7f1]">
       {/* Banner */}
-      <div className="relative w-full h-[280px] flex items-center justify-center bg-secondary overlay-black-light">
+      <div className="relative w-full h-[350px] flex items-center justify-center bg-secondary overlay-black-light">
         <Image
           src="/bg1.jpg"
           alt="About Banner"
@@ -71,7 +71,7 @@ const AboutMe = () => {
             {/* Left: Text and Accordion */}
             <div className="lg:w-1/2 flex flex-col justify-center overflow-y-auto">
               <div className="mb-8">
-                <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-800">"Breathe. Stretch. Transform. Find Your Flow, Feel Your Peace."</h2>
+                <h2 className="pacifico-h2 text-4xl md:text-5xl mb-6 text-green-800">"Breathe. Stretch. Transform. Find Your Flow, Feel Your Peace."</h2>
                 <p className="text-lg text-gray-700 leading-relaxed mb-6">
                   Himalayan Wellness Retreats invites you to a transformative journey nestled in the spiritual heartland of Tapovan, Rishikesh — where the charm of the sacred city meets the serene rhythm of the Ganges. Known as the Yoga Capital of the World, Rishikesh offers the perfect backdrop for inner healing, mindful living, and soulful exploration. Our thoughtfully curated retreats are designed to rejuvenate your body, mind, and spirit amidst the majestic Himalayan landscape. Each day begins with revitalizing yoga and meditation sessions led by experienced instructors, followed by nourishing yogic meals prepared from fresh, organic ingredients.<br /><br />
                   Immerse yourself in the local lifestyle as you explore ancient temples, vibrant artisan markets, and the awe-inspiring Ganga Aarti — all just steps away from our peaceful retreat in Tapovan. Guests enjoy serene accommodations with stunning views, nature walks, and spiritual excursions that connect you deeply with the essence of the region. Whether you seek inner peace, spiritual growth, or simply a conscious escape, Himalayan Wellness Retreats in Rishikesh offers a sacred space to reconnect—with yourself, with nature, and with the divine flow of life.<br /><br />

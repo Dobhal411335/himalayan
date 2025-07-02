@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Skeleton } from "./ui/skeleton";
-
+import './fonts/fonts.css';
 const AboutUsSection = () => {
     const [featuredPackages, setFeaturedPackages] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -82,8 +82,8 @@ const AboutUsSection = () => {
     return (
         <section className="bg-[url('/aboutUsBanner.jpg')] bg-no-repeat bg-cover bg-center relative py-10 w-full px-10 md:px-5 overflow-hidden max-w-screen overflow-x-hidden">
             <div className="w-full">
-                <h2 className="font-bold text-2xl md:text-4xl text-center mt-2 md:mt-7 uppercase">
-                    <span className="italic">Experience the Soul of Himalayan Wellness in Rishikesh,</span>
+                <h2 className="pacifico-h2 text-green-800 text-3xl text-center mt-2 md:mt-7 uppercase">
+                    <span className="">Experience the Soul of Himalayan Wellness in Rishikesh,</span>
                 </h2>
                 <p className=" text-xl font-lg md:text-xl text-center mt-2">
                     emphasizes uniqueness, tradition, artistry, and authentic

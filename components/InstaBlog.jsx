@@ -16,6 +16,7 @@ import { Button } from "./ui/button";
 import { Star } from 'lucide-react';
 import ReviewModal from "./ReviewModal";
 import toast from "react-hot-toast"
+import './fonts/fonts.css'
 const InstaBlog = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [blogs, setBlogs] = useState([]);
@@ -187,6 +188,7 @@ const InstaBlog = () => {
     return (
         <div className='bg-[#fcf7f1] w-full overflow-hidden max-w-screen overflow-x-hidden'>
             {/*Blogs /  News & Announcement Section */}
+            {((!isBlogsLoading && blogs && blogs.length > 0) || (news && news.length > 0)) && (
             <div className="w-full flex flex-col items-center mb-12 py-20 bg-blue-100">
                 <div className="w-full flex flex-col md:flex-row gap-8 min-h-[350px]">
                     <div className="flex flex-col md:flex-row w-full gap-8">
@@ -198,7 +200,7 @@ const InstaBlog = () => {
                                     <span className='border-b-2 border-black'>
                                         <span className='italic'>Blog</span> and Events
                                     </span></div>
-                                <h2 className='font-semibold text-xl p-1 '>Experience , Engage, Explore, Event by Event.</h2>
+                                <h2 className='pacifico-h2 text-green-800 font-semibold text-xl p-1'>Experience , Engage, Explore, Event by Event.</h2>
                                 <p className="text-gray-800 mb-8 text-lg md:text-md font-medium">
                                     "We're preparing exciting new content and updates for our users, including upcoming news and events. We’re working behind the scenes to bring you fresh news, upcoming events, and new features to enhance your experience.
                                     <br /><br />
@@ -289,7 +291,7 @@ const InstaBlog = () => {
                             <div className="flex-1 bg-[#fcf7f1] rounded-lg p-4 flex flex-col min-h-[350px] border-[1px] border-black">
                                 <div className="flex-1 pr-2 mb-4">
                                     <div className="font-bold text-2xl mb-4 px-2">
-                                        <span className='border-b-2 border-black'>
+                                        <span className='pacifico-h2 text-green-800 border-b-2 border-black'>
                                             Upcoming News & Notice
                                         </span></div>
                                     <div className="h-[400px] overflow-y-auto p-0 border-none rounded-xl">
@@ -360,11 +362,12 @@ const InstaBlog = () => {
                     </div>
                 </div>
             </div>
+            )}
 
             {/* Instagram-like Image Carousel using Carousel classes */}
             {!isInstaLoading && !isFbLoading && allPosts.length > 0 && (
                 <div className="w-full flex flex-col items-center py-12">
-                    <h2 className="text-center font-bold text-2xl md:text-3xl lg:text-4xl uppercase">
+                    <h2 className="pacifico-h2 text-green-800 text-center text-2xl md:text-3xl lg:text-4xl uppercase">
                         Don’t just watch the trends — live them!
                     </h2>
                     <p className="text-gray-600 py-4 text-center font-barlow w-full md:w-[90%] mx-auto">

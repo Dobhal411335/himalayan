@@ -10,34 +10,34 @@ import GoogleTranslate from "@/components/GoogleTranslate";
 
 
 export const metadata = {
-  metadataBase: new URL("https://rishikeshhandmade.com/"),
+  metadataBase: new URL("https://www.himalayanwellnessretreats.com/"),
   title: {
-    default: "Rishikesh Handmade - Jute Fiber, Bhimal Fiber, Natural Fiber, Handicraft Product",
-    template: "%s | Rishikesh Handmade",
+    default: "Experience the Soul of Himalayan Wellness in Rishikesh.   Our wellness retreat packages are thoughtfully designed to rejuvenate your body, mind, and spirit amidst the tranquil beauty of the Himalayas. Each retreat offers a holistic blend of daily yoga and meditation sessions led by experienced instructors",
+    template: "%s | Himalayan Wellness Retreats",
   },
   description:
-    "Rishikesh Handmade:It showcases eco-friendly, handcrafted items like wooden carvings, paintings, jewelry, and home decor made by skilled local artisans. By supporting this platform, you help preserve age-old crafts and empower local communitiess. For more info call +91 7351009107, Info@rishikeshhandmade.com rishikeshhandmade@gmail.com Our website is your gateway to the heart of Rishikesh, offering rich and soulful handmade creations crafted by local artisans.",
+    "Experience the Soul of Himalayan Wellness in Rishikesh.   Our wellness retreat packages are thoughtfully designed to rejuvenate your body, mind, and spirit amidst the tranquil beauty of the Himalayas. Each retreat offers a holistic blend of daily yoga and meditation sessions led by experienced instructors",
   keywords:
-    "rishikeshhandmade, rishikesh, handmade, website, rishikesh handmade, india, India",
+    "himalayanwellnessretreats, rishikesh, Yoga, website, rishikesh yoga,meditation, Ayurveda, india, India",
   icons: { apple: "/apple-touch-icon.png" },
   manifest: "/site.webmanifest",
   openGraph: {
-    title: "Rishikesh Handmade - Jute Fiber, Bhimal Fiber, Natural Fiber, Handicraft Product",
+    title: "Himalayan Wellness Retreats - Yoga, Meditation, Ayurveda",
     description:
-      "Embark on a transformative voyage with Rishikesh Handmade, offering enriching spiritual journeys across India.",
+      "Experience the Soul of Himalayan Wellness in Rishikesh.   Our wellness retreat packages are thoughtfully designed to rejuvenate your body, mind, and spirit amidst the tranquil beauty of the Himalayas. Each retreat offers a holistic blend of daily yoga and meditation sessions led by experienced instructors",
     images: ["/logo.png"],
-    url: "https://rishikeshhandmade.com/",
-    site_name: "Rishikesh Handmade",
+    url: "https://www.himalayanwellnessretreats.com/",
+    site_name: "Himalayan Wellness Retreats",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Rishikesh Handmade - Jute Fiber, Bhimal Fiber, Natural Fiber, Handicraft Product",
+    title: "Himalayan Wellness Retreats - Yoga, Meditation, Ayurveda",
     description:
-      "Embark on a transformative voyage with Rishikesh Handmade, offering enriching spiritual journeys across India.",
+      "Experience the Soul of Himalayan Wellness in Rishikesh.   Our wellness retreat packages are thoughtfully designed to rejuvenate your body, mind, and spirit amidst the tranquil beauty of the Himalayas. Each retreat offers a holistic blend of daily yoga and meditation sessions led by experienced instructors",
     images: ["/logo.png"],
   },
   other: {
-    "author": "Rishikesh Handmade",
+    "author": "Himalayan Wellness Retreats",
     "robots": "index, follow",
     "viewport": "width=device-width, initial-scale=1",
   },

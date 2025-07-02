@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/carousel";
 
 import Link from "next/link";
-
+import './fonts/fonts.css';
 const Banner = () => {
     const [promotinalBanner, setPromotinalBanner] = useState([])
     const [featuredOffer, setFeaturedOffer] = useState([])
@@ -58,8 +58,8 @@ const Banner = () => {
             {/* Promotional Banner Section */}
             {promotinalBanner.length > 0 && (
                 <div className="w-full py-20 bg-blue-100">
-                    <h2 className="text-2xl md:text-4xl font-bold text-center mb-5 uppercase">
-                        <span className="italic">Balance is the New Luxury – Embrace It Today
+                    <h2 className="pacifico-h2 text-green-800 text-2xl md:text-4xl font-bold text-center mb-5 uppercase">
+                        <span className="">Balance is the New Luxury – Embrace It Today
                         </span>
                         
                     </h2>
@@ -100,7 +100,7 @@ const Banner = () => {
             {/* Featured Offer For You Section */}
             {featuredOffer.length > 0 && (
                 <div className="w-full my-20 px-10">
-                    <h2 className="text-2xl md:text-3xl font-bold text-center mb-5 uppercase">Balance is the New Luxury – Embrace It Today
+                    <h2 className="pacifico-h2 text-green-800 text-2xl md:text-3xl text-center mb-5 uppercase">Balance is the New Luxury – Embrace It Today
                     </h2>
                     <p className="font-barlow text-gray-600 mb-5 w-[50%] mx-auto text-center">Leave the chaos behind and embrace mindful simplicity. Nestled in the calm of Tapovan, our retreats offer expert-led sessions, soulful food, and Himalayan stillness for the ultimate reset.</p>
                     <Carousel className="w-full">

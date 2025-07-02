@@ -17,7 +17,7 @@ import Autoplay from "embla-carousel-autoplay";
 import QuickViewProductCard from "./QuickViewProductCard";
 import { useCart } from "../context/CartContext";
 import { toast } from "react-hot-toast"
-
+import './fonts/fonts.css';
 
 
 function slugify(text) {
@@ -202,7 +202,7 @@ const RandomTourPackageSection = () => {
       <div className=" w-full h-full overflow-hidden max-w-screen">
         {/* Product Section */}
         <div className="w-full py-10 px-1 bg-blue-100">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mt-10 uppercase">
+          <h1 className="pacifico-h2 text-green-800 text-2xl md:text-3xl lg:text-4xl text-center mt-10 uppercase">
           Wellness That’s In – Experience the Best, Today.
           </h1>
           <p className=" text-gray-600 py-4 text-center font-barlow md:w-[50%] w-full mx-auto">
@@ -401,8 +401,8 @@ const RandomTourPackageSection = () => {
             <div className="flex flex-col md:flex-row items-start gap-5">
               {/* Left: Heading and description */}
               <div className="flex-1 flex flex-col justify-center md:pr-8">
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-start mb-5 uppercase">Who We Are</h2>
-                <h2 className="text-xl font-bold mb-2">Guided Yoga & Meditation with Experienced Instructors      ----------    yoga and meditation sessions led by experienced instructors</h2>
+                <h2 className="pacifico-h2 text-green-800 text-2xl md:text-3xl lg:text-4xl text-start mb-5 uppercase">Who We Are</h2>
+                <h2 className="text-xl font-bold mb-2">Guided Yoga & Meditation with Experienced Instructors <br /> yoga and meditation sessions led by experienced instructors</h2>
                 <div className="text-md text-gray-700 text-justify mb-6">
                 At Himalayan Wellness Retreats, each day begins with soul-soothing yoga and meditation sessions guided by experienced and certified instructors. Rooted in ancient yogic traditions, our sessions are thoughtfully designed to suit all levels — from beginners to seasoned practitioners. With a focus on breath, alignment, and inner awareness, these practices help release stress, restore balance, and deepen your connection to self. Whether on the mat or in quiet stillness, our instructors gently guide you toward physical vitality and mental clarity in the peaceful energy of Rishikesh.
                 </div>
