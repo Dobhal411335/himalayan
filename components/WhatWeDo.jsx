@@ -3,27 +3,31 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import React from 'react'
-
+import './fonts/fonts.css';
 const accordionData = [
   {
     title: "What Sets Us Apart:",
-    content: "Specialization in Natural Fiber Products: Expertly handcrafted eco-products made from jute, hemp, bamboo, and other sustainable materials. "
+    content: "We are committed to curating authentic, soul-nourishing wellness experiences that spark personal transformation and holistic healing.Through a thoughtfully crafted blend of yoga, meditation, Ayurvedic therapies, and nature-based healing, we create immersive retreats that go beyond relaxation—they awaken self-awareness, restore balance, and promote long-term well-being.\n\nOur programmes are grounded in the rich spiritual and cultural heritage of Rishikesh, and guided by experienced practitioners who honor ancient traditions while adapting to individual needs.\n\nWe incorporate local wisdom, sustainable practices, and community involvement, ensuring that our retreats not only serve our guests, but also uplift the environment and local livelihoods.By connecting people back to the rhythms of nature and inner stillness, we inspire a way of life rooted in mindfulness, compassion, and sustainability—helping individuals return home with tools for lasting wellness, and a deeper connection to themselves and the world around them."
   },
   {
-    title: "100% Handmade & Authentic:",
-    content: "No factory replicas. Every item carries the uniqueness and imperfection of a true handmade creation. "
+    title: "Yoga & Meditation",
+    content: "Daily yoga sessions are at the heart of our retreats. Led by experienced and certified instructors, our classes blend Hatha, Ashtanga, and restorative yoga, paired with guided meditation and pranayama (breathwork) to enhance inner calm, flexibility, and focus.\n\n• Morning & evening yoga sessions\n• Meditation for stress release and mental clarity\n• Special focus on alignment, breath, and mindfulness"
   },
   {
-    title: "Eco-Friendly Commitment:",
-    content: "We embrace slow fashion and sustainable living, minimizing waste and avoiding plastic in our packaging and production."
+    title: "Ayurvedic Therapies",
+    content: "We incorporate ancient Ayurvedic healing practices to rejuvenate the body and restore balance. Our therapies are tailored to your dosha (body constitution) and health goals.\n\n• Abhyanga (full body oil massage)\n• Shirodhara (oil stream therapy for mental peace)\n• Herbal detox and wellness consultations"
   },
   {
-    title: "Fair Trade & Artisan Empowerment:",
-    content: "Ethical partnerships that support and uplift local communities, not just profit from them."
+    title: "Nature Walks & Himalayan Trails",
+    content: "Surrounded by the sacred Ganga and lush green hills, our nature-based experiences reconnect you with the earth.\n\n• Peaceful morning nature walks\n• Sunset hikes\n• Ganga-side meditations\n\nThese activities foster deep reflection and emotional release."
   },
   {
-    title: "Cultural Soul in Every Product:",
-    content: "Each item tells a story — of Rishikesh, its people, and its rich cultural legacy."
+    title: "Accommodation for Yogic Lifestyle",
+    content: "Our retreat offers serene and comfortable accommodation options, designed to support a simple, sattvic (pure) lifestyle. Rooms are clean, minimal, and infused with natural elements to encourage restful sleep and peace of mind.\n\n• Private & shared rooms with attached bath\n• Yogic vegetarian meals (sattvic food)\n• Peaceful ambiance for digital detox"
+  },
+  {
+    title: "Wellness Retreat Packages",
+    content: "We offer flexible retreat durations to suit your availability and wellness goals:\n\n• 3-Day Introductory Retreat – A short yet refreshing break for beginners\n• 5-Day Rejuvenation Retreat – Ideal for balancing mind, body & energy\n• 7-Day Deep Wellness Journey – Includes full program with yoga, therapies, and excursions\n• 15-Day Transformational Retreat – For serious practitioners seeking deep healing, discipline, and renewal\n\nAll packages include:\n- Yoga classes\n- Meals\n- Accommodation\n- Ayurveda therapy sessions\n- Guided outdoor activities"
   },
 ];
 
@@ -45,8 +49,8 @@ const WhatWeDo = () => {
                 <li className="text-amber-300">What We Do</li>
               </ul>
             </nav> */}
-            <div className="w-96 rounded-lg overflow-hidden shadow-lg">
-              <Image src="/pic7.jpg" alt="Intro" width={300} height={300} className="object-cover w-full h-full" />
+            <div className="w-96 rounded-lg overflow-hidden">
+              <Image src="/pic7.png" alt="Intro" width={300} height={300} className="object-cover w-full h-full" />
             </div>
           </div>
         </div>
@@ -59,15 +63,36 @@ const WhatWeDo = () => {
             {/* Left Side */}
             <div className="lg:w-7/12 w-full">
               <div className=" p-8  mb-8">
-                <h4 className="text-2xl md:text-3xl font-bold mb-4 text-amber-700">Bringing you soulful, sustainable art — one handmade piece at a time.</h4>
+                <h4 className="pacifico-h2 text-green-800 text-2xl md:text-3xl mb-4">Wellness Retreats – A Sanctuary in Nature.</h4>
                 <p className="text-base text-gray-700 mb-4">
-                  At Rishikesh Handmade Craft, we don’t just sell handmade products — we offer a piece of nature, culture, and community. While many marketplaces source mass-produced or factory-replicated goods, we stay firmly committed to authentic, eco-conscious craftsmanship, with a strong specialization in natural fiber products. <br /><br />
-                  Our collections are made using locally sourced, biodegradable materials such as jute, hemp, cotton, bamboo, and banana fiber — all chosen for their minimal environmental impact and natural beauty. These fibers are not only sustainable but also deeply embedded in India’s artisanal traditions, making each product a harmonious blend of heritage and environmental responsibility.<br /><br />
-                  Unlike others, we work directly with artisans, ensuring they receive fair wages and continued support. This hands-on, ethical approach allows us to maintain quality, authenticity, and transparency in every step — from sourcing raw materials to the final handcrafted piece you receive.
-                </p>
+                  At our Wellness Retreats in Tapovan, Rishikesh, we offer a complete and immersive wellness experience that nurtures the body, mind, and soul. Whether you're a beginner or an advanced practitioner, our programs are designed to guide you on a journey of inner healing and mindful living—amidst the spiritual energy of the Himalayas. <br /><br />
 
+                </p>
+                <div className="max-w-xl mx-auto px-6 py-4 border border-gray-300 rounded-2xl relative">
+                  <blockquote className="relative">
+                    <h2 className="text-3xl font-bold mb-4 text-gray-900">Why Choose Us?</h2>
+
+                    <ul className="space-y-3 text-gray-800 font-medium list-none">
+                      <li>• Located in the spiritual hub of Rishikesh, near the sacred Ganga</li>
+                      <li>• Led by experienced yoga teachers and wellness professionals</li>
+                      <li>• Authentic practices rooted in ancient Indian traditions</li>
+                      <li>• Personalized approach to wellness and healing</li>
+                      <li>• Clean, serene, and eco-conscious accommodation</li>
+                    </ul>
+
+                    <div className="flex justify-between items-center mt-6">
+                      <div className="flex gap-2">
+                        <hr className="my-6 border-t border-black w-10" />
+                        <img src="/A1.jpg" alt="Logo Image" className="h-16 w-auto" />
+
+                      </div>
+
+                      <span className="text-7xl text-black font-serif">”</span>
+                    </div>
+                  </blockquote>
+                </div>
                 {/* Accordion */}
-                <div className="w-full max-w-2xl mx-auto mb-8">
+                <div className="w-full max-w-2xl mx-auto mb-8 mt-10">
                   {accordionData.map((item, idx) => {
                     // Create a ref for each accordion item
                     const contentRef = React.useRef(null);
@@ -84,7 +109,7 @@ const WhatWeDo = () => {
                     }, [isOpen]);
 
                     return (
-                      <div key={idx} className="mb-2 border border-gray-200 rounded-lg bg-white shadow-sm">
+                      <div key={idx} className="mb-2 border border-gray-200 rounded-lg bg-white">
                         <button
                           className={`w-full flex justify-between items-center px-4 py-3 text-left font-semibold text-lg transition focus:outline-none ${isOpen ? 'text-amber-700' : 'text-gray-800'}`}
                           onClick={() => setOpenIndex(isOpen ? -1 : idx)}
@@ -113,16 +138,27 @@ const WhatWeDo = () => {
               </div>
             </div>
             {/* Right Side - keep width fixed and separated */}
-            <div className="lg:w-5/12 w-full flex items-center justify-center">
-              <div className="w-[100%] min-w-[260px] h-[95%] rounded-xl overflow-hidden shadow-lg bg-white flex items-center justify-center">
-                <Image src="/Rishikesh.jpg" alt="Rishikesh" width={400} height={500} className="object-cover w-full h-full" />
+            <div className="lg:w-5/12 w-full flex items-center justify-center sticky top-20 self-start">
+              <div className="w-full max-w-md rounded-xl overflow-hidden bg-white shadow-lg">
+                <Image
+                  src="/image.png"
+                  alt="Rishikesh"
+                  width={600}
+                  height={800}
+                  className="object-cover w-full h-auto"
+                  style={{ aspectRatio: '3/4' }}
+                  priority
+                />
               </div>
             </div>
           </div>
         </div>
       </section>
+
+
+
       {/* Get in Touch Section */}
-      <section className="w-full bg-black py-5 text-white flex flex-col md:flex-row items-center justify-between  md:px-24 gap-6 ">
+      <section className="w-full bg-black py-5 text-white flex flex-col md:flex-row items-center justify-between md:px-24 gap-6">
         <div className="mb-6 md:mb-0 px-3">
           <h3 className="text-2xl md:text-3xl font-bold gap-2">Questions?
             <span className="text-lg font-normal px-2">Our experts will help find the gear that’s right for you</span>

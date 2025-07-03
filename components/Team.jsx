@@ -24,18 +24,6 @@ const Team = () => {
           className="z-0 opacity-80"
           priority
         />
-        <div className="relative z-10 text-center text-white">
-          <h1 className="text-4xl md:text-5xl font-bold mb-2 drop-shadow-lg">Our Experienced Gurus</h1>
-          {/* <nav aria-label="breadcrumb" className="flex justify-center">
-            <ul className="flex gap-2 text-lg">
-              <li>
-                <Link href="/" className="hover:underline">Home</Link>
-              </li>
-              <li>/</li>
-              <li className="text-amber-300">Our Team</li>
-            </ul>
-          </nav> */}
-        </div>
       </div>
 
       {/* Main Content */}
@@ -44,7 +32,7 @@ const Team = () => {
           <div className="flex flex-col lg:flex-row gap-8 mb-10 items-start">
             {/* Left: Heading and Paragraph */}
             <div className="w-full lg:w-[60%]">
-              <h2 className="pacifico-h2 text-green-800 text-3xl md:text-5xl mb-4">Experience You Can Trust. Where Expertise Meets Himalayan Spirit.</h2>
+              <h2 className="pacifico-h2 text-green-800 text-3xl md:text-4xl mb-4">Experience You Can Trust. Where Expertise Meets Himalayan Spirit.</h2>
               <p className="text-xl text-gray-700 mb-4 w-full lg:w-[90%]">
               At Himalayan Wellness Retreats, our strength lies in the wisdom and dedication of our core team — a collective of experienced teachers, compassionate healers, and inspiring mentors. Each expert brings years of training in traditional practices such as yoga, meditation, Ayurveda, and holistic therapies, rooted in the sacred traditions of the Himalayas. More than instructors, they are soulful guides committed to your personal growth and well-being. With a deep understanding of ancient knowledge and a modern approach to healing, they create a nurturing environment where transformation begins — mindfully, gently, and authentically.
 
