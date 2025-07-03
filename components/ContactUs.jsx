@@ -102,7 +102,7 @@ const ContactUs = () => {
         <div className="bg-[#fdf7f2] min-h-screen w-full flex flex-col items-center justify-start pt-5">
             {/* Banner */}
             <div className="relative w-full h-[320px] flex items-center justify-center">
-                <Image src="/ContactUs.jpg" alt="Banner" layout="fill" objectFit="cover" className="z-0 opacity-80" priority />
+                <Image src="/contactUs.jpg" alt="Banner" width={1920} height={1080} layout="fill" objectFit="cover" className="z-0 opacity-80" priority />
             </div>
             <div className="container mx-auto p-10">
                 <div className="flex flex-col lg:flex-row gap-8 w-full justify-center mt-10 px-20">
