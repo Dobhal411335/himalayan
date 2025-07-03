@@ -54,8 +54,8 @@ const AboutMe = () => {
       </div>
 
       {/* Main Content */}
-      <section className="content-inner py-16 overflow-hidden">
-        <div className="container mx-auto px-4">
+      <section className="content-inner p-10 overflow-hidden">
+        <div className="container mx-auto px-20">
           <div className="flex flex-col lg:flex-row gap-10 items-stretch">
             {/* Left: Text and Accordion */}
             <div className="lg:w-1/2 flex flex-col justify-center overflow-y-auto">

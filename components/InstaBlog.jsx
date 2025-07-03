@@ -439,11 +439,11 @@ const InstaBlog = () => {
                     <div className="button px-10">
                         <Button className="bg-white text-black hover:bg-black hover:text-white transition-colors duration-300" onClick={() => setShowReviewModal(true)}>Write Reviews</Button>
                     </div>
+                    {(normalizedReviews && normalizedReviews.length > 0 ? normalizedReviews : [].map(normalizeReview)).map((review, idx) => (
                     <Carousel className="w-full md:w-[600px]"
                         plugins={[Autoplay({ delay: 4000 })]}>
 
                         <CarouselContent className="w-full">
-                            {(normalizedReviews && normalizedReviews.length > 0 ? normalizedReviews : [].map(normalizeReview)).map((review, idx) => (
                                 <CarouselItem
                                     key={review._id}
                                     className="min-w-0 snap-center w-full"
@@ -483,13 +483,13 @@ const InstaBlog = () => {
                                         </div>
                                     </div>
                                 </CarouselItem>
-                            ))}
                         </CarouselContent>
                         <div className="flex items-center gap-3">
                             <CarouselPrevious className="absolute top-[85%] left-[65%] bg-[#f7eedd] !rounded-full !w-12 !h-12 !flex !items-center !justify-center transition" />
                             <CarouselNext className="absolute top-[85%] left-[80%] bg-[#f7eedd] !rounded-full !w-12 !h-12 !flex !items-center !justify-center transition" />
                         </div>
                     </Carousel>
+                        ))}
                 </div>
 
                 {/* Review Card (Mobile) */}

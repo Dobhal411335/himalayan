@@ -39,7 +39,7 @@ const WhatWeDo = () => {
       {/* Banner */}
       <div className="relative w-full h-[320px] flex items-center justify-center">
         <Image src="/bg7.jpg" alt="Banner" layout="fill" objectFit="cover" className="z-0 opacity-80" priority />
-        <div className="absolute left-[10%] top-10 z-10 container w-fit mx-auto px-4 flex flex-col justify-center h-full bg-white rounded-xl">
+        <div className="absolute left-[10%] top-10 z-10 container w-fit mx-auto px-4 flex flex-col justify-center h-full bg-[#fcf7f1] rounded-xl">
           <div className="max-w-2xl flex flex-col items-center justify-center px-10">
             <h1 className="text-3xl  font-semibold text-black mb-2 drop-shadow-lg">The Impact of What We Do How <br /> We Make a Difference</h1>
             {/* <nav aria-label="breadcrumb" className="mb-4">
@@ -57,7 +57,7 @@ const WhatWeDo = () => {
       </div>
 
       {/* Main Content */}
-      <section className="content-inner about-style3 py-16">
+      <section className="content-inner about-style3 p-10">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-10">
             {/* Left Side */}

@@ -53,8 +53,8 @@ const Footer = () => {
     };
 
     return (
-        <footer className={`print:hidden ${pathName.includes('admin') && 'hidden'}
-         ${pathName.includes('artisan') && 'block'} ${pathName.includes('product') && 'block'} ${pathName.includes('customEnquiry') && 'hidden'} ${pathName.includes('checkout') && 'hidden'}  ${pathName.includes('category') && 'block'} bg-[url('/footerBanner.jpg')] bg-cover bg-center bg-no-repeat py-4 text-black`}>
+        <footer  className={`print:hidden ${pathName.includes('admin') && 'hidden'}
+         ${pathName.includes('artisan') && 'block'} ${pathName.includes('product') && 'block'} ${pathName.includes('customEnquiry') && 'hidden'} ${pathName.includes('checkout') && 'hidden'}  ${pathName.includes('category') && 'block'} py-4 text-white`} style={{backgroundColor: 'rgb(0, 44, 54)'}}>
             {/* <div className="w-full flex justify-center pb-8">
                 <div className="h-[3px] bg-black w-full mx-auto px-4" />
             </div> */}
@@ -62,34 +62,34 @@ const Footer = () => {
                 <div className="flex flex-col gap-2 px-5">
                     <h1 className="font-semibold text-xl my-4">Main Menu</h1>
                     {pages.filter(page => !page?.link?.includes('policy')).map(page => (
-                        <Link key={page._id} href={page.url} className="block text-black font-barlow ">
+                        <Link key={page._id} href={page.url} className="block text-white font-barlow ">
                             {page.title}
                         </Link>
                     ))}
-                    <Link href={'/contact'} className="block text-black font-barlow ">Contact</Link>
+                    <Link href={'/contact'} className="block text-white font-barlow ">Contact</Link>
                 </div>
 
                 <div className="flex flex-col gap-2 px-6">
                     <h1 className="font-semibold text-xl my-4">Our Policy</h1>
                     {pages.filter(page => page?.link?.includes('policy')).map(page => (
-                        <Link key={page._id} href={page.url} className="block text-black font-barlow">
+                        <Link key={page._id} href={page.url} className="block text-white font-barlow">
                             {page.title}
                         </Link>
                     ))}
-                    <Link href={'/faq'} className="block text-black font-barlow ">FAQ</Link>
+                    <Link href={'/faq'} className="block text-white font-barlow ">FAQ</Link>
                 </div>
 
                 <div className="flex flex-col gap-1">
                     <h1 className="font-semibold text-xl flex items-center gap-2"> More Inquiry</h1>
-                    <Link href={'tel:+917351009107'} className="my-2 block rounded-full py-1 font-barlow text-black flex items-center">
+                    <Link href={'tel:+917351009107'} className="my-2 block rounded-full py-1 font-barlow text-white flex items-center">
                         <Phone size={20} className="text-blue-600" />
                         +91 9897515305,7060340176
                     </Link>
-                    <Link href={'mailto:himalayanwellnessretreats@gmail.com'} className="my-2 block rounded-full font-barlow text-black flex items-center">
+                    <Link href={'mailto:himalayanwellnessretreats@gmail.com'} className="my-2 block rounded-full font-barlow text-white flex items-center">
                         <Send className="text-blue-600" size={20} />
                         himalayanwellnessretreats@gmail.com
                     </Link>
-                    <p className="my-2 font-barlow text-black mb-5 flex items-center">
+                    <p className="my-2 font-barlow text-white mb-5 flex items-center">
                         <MapPin className="text-blue-600" size={20} />
                         Balak Nath Temple Street, Upper Tapovan,
                         <br />
@@ -106,15 +106,18 @@ const Footer = () => {
                             <AccordionContent className="text-gray-900 px-6 pb-6 pt-1 text-sm">
                                 Terms & House Rules – Himalayan Wellness Retreats
                                 To ensure a peaceful and fulfilling experience for all our guests, we kindly request you to read and follow our terms and house rules:
+                                <br />
 
-                                1. Booking & Payment
+                                1. Booking & Payment :
                                 All bookings must be confirmed with a minimum advance deposit (as per package).
+                                <br />
 
                                 The remaining balance is payable upon arrival/check-in.
 
                                 We accept payments via bank transfer, UPI, or cash.
 
                                 2. Cancellation Policy
+                                
                                 Cancellations made 15 days prior to arrival are eligible for a full refund.
 
                                 Cancellations within 7–14 days will receive a 50% refund.
@@ -122,11 +125,13 @@ const Footer = () => {
                                 No refunds for cancellations made less than 7 days before arrival.
 
                                 In case of emergencies or natural disruptions, we may offer date rescheduling.
+                                <br />
 
                                 3. Check-In / Check-Out
                                 Check-In: 12:00 PM | Check-Out: 10:00 AM
 
                                 Early check-in or late check-out is subject to availability and additional charges.
+                                <br />
 
                                 4. House Rules
                                 This is a wellness and mindful living space — silence is appreciated during yoga, meditation, and evening hours.
@@ -138,6 +143,7 @@ const Footer = () => {
                                 Please inform us in advance about any allergies or dietary restrictions.
 
                                 Modest and comfortable attire is recommended, especially during spiritual or outdoor activities.
+                                <br />
 
                                 5. Health & Safety
                                 Guests are responsible for their own health and safety; kindly inform us of any medical conditions at the time of booking.
@@ -145,6 +151,7 @@ const Footer = () => {
                                 We follow eco-friendly practices — please help us conserve water, electricity, and avoid plastic use.
 
                                 First aid is available on-site; for medical emergencies, the nearest clinic is accessible within 15 minutes.
+                                <br />
 
                                 6. Photography & Privacy
                                 Kindly seek permission before taking photos of staff, other guests, or during ceremonies.
@@ -204,8 +211,8 @@ const Footer = () => {
                 </CardFooter>
             </Card>
             <div className="flex flex-col lg:flex-row items-center justify-center max-w-[25rem] md:max-w-[60rem] xl:max-w-6xl mx-auto font-barlow">
-                <p className="text-black font-bold text-center my-4">
-                    &copy; <CurrentYear /> <Link href={'/'} className="font-bold text-black">Himalayan Wellness Retreat</Link>. All rights reserved
+                <p className="text-white font-bold text-center my-4">
+                    &copy; <CurrentYear /> <Link href={'/'} className="font-bold text-white">Himalayan Wellness Retreat</Link>. All rights reserved
                 </p>
             </div>
         </footer >

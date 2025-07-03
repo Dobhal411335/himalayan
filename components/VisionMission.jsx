@@ -16,7 +16,7 @@ const VisionMission = () => {
             priority
           />
         </div>
-        <div className="w-full container mx-auto flex gap-10 items-center mt-10">
+        <div className="w-full container mx-auto flex gap-10 items-center mt-10 px-20">
           {/* Left: Intro & Image */}
           <div className="w-full flex flex-col items-start">
             <h2 className="pacifico-h2 text-green-800 text-3xl md:text-4xl mb-6 text-start lg:text-start">“Wellness Retreats – A Sanctuary in Nature.”</h2>
@@ -27,7 +27,7 @@ const VisionMission = () => {
           </div>
 
         </div> {/* Right: Vision & Mission */}
-        <div className="container mx-auto w-full flex md:flex-row flex-col w-full gap-8">
+        <div className="container mx-auto w-full flex md:flex-row flex-col w-full gap-8 px-20">
           <div className="md:w-2/3 w-full flex justify-center mb-6 ">
             <Image src="/Vision.png" alt="Vision Mission Banner" width={500} height={500} className="rounded-xl shadow-lg object-cover w-fit h-auto " />
           </div>
@@ -40,7 +40,7 @@ const VisionMission = () => {
               </p>
             </div>
             {/* Mission */}
-            <div className=" rounded-xl  p-6 border border-gray-400">
+            <div className=" rounded-xl p-6 border border-gray-400">
               <h3 className="text-2xl font-bold mb-2 text-amber-700">Our Mission</h3>
               <ul className="pl-6 text-gray-700 text-base space-y-2">
                 <li>We are committed to curating authentic, soul-nourishing wellness experiences that spark personal transformation and holistic healing. Through a thoughtfully crafted blend of yoga, meditation, Ayurvedic therapies, and nature-based healing, we create immersive retreats that go beyond relaxation—they awaken self-awareness, restore balance, and promote long-term well-being.</li>

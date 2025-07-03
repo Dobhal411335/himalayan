@@ -11,6 +11,7 @@ import { useState, useEffect } from "react"
 import toast from "react-hot-toast"
 import { useSession } from "next-auth/react"
 import './fonts/fonts.css';
+import Image from "next/image"
 const ContactUs = () => {
     const { data: session } = useSession();
     const [formData, setFormData] = useState({
@@ -99,15 +100,20 @@ const ContactUs = () => {
     };
     return (
         <div className="bg-[#fdf7f2] min-h-screen w-full flex flex-col items-center justify-start pt-5">
-            <div className="container mx-auto px-10">
-                <div className="flex flex-col lg:flex-row gap-8 w-full justify-center mt-10">
+            {/* Banner */}
+            <div className="relative w-full h-[320px] flex items-center justify-center">
+                <Image src="/ContactUs.jpg" alt="Banner" layout="fill" objectFit="cover" className="z-0 opacity-80" priority />
+            </div>
+            <div className="container mx-auto p-10">
+                <div className="flex flex-col lg:flex-row gap-8 w-full justify-center mt-10 px-20">
                     {/* Contact Info */}
                     <div className="lg:w-1/2 w-full flex flex-col justify-center text-black">
                         <h2 className="pacifico-h2 text-5xl text-green-800 mb-4">DISCOVER US</h2>
-                        <p className="mb-6 text-base w-[90%] ">
-                            <span className="underline text-3xl">Rishikesh Handmade is here to help you.</span>
+                        <p className="mb-6 text-base">
+                            <span className="underline text-3xl">Himalayan Wellness Retreats is here to help you.</span>
                             <br />
-                            <span className='text-3xl'> Our experts are available to answer any questions you might have. We’ve got the answers.</span>
+                            <span className='text-3xl'>
+                                Our experts are available to answer any questions you might have. We’ve got the answers.</span>
                         </p>
                         <div className="mb-4">
                             <h3 className="font-bold text-2xl mb-2">Call Us</h3>
@@ -126,6 +132,9 @@ const ContactUs = () => {
                                     <a href="mailto:himalayanwellnessretreats@gmail.com" className="hover:underline text-xl"> himalayanwellnessretreats@gmail.com</a>
                                 </li>
                             </ul>
+                        </div>
+                        <div className='my-2'>
+                                    <a href="https://maps.app.goo.gl/ZGJ9ivjmABr6rzkt9" className="hover:underline text-xl"><h3 className="font-bold text-2xl mb-2 ">Google</h3></a>
                         </div>
                     </div>
                     {/* Contact Form */}
@@ -204,16 +213,7 @@ const ContactUs = () => {
             {/* Google Maps */}
             <div className="w-full mt-10 flex justify-center">
                 <div className="w-full h-[400px]  overflow-hidden ">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d2839.0776501691057!2d78.2849206552164!3d30.12616554867223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2sin!4v1748107187292!5m2!1sen!2sin"
-                        width="100%"
-                        height="100%"
-                        style={{ border: 0 }}
-                        allowFullScreen=""
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                        title="Rishikesh Handmade Location"
-                    ></iframe>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d110486.44319936309!2d78.11853922973108!3d30.074093952521892!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39091779b4cdc119%3A0x687dc67a4b8a2153!2sHimalayan%20Wellness%20Retreats!5e0!3m2!1sen!2sin!4v1751524996887!5m2!1sen!2sin" width="100%" height="100%" style={{ border: 0 }} allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Himalayan Wellness Retreats "></iframe>
                 </div>
             </div>
         </div>

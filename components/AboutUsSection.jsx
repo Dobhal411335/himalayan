@@ -80,7 +80,7 @@ const AboutUsSection = () => {
         );
     }
     return (
-        <section className="bg-[url('/aboutUsBanner.jpg')] bg-no-repeat bg-cover bg-center relative py-10 w-full px-10 md:px-5 overflow-hidden max-w-screen overflow-x-hidden">
+        <section className="bg-[#f8f9f6] relative py-10 w-full px-10 md:px-5 overflow-hidden max-w-screen overflow-x-hidden">
             <div className="w-full">
                 <h2 className="pacifico-h2 text-green-800 text-3xl text-center mt-2 md:mt-7 uppercase">
                     <span className="">Experience the Soul of Himalayan Wellness in Rishikesh,</span>

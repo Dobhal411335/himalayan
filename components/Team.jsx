@@ -25,10 +25,9 @@ const Team = () => {
           priority
         />
       </div>
-
       {/* Main Content */}
-      <section className="content-inner py-20">
-        <div className="container mx-auto px-10">
+      <section className="content-inner p-20">
+        <div className="container mx-auto ">
           <div className="flex flex-col lg:flex-row gap-8 mb-10 items-start">
             {/* Left: Heading and Paragraph */}
             <div className="w-full lg:w-[60%]">
