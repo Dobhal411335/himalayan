@@ -95,7 +95,7 @@ const Activity = ({ data }) => {
                       return (
                         <iframe
                           width="100%"
-                          height="400"
+                          height="300"
                           className="my-4 rounded-lg"
                           src={embedUrl}
                           title="YouTube video player"
