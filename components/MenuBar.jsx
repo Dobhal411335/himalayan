@@ -127,7 +127,12 @@ const MenuBar = (props) => {
                 "absolute top-8  md:top-12 mt-4 rounded-xl left-0 w-[90vw] text-black bg-white shadow-md lg:hidden transition-all duration-300 overflow-hidden",
                 isOpen ? "max-h-[500px]" : "max-h-0"
             )}>
-                {menuItems.map((item, index) => (
+                {/* Home button always first, no dropdown */}
+                <Link href="/" className="w-full block p-3 text-sm font-medium hover:bg-gray-100">
+                    Home
+                </Link>
+                {/* Render the rest of the menu, excluding Home */}
+                {menuItems.filter(item => item.active).map((item, index) => (
                     <div key={index} className="border-b">
                         <button
                             onClick={() => toggleMenu(index)}
@@ -201,6 +206,12 @@ const MenuBar = (props) => {
             {/* Desktop Navigation */}
             <NavigationMenu.Root className="hidden lg:flex relative justify-center" >
                 <NavigationMenu.List className="flex space-x-4">
+                    {/* Home button always first, styled like other top-level items */}
+                    <NavigationMenu.Item className="relative flex justify-center">
+                        <Link href="/" className="flex items-center px-4 py-2 text-sm font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md">
+                            Home
+                        </Link>
+                    </NavigationMenu.Item>
                     {menuItems.map((item, index) => (
                         <NavigationMenu.Item key={index} className="relative flex justify-center">
                             <NavigationMenu.Trigger className="flex items-center px-4 py-2 text-sm font-semibold  data-[state=open]:text-black rounded-md">

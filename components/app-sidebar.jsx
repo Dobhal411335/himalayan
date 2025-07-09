@@ -67,6 +67,13 @@ const data = {
       icon: Plus,
     },
     { divider: true },
+
+    {
+      name: "Activity Page",
+      url: "/admin/add_activity",
+      icon: Plus,
+    },
+    { divider: true },
     {
       name: "Create Discount",
       url: "/admin/create_discount",
