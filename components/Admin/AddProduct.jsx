@@ -38,7 +38,7 @@ const AddProduct = ({ id }) => {
         // Use react-hook-form's reset to fill all fields
         reset({
             title: prod.title || '',
-            artisan: prod.artisan || '',
+          
             order: prod.order || 1,
             active: typeof prod.active === 'boolean' ? prod.active : true,
             // Add other fields as needed
@@ -46,7 +46,7 @@ const AddProduct = ({ id }) => {
         setProductCode(prod.code || '');
         setActive(typeof prod.active === 'boolean' ? prod.active : true);
         setOrder(prod.order || 1);
-        setArtisan(prod.artisan || '');
+       
         setTitle(prod.title || '');
         setIsEditing(true);
         // Optionally scroll to form
@@ -59,15 +59,14 @@ const AddProduct = ({ id }) => {
     const handleCancelEdit = () => {
         reset({
             title: '',
-            artisan: '',
-            order: 1,
+                order: 1,
             active: true,
             // Add other fields as needed
         });
         setProductCode(generateCode());
         setActive(true);
         setOrder(1);
-        setArtisan('');
+
         setTitle('');
         setIsEditing(false);
     };
@@ -80,6 +79,7 @@ const AddProduct = ({ id }) => {
 
     // Slugify utility (copied from ProductProfile)
     function slugify(str) {
+        if (!str) return '';
         return str
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')
@@ -122,24 +122,12 @@ const AddProduct = ({ id }) => {
     const [productCode, setProductCode] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [products, setProducts] = useState([]);
-    const [artisans, setArtisans] = useState([]);
-    const [artisan, setArtisan] = useState("");
-    const [loading, setLoading] = useState(false);
     const [title, setTitle] = useState("");
     const [order, setOrder] = useState(1);
     const [active, setActive] = useState(true);
 
-    useEffect(() => {
-        setLoading(true);
-        fetch('/api/createArtisan')
-            .then(res => res.json())
-            .then(data => {
-                setArtisans(Array.isArray(data) ? data : []);
-                setLoading(false);
-            })
-            .catch(() => setLoading(false));
-    }, []);
 
+console.log(products)
     useEffect(() => {
         setProductCode(generateCode());
     }, []);
@@ -154,9 +142,9 @@ const AddProduct = ({ id }) => {
                 }
                 const response = await fetch(url);
                 const data = await response.json();
-                // console.log(data)
-                if (subMenuId && Array.isArray(data.products)) {
-                    setProducts(data.products);
+                console.log(data)
+                if (subMenuId && Array.isArray(data.rooms)) {
+                    setProducts(data.rooms);
                 } else if (!subMenuId && Array.isArray(data)) {
                     setProducts(data);
                 } else {
@@ -195,7 +183,7 @@ const AddProduct = ({ id }) => {
             const payload = {
                 title,
                 code: productCode,
-                artisan,
+            
                 order,
                 active: typeof active === 'boolean' ? active : true, // always true by default
                 isDirect: !subMenuId,
@@ -203,8 +191,6 @@ const AddProduct = ({ id }) => {
             };
             let response, result;
             if (isEditing) {
-                // Use code or _id as identifier. Preferably _id if available in state.
-                // We'll use code for now as per the form structure
                 response = await fetch('/api/admin/website-manage/addPackage', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -212,7 +198,7 @@ const AddProduct = ({ id }) => {
                 });
                 result = await response.json();
                 if (response.ok) {
-                    toast.success('Product updated successfully!');
+                    toast.success('Room updated successfully!');
                     reset();
                     setProductCode(generateCode());
                     setIsEditing(false);
@@ -220,8 +206,8 @@ const AddProduct = ({ id }) => {
                     if (subMenuId) {
                         const res = await fetch(`/api/getSubMenuById/${subMenuId}`);
                         const data = await res.json();
-                        if (Array.isArray(data.products)) {
-                            setProducts(data.products);
+                        if (Array.isArray(data.rooms)) {
+                            setProducts(data.rooms);
                         }
                     } else {
                         const res = await fetch('/api/product?isDirect=true');
@@ -231,7 +217,7 @@ const AddProduct = ({ id }) => {
                         }
                     }
                 } else {
-                    toast.error(result.message || 'Failed to update product');
+                    toast.error(result.message || 'Failed to update room');
                 }
             } else {
                 response = await fetch('/api/admin/website-manage/addPackage', {
@@ -241,15 +227,15 @@ const AddProduct = ({ id }) => {
                 });
                 result = await response.json();
                 if (response.ok) {
-                    toast.success('Product added successfully!');
+                    toast.success('Room added successfully!');
                     reset();
                     setProductCode(generateCode());
                     // Refetch products
                     if (subMenuId) {
                         const res = await fetch(`/api/getSubMenuById/${subMenuId}`);
                         const data = await res.json();
-                        if (Array.isArray(data.products)) {
-                            setProducts(data.products);
+                        if (Array.isArray(data.rooms)) {
+                            setProducts(data.rooms);
                         }
                     } else {
                         const res = await fetch('/api/product?isDirect=true');
@@ -259,7 +245,7 @@ const AddProduct = ({ id }) => {
                         }
                     }
                 } else {
-                    toast.error(result.message || 'Failed to add product');
+                    toast.error(result.message || 'Failed to add room');
                 }
             }
         } catch (error) {
@@ -269,7 +255,7 @@ const AddProduct = ({ id }) => {
         }
 
 
-        if (!title || !artisan) {
+        if (!title) {
             toast.error("All fields are required", { style: { borderRadius: "10px", border: "2px solid red" } });
             return;
         }
@@ -279,7 +265,7 @@ const AddProduct = ({ id }) => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ code: productCode, title, artisan }),
+                body: JSON.stringify({ code: productCode, title }),
             });
 
             const res = await response.json();
@@ -300,32 +286,14 @@ const AddProduct = ({ id }) => {
             <form className="flex flex-col items-center justify-center gap-8 my-20 bg-blue-100 w-[50%] max-w-xl md:max-w-7xl mx-auto p-4 rounded-lg" onSubmit={handleSubmit(onSubmit)}>
                 <div className="flex md:flex-row flex-col items-center md:items-end gap-6 w-full">
                     <div className="flex flex-col gap-2">
-                        <label htmlFor="productCode" className="font-semibold">Product Code</label>
+                        <label htmlFor="productCode" className="font-semibold">Room Code</label>
                         <Input name="productCode" className="w-32 border-2 border-blue-600 focus:border-dashed focus:border-blue-500 focus:outline-none focus-visible:ring-0 font-bold" readOnly value={productCode} />
                     </div>
                     <div className="flex flex-col gap-2 ">
-                        <label htmlFor="productTitle" className="font-semibold">Product Title</label>
+                        <label htmlFor="productTitle" className="font-semibold">Room Title</label>
                         <Input name="productTitle" className="w-full border-2 font-bold border-blue-600 " value={title} onChange={e => setTitle(e.target.value)} />
                     </div>
-                    <div className="flex flex-col gap-2 w-1/2">
-                        <label htmlFor="artisan" className="font-semibold">Artisan Name</label>
-                        <Select value={artisan} onValueChange={setArtisan} name="artisan" disabled={loading}>
-                            <SelectTrigger className="w-full border-2 bg-transparent border-blue-600 focus:border-blue-500 focus:ring-0 focus:outline-none focus-visible:outline-none focus-visible:ring-0">
-                                <SelectValue placeholder={loading ? 'Loading artisans...' : 'Select Artisan'} />
-                            </SelectTrigger>
-                            <SelectContent className="border-2 border-blue-600 bg-gray-200">
-                                <SelectGroup>
-                                    {artisans.length > 0 ? (
-                                        artisans.map(a => (
-                                            <SelectItem key={a._id} value={a._id} className="focus:bg-blue-300 font-bold">
-                                                {a.title ? `${a.title} ` : ''}{a.firstName} {a.lastName}
-                                            </SelectItem>
-                                        ))
-                                    ) : null}
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    
                 </div>
                 <Button type="submit" className="bg-blue-600 hover:bg-blue-500">Add Product</Button>
             </form>
@@ -337,14 +305,13 @@ const AddProduct = ({ id }) => {
                             <TableHead className="text-center !text-black w-1/6">Order</TableHead>
                             <TableHead className="text-center !text-black w-1/4">Product Name</TableHead>
                             <TableHead className="text-center !text-black w-1/6">URL</TableHead>
-                            <TableHead className="text-center !text-black w-1/6">QR</TableHead>
                             <TableHead className="w-1/6 !text-black text-center">Action</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {products && products.length > 0 ? (
                             products.map((prod, index) => {
-                                const url = typeof window !== 'undefined' ? `${window.location.origin}/product/${slugify(prod._id)}` : '';
+                                const url = typeof window !== 'undefined' ? `${window.location.origin}/room/${slugify(prod.title)}` : '';
                                 return (
                                     <TableRow key={prod._id}>
                                         <TableCell className="border font-semibold border-blue-600">{index + 1}</TableCell>
@@ -364,26 +331,9 @@ const AddProduct = ({ id }) => {
                                             </div>
                                         </TableCell>
                                         <TableCell className="border font-semibold border-blue-600">
-                                            <div className="flex items-center justify-center gap-2">
-                                                {/* QR Code Button */}
-                                                <Button
-                                                    size="icon"
-                                                    variant="ghost"
-                                                    onClick={() => {
-                                                        setQrModalUrl(url);
-                                                        setQrModalTitle(prod.title);
-                                                        setQrModalOpen(true);
-                                                    }}
-                                                    title="View QR & Download"
-                                                >
-                                                    <QrCode className="w-6 h-6" />
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="border font-semibold border-blue-600">
                                             <div className="flex items-center justify-center gap-6">
                                                 <Button size="icon" variant="outline" asChild>
-                                                    <Link href={`/admin/add_direct_product/${prod._id}`}>
+                                                    <Link href={`/admin/add_direct_rooms/${prod._id}`}>
                                                         Edit
                                                     </Link>
                                                 </Button>
@@ -425,13 +375,7 @@ const AddProduct = ({ id }) => {
                     </TableBody>
                 </Table>
             </div>
-            {/* QR Modal for viewing/downloading QR code */}
-            <ProductQrModal
-                open={qrModalOpen}
-                onOpenChange={setQrModalOpen}
-                qrUrl={qrModalUrl}
-                productTitle={qrModalTitle}
-            />
+            
         </>
     )
 

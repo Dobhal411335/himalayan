@@ -50,13 +50,13 @@ const data = {
     },
     { divider: true },
     {
-      name: "Create Artisan",
-      url: "/admin/create_artisan",
+      name: "Create Instructor",
+      url: "/admin/create_instructor",
       icon: User,
     },
     {
-      name: "View / Edit Artisan",
-      url: "/admin/edit_artisan",
+      name: "View / Edit Instructor",
+      url: "/admin/edit_instructor",
       icon: User,
     },
     { divider: true },
@@ -146,13 +146,13 @@ const data = {
       icon: MenuIcon,
     },
     {
-      name: "Manage Products & Category",
-      url: "/admin/manage_products_category",
+      name: "Manage Rooms & Category",
+      url: "/admin/manage_rooms_category",
       icon: Boxes,
     },
     {
-      name: "View All Products",
-      url: "/admin/all_products",
+      name: "View All Rooms",
+      url: "/admin/all_rooms",
       icon: Boxes,
     },
     {

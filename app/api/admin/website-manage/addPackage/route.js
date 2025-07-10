@@ -1,82 +1,77 @@
 import connectDB from "@/lib/connectDB";
 import { NextResponse } from "next/server";
-import Product from "@/models/Product";
-import Artisan from "@/models/Artisan";
 import MenuBar from "@/models/MenuBar";
 import mongoose from "mongoose";
+import Room from "@/models/Room"
+function slugify(str) {
+    if (!str) return '';
+    return str
+        .toString()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .replace(/-+/g, '-');
+}
 
 export async function POST(req) {
     await connectDB();
     const body = await req.json();
+    const slug = slugify(body.title);
 
     try {
-        // Step 1: Check for existing product
-        let productQuery = {
+        // Step 1: Check for existing room
+        let roomQuery = {
             title: body.title,
             code: body.code,
-            artisan: body.artisan
+            slug: slug
         };
         // Optionally, also check for subMenu/category if you want to scope uniqueness
-        let existingProduct = await Product.findOne(productQuery);
-        if (existingProduct) {
+        let existingRoom = await Room.findOne(roomQuery);
+        if (existingRoom) {
             // If already linked to submenu, skip push
             if (!body.isDirect && body.subMenuId) {
                 const menuBarDoc = await MenuBar.findOne({ "subMenu._id": body.subMenuId });
-                // console.log("[EXISTING PRODUCT] MenuBar doc for submenu:", JSON.stringify(menuBarDoc, null, 2));
                 const updateResult = await MenuBar.updateOne(
-                    { "subMenu._id": body.subMenuId, "subMenu.products": { $ne: existingProduct._id } },
-                    { $push: { "subMenu.$.products": existingProduct._id } }
+                    { "subMenu._id": body.subMenuId, "subMenu.rooms": { $ne: existingRoom._id } },
+                    { $push: { "subMenu.$.rooms": existingRoom._id } }
                 );
                 if (updateResult.matchedCount === 0) {
-                    console.error("No submenu matched for existing product linkage!", body.subMenuId);
+                    console.error("No submenu matched for existing room linkage!", body.subMenuId);
                 }
             }
-            // Also ensure the artisan's products array contains this product
-            if (existingProduct && existingProduct.artisan) {
-                await Artisan.findByIdAndUpdate(
-                    existingProduct.artisan,
-                    { $addToSet: { products: existingProduct._id } }
-                );
-            }
-            return NextResponse.json({ message: "Product already exists!", product: existingProduct }, { status: 200 });
+            return NextResponse.json({ message: "Room already exists!", room: existingRoom }, { status: 200 });
         }
-        // Step 2: Create a new Product document
-        const newProduct = await Product.create({
+        // Step 2: Create a new Room document
+        const newRoom = await Room.create({
             title: body.title,
             code: body.code,
-            artisan: body.artisan,
-            isDirect: false,
-            // Save subMenuId as category if present
+            slug: slug,
+            paragraph: body.paragraph,
+            mainPhoto: body.mainPhoto,
+            relatedPhotos: body.relatedPhotos,
+            prices: body.prices,
+            amenities: body.amenities,
+            reviews: body.reviews,
+            isDirect: body.isDirect,
             ...(body.subMenuId ? { category: body.subMenuId } : {})
         });
 
-        // Step 2.5: Push product _id to artisan's products array
-        if (body.artisan) {
-            await Artisan.findByIdAndUpdate(
-                body.artisan,
-                { $addToSet: { products: newProduct._id } }
-            );
-        }
-
-        // Step 3: Link new product to submenu
+        // Step 3: Link new room to submenu
         if (!body.isDirect && body.subMenuId) {
             const menuBarDoc = await MenuBar.findOne({ "subMenu._id": body.subMenuId });
-            console.log("[NEW PRODUCT] MenuBar doc for submenu:", JSON.stringify(menuBarDoc, null, 2));
             const updateResult = await MenuBar.updateOne(
-                { "subMenu._id": body.subMenuId, "subMenu.products": { $ne: newProduct._id } },
-                { $push: { "subMenu.$.products": newProduct._id } }
+                { "subMenu._id": body.subMenuId, "subMenu.rooms": { $ne: newRoom._id } },
+                { $push: { "subMenu.$.rooms": newRoom._id } }
             );
             if (updateResult.matchedCount === 0) {
-                console.error("No submenu matched for new product linkage!", body.subMenuId);
+                console.error("No submenu matched for new rooms linkage!", body.subMenuId);
             }
         }
-        return NextResponse.json({ message: "Product added successfully!", product: newProduct }, { status: 201 });
+        return NextResponse.json({ message: "Room added successfully!", room: newRoom }, { status: 201 });
     } catch (error) {
         return NextResponse.json({ message: error.message }, { status: 500 });
     }
 }
-
-
 export async function PUT(req) {
     await connectDB();
     try {
@@ -84,103 +79,60 @@ export async function PUT(req) {
         // Support either code or _id as identifier
         const identifier = body._id ? { _id: body._id } : { code: body.code };
         if (!identifier._id && !identifier.code) {
-            return NextResponse.json({ message: 'Product identifier (code or _id) required' }, { status: 400 });
+            return NextResponse.json({ message: 'Room identifier (code or _id) required' }, { status: 400 });
         }
-        // Find the product
-        const existingProduct = await Product.findOne(identifier);
-        if (!existingProduct) {
-            return NextResponse.json({ message: 'Product not found' }, { status: 404 });
+        // Find the room
+        const existingRoom = await Room.findOne(identifier);
+        if (!existingRoom) {
+            return NextResponse.json({ message: 'Room not found' }, { status: 404 });
         }
-        // Track old artisan for removal if changed
-        const oldArtisanId = existingProduct.artisan?.toString();
         // Prepare update fields (do not allow code overwrite)
         const updateFields = { ...body };
         delete updateFields._id;
         delete updateFields.code;
-        // Update product
-        const updatedProduct = await Product.findOneAndUpdate(identifier, updateFields, { new: true });
-        // If artisan changed, update artisan references
-        if (body.artisan && oldArtisanId !== body.artisan) {
-            if (oldArtisanId) {
-                await Artisan.findByIdAndUpdate(oldArtisanId, { $pull: { products: existingProduct._id } });
-            }
-            await Artisan.findByIdAndUpdate(body.artisan, { $addToSet: { products: existingProduct._id } });
-        }
-        return NextResponse.json({ message: 'Product updated successfully!', product: updatedProduct });
+        // Update room
+        const updatedRoom = await Room.findOneAndUpdate(identifier, updateFields, { new: true });
+        return NextResponse.json({ message: 'Room updated successfully!', room: updatedRoom });
     } catch (error) {
         return NextResponse.json({ message: error.message || 'Internal Server Error' }, { status: 500 });
     }
-
 }
-
-
 export async function PATCH(req) {
     await connectDB();
     const body = await req.json();
-    const { pkgId, artisan: newArtisanId, ...updateFields } = body;
-    const Artisan = require('@/models/Artisan');
+    const { roomId, ...updateFields } = body;
 
     try {
-        // Find the current product and its artisan
-        const oldProduct = await Product.findById(pkgId);
-        const oldArtisanId = oldProduct?.artisan?.toString();
-
-        // Update the product
-        const updatedProduct = await Product.findByIdAndUpdate(pkgId, updateFields, { new: true });
-
-        // If artisan changed, update both artisans' product arrays
-        if (newArtisanId && oldArtisanId !== newArtisanId) {
-            // Remove from old artisan
-            if (oldArtisanId) {
-                await Artisan.findByIdAndUpdate(
-                    oldArtisanId,
-                    { $pull: { products: pkgId } }
-                );
-            }
-            // Add to new artisan
-            await Artisan.findByIdAndUpdate(
-                newArtisanId,
-                { $addToSet: { products: pkgId } }
-            );
+        // Update the room
+        const updatedRoom = await Room.findByIdAndUpdate(roomId, updateFields, { new: true });
+        if (!updatedRoom) {
+            return NextResponse.json({ message: "Room not found" }, { status: 404 });
         }
-
-        if (!updatedProduct) {
-            return NextResponse.json({ message: "Product not found" }, { status: 404 });
-        }
-
-        return NextResponse.json({ message: "Product updated successfully!", product: updatedProduct });
+        return NextResponse.json({ message: "Room updated successfully!", room: updatedRoom });
     } catch (error) {
         return NextResponse.json({ message: error.message }, { status: 500 });
     }
 }
-
 export async function DELETE(req) {
     await connectDB();
     const { id } = await req.json();
 
     try {
-        // Find the package to delete
-        const packageToDelete = await Product.findById(id);
-        if (!packageToDelete) {
-            return NextResponse.json({ message: "Product not found!" }, { status: 404 });
+        // Find the room to delete
+        const roomToDelete = await Room.findById(id);
+        if (!roomToDelete) {
+            return NextResponse.json({ message: "Room not found!" }, { status: 404 });
         }
-        // Delete the package from the database
-        const deletedProduct = await Product.findByIdAndDelete(id);
-        // Remove product reference from artisan's products array if applicable
-        if (deletedProduct && deletedProduct.artisan) {
-            await Artisan.findByIdAndUpdate(
-                deletedProduct.artisan,
-                { $pull: { products: deletedProduct._id } }
-            );
-        }
+        // Delete the room from the database
+        const deletedRoom = await Room.findByIdAndDelete(id);
 
-        // Remove package references from MenuBar
+        // Remove room references from MenuBar
         await MenuBar.updateMany(
-            { "subMenu.products": id },
-            { $pull: { "subMenu.$[].products": id } }
+            { "subMenu.rooms": id },
+            { $pull: { "subMenu.$[].rooms": id } }
         );
 
-        return NextResponse.json({ message: "Product deleted successfully!" }, { status: 200 });
+        return NextResponse.json({ message: "Room deleted successfully!" }, { status: 200 });
     } catch (error) {
         return NextResponse.json({ message: error.message }, { status: 500 });
     }

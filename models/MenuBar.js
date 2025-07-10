@@ -1,16 +1,8 @@
 import { Schema, models, model } from "mongoose";
-import Size from '@/models/Size';
-import Color from '@/models/Color';
-import Gallery from '@/models/Gallery';
-import Video from '@/models/Video';
-import Description from '@/models/Description';
-import Info from '@/models/Info';
-import CategoryTag from '@/models/CategoryTag';
-import ProductReview from '@/models/ProductReview';
-import Quantity from '@/models/Quantity';
-import ProductCoupons from '@/models/ProductCoupons';
-import ProductTax from '@/models/ProductTax';
-
+import Room from "@/models/Room"
+import RoomAmenities from '@/models/RoomAmenities';
+import RoomPrice from '@/models/RoomPrice';
+import RoomReview from '@/models/RoomReview';
 const MenuBarSchema = new Schema(
     {
         active: { type: Boolean },
@@ -24,7 +16,7 @@ const MenuBarSchema = new Schema(
                 order: { type: Number },
                 banner: { url: { type: String }, key: { type: String } },
                 profileImage: { url: { type: String }, key: { type: String } },
-                products: { type: [Schema.Types.ObjectId], ref: "Product", default: [] },
+                rooms: { type: [Schema.Types.ObjectId], ref: "Room", default: [] },
             }
         ]
     },

@@ -1,9 +1,9 @@
 import ProductProfile from "@/components/Admin/ProductProfile"
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import AddProduct from "@/components/Admin/AddProduct"
-const page = async ({ params }) => {
-    const { id } = await params
-    // console.log(id)
+
+// export const dynamic = "force-dynamic"
+
+const AddDirectProductPage = async () => {
 
     return (
         <SidebarInset>
@@ -13,12 +13,11 @@ const page = async ({ params }) => {
                 </div>
             </header>
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                <h1 className="text-4xl px-12 font-semibold">Add Product</h1>
-                <AddProduct id={id} />
-                {/* <ProductProfile id={id}/> */}
+                <h1 className="text-4xl px-12 font-semibold mb-5">Add Room</h1>
+                <ProductProfile />
             </div>
         </SidebarInset>
     )
 }
 
-export default page
+export default AddDirectProductPage

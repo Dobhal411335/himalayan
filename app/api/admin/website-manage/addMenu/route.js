@@ -61,7 +61,7 @@ export async function DELETE(req) {
         }
 
         // Collect all package IDs from submenus
-        const packageIds = menu.subMenu.flatMap(sub => sub.products);
+        const packageIds = menu.subMenu.flatMap(sub => sub.rooms);
 
         // Collect image keys from the menu's banners and submenus
         const imageKeysToDelete = [];
@@ -74,9 +74,9 @@ export async function DELETE(req) {
                 }
 
                 // Loop through packages in submenus and gather image keys
-                for (const productId of subMenu.products) {
+                for (const productId of subMenu.rooms) {
                     // Fetch the package and collect the gallery image keys
-                    const pkg = await Product.findById(productId);
+                    const pkg = await Room.findById(productId);
                     if (pkg) {
                         for (const galleryItem of pkg.gallery) {
                             if (galleryItem.key) {
@@ -98,7 +98,7 @@ export async function DELETE(req) {
 
         // Delete all associated packages
         if (packageIds.length > 0) {
-            await Package.deleteMany({ _id: { $in: packageIds } });
+            await Room.deleteMany({ _id: { $in: packageIds } });
         }
 
         // Now delete all images from UploadThing (or other external storage)

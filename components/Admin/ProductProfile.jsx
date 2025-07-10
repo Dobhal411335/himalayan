@@ -195,37 +195,18 @@ const ProductProfile = ({ id }) => {
             }}>
                 <div className="flex md:flex-row flex-col items-center md:items-end gap-6 w-full">
                     <div className="flex flex-col gap-2 w-full">
-                        <label htmlFor="productCode" className="font-semibold">Product Code</label>
+                        <label htmlFor="productCode" className="font-semibold">Rooms Code</label>
                         <Input name="productCode" className="w-full border-2 font-bold border-blue-600 focus:border-dashed focus:border-blue-500 focus:outline-none focus-visible:ring-0 bg-gray-100" placeholder="Pre Fix" value={code} readOnly />
                     </div>
                     <div className="flex flex-col gap-2 w-full">
-                        <label htmlFor="productTitle" className="font-semibold">Product Title</label>
+                        <label htmlFor="productTitle" className="font-semibold">Room Title</label>
                         <Input name="productTitle" className="w-full border-2 font-bold border-blue-600 focus:border-dashed focus:border-blue-500 focus:outline-none focus-visible:ring-0" placeholder="Type Here:" value={title} onChange={e => setTitle(e.target.value)} />
-                    </div>
-                    <div className="flex flex-col gap-2 w-full">
-                        <label htmlFor="artisan" className="font-semibold">Artisan Name</label>
-                        <Select value={artisan} onValueChange={setArtisan} name="artisan" disabled={loading}>
-                            <SelectTrigger className="w-full border-2 bg-transparent border-blue-600 focus:border-blue-500 focus:ring-0 focus:outline-none focus-visible:outline-none focus-visible:ring-0">
-                                <SelectValue placeholder={loading ? 'Loading artisans...' : 'Select Artisan'} />
-                            </SelectTrigger>
-                            <SelectContent className="border-2 border-blue-600 bg-gray-200">
-                                <SelectGroup>
-                                    {artisans.length > 0 ? (
-                                        artisans.map(a => (
-                                            <SelectItem key={a._id} value={a._id} className="focus:bg-blue-300 font-bold">
-                                                {a.title ? `${a.title} ` : ''}{a.firstName} {a.lastName}
-                                            </SelectItem>
-                                        ))
-                                    ) : null}
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
                     </div>
                 </div>
                 {editingId ? (
                     <div className="flex gap-4 mt-4">
                         <Button type="submit" className="bg-green-600">Update</Button>
-                        <Button type="button" className="bg-gray-400" onClick={() => { setEditingId(null); setTitle(""); setArtisan(""); }}>Cancel</Button>
+                        <Button type="button" className="bg-gray-400" onClick={() => { setEditingId(null); setTitle(""); }}>Cancel</Button>
                     </div>
                 ) : (
                     <Button type="submit" className="bg-red-500">Save Product</Button>
@@ -238,7 +219,7 @@ const ProductProfile = ({ id }) => {
                     <thead>
                         <tr className="bg-gray-200">
                             <th className="py-2 px-4 text-center">Title</th>
-                            <th className="py-2 px-4 text-center">Artisan</th>
+                           
                             <th className="py-2 px-4 text-center">URL</th>
                             <th className="py-2 px-4 text-center">QR</th>
                             <th className="py-2 px-4 text-center">Active</th>
@@ -250,27 +231,16 @@ const ProductProfile = ({ id }) => {
                             <tr key={prod._id} className="border-t">
                                 <td className="py-2 px-4 text-center">{prod.title}</td>
                                 <td className="py-2 px-4 text-center">
-                                    {prod.artisan && typeof prod.artisan === 'object'
-                                        ? `${prod.artisan.firstName || ''} ${prod.artisan.lastName || ''}`.trim()
-                                        : prod.artisan || ''}
-                                </td>
-                                {/* <td className="py-2 px-4 text-center">{prod.code}</td> */}
-                                {/* <td className="py-2 px-4 text-center">
-                                    <div className="flex flex-col items-center">
-                                        <span>{prod.title}</span>
-                                    </div>
-                                </td> */}
-                                <td className="py-2 px-4 text-center">
                                     {/* Product URL Copy Button Only */}
                                     {prod.title && (() => {
-                                        const url = `${window.location.origin}/product/${slugify(prod._id)}`;
+                                        const url = `${window.location.origin}/room/${slugify(prod.title)}`;
                                         return (
                                             <Button
                                                 size="icon"
                                                 variant="ghost"
                                                 onClick={() => copyToClipboard(url)}
                                                 disabled={!url}
-                                                title="Copy Product URL"
+                                                title="Copy Room URL"
                                             >
                                                 <Copy className="w-4 h-4" />
                                             </Button>
@@ -280,7 +250,7 @@ const ProductProfile = ({ id }) => {
                                 <td className="py-2 px-4 text-center">
                                     {/* Product QR Copy/View Button */}
                                     {prod.title && (() => {
-                                        const qr = `${window.location.origin}/product/${slugify(prod._id)}`;
+                                        const qr = `${window.location.origin}/room/${slugify(prod.title)}`;
                                         return (
                                             <div className="flex gap-2 justify-center">
                                                 <Button
@@ -362,7 +332,7 @@ const ProductProfile = ({ id }) => {
                     <DialogHeader>
                         <DialogTitle>Delete Product</DialogTitle>
                     </DialogHeader>
-                    <p>Are you sure you want to delete this product?</p>
+                    <p>Are you sure you want to delete this room?</p>
                     <DialogFooter>
                         <Button variant="secondary" onClick={cancelDelete}>Cancel</Button>
                         <Button variant="destructive" onClick={confirmDelete}>Delete</Button>

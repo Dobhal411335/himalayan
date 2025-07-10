@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useRef } from 'react';
 import { Label } from "../ui/label";
 import Image from 'next/image';
-const ProductReview = ({ productData, productId }) => {
+const ProductReview = ({ roomData, roomId }) => {
   // Image upload state
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -103,11 +103,11 @@ const ProductReview = ({ productData, productId }) => {
   const [title, setTitle] = useState("");
   const [review, setReview] = useState("");
   const [loading, setLoading] = useState(false);
-  const productTitle = productData?.title || "";
+  const roomTitle = roomData?.title || "";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!productId || !rating || !review || !createdBy) {
+    if (!roomId || !rating || !review || !createdBy) {
       toast.error('Please provide a rating, review, createdBy, and valid product.');
       return;
     }
@@ -117,7 +117,7 @@ const ProductReview = ({ productData, productId }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          productId, 
+          roomId, 
           rating, 
           title, 
           review, 
@@ -165,10 +165,10 @@ const ProductReview = ({ productData, productId }) => {
 
   // Fetch reviews for this product
   const fetchReviews = async () => {
-    if (!productId) return;
+    if (!roomId) return;
     setTableLoading(true);
     try {
-      const res = await fetch(`/api/productReviews?productId=${productId}`);
+      const res = await fetch(`/api/productReviews?roomId=${roomId}`);
       const data = await res.json();
       if (res.ok && data.reviews) {
         setReviews(data.reviews);
@@ -182,7 +182,7 @@ const ProductReview = ({ productData, productId }) => {
 
   useEffect(() => {
     fetchReviews();
-  }, [productId]);
+  }, [roomId]);
 
   // Handle edit: populate form
   const handleEdit = (review) => {
@@ -376,15 +376,15 @@ const ProductReview = ({ productData, productId }) => {
         <div className="container-fluid">
           <div className="row justify-content-center">
             <div className="col-12 col-md-12 col-lg-12">
-              <h3 className="my-4 text-center">Product Review</h3>
+              <h3 className="my-4 text-center">Create Room Review</h3>
               <div className="card my-2">
                 <div className="card-body px-4 py-2">
                   <div className="mb-4">
-                    <label className="font-semibold">Product Name</label>
+                    <label className="font-semibold">Room Name</label>
                     <Input
                       type="text"
                       className="form-control"
-                      value={productTitle}
+                      value={roomTitle}
                       disabled
                       readOnly
                     />
@@ -529,7 +529,7 @@ const ProductReview = ({ productData, productId }) => {
                         reviews.map((r, idx) => (
                           <TableRow key={r._id}>
                             <TableCell className="px-4 py-3 text-center font-medium">{idx + 1}</TableCell>
-                            <TableCell className="px-4 py-3 text-center whitespace-nowrap ">{productTitle}</TableCell>
+                            <TableCell className="px-4 py-3 text-center whitespace-nowrap ">{roomTitle}</TableCell>
                             <TableCell className="px-4 py-3 text-center whitespace-nowrap ">{r.createdBy}</TableCell>
                             <TableCell className="px-4 py-3 text-center whitespace-nowrap ">{r.rating}</TableCell>
                             <TableCell className="px-4 py-3 flex gap-2 justify-center">

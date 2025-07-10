@@ -7,7 +7,7 @@ import { Label } from "../ui/label";
 import toast from "react-hot-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTrigger, DialogTitle } from '@/components/ui/dialog';
 import { Trash2, Plus } from "lucide-react";
-const QuantityManagement = ({ productData, productId }) => {
+const QuantityManagement = ({ roomData, roomId }) => {
   // Remove a row by index, but always keep at least one row
   const handleRemoveRow = (idx) => {
     setRows(rows => rows.length > 1 ? rows.filter((_, i) => i !== idx) : rows);
@@ -20,9 +20,9 @@ const QuantityManagement = ({ productData, productId }) => {
   const [allColors, setAllColors] = useState([]); // fetched from API
 
   useEffect(() => {
-    if (!productId) return;
+    if (!roomId) return;
     // Fetch sizes
-    fetch(`/api/productSize?product=${productId}`)
+    fetch(`/api/productSize?product=${roomId}`)
       .then(async res => {
         if (!res.ok) { setSizes([]); return; }
         const data = await res.json();
@@ -30,7 +30,7 @@ const QuantityManagement = ({ productData, productId }) => {
       })
       .catch(() => setSizes([]));
     // Fetch colors
-    fetch(`/api/productColor?product=${productId}`)
+    fetch(`/api/productColor?product=${roomId}`)
       .then(async res => {
         if (!res.ok) { setAllColors([]); return; }
         const data = await res.json();
@@ -38,9 +38,9 @@ const QuantityManagement = ({ productData, productId }) => {
       })
       .catch(() => setAllColors([]));
 
-  }, [productId]);
+  }, [roomId]);
 
-  const productName = productData?.title || "";
+  const roomName = roomData?.title || "";
 
   const handleRowChange = (idx, field, value) => {
     setRows(rows => rows.map((row, i) => i === idx ? { ...row, [field]: value } : row));
@@ -58,9 +58,9 @@ const QuantityManagement = ({ productData, productId }) => {
 
   // Fetch quantity records for the current product only
   const fetchQuantities = async () => {
-    if (!productId) return;
+    if (!roomId) return;
     try {
-      const res = await fetch(`/api/productQuantity?product=${productId}`);
+      const res = await fetch(`/api/productQuantity?product=${roomId}`);
       const data = await res.json();
       // If API returns a single object, wrap in array for consistency
       if (res.ok && data && (Array.isArray(data) ? data.length : data._id)) {
@@ -96,7 +96,7 @@ const QuantityManagement = ({ productData, productId }) => {
         };
       });
       const payload = {
-        product: productId,
+        product: roomId,
         variants
       };
       const res = await fetch('/api/productQuantity', {
@@ -151,7 +151,7 @@ const QuantityManagement = ({ productData, productId }) => {
     if (!deleteDialog.id) return;
     try {
       // Include productId in the DELETE request so backend can clear Product.quantity
-      const res = await fetch(`/api/productQuantity?id=${deleteDialog.id}&productId=${productId}`, { method: 'DELETE' });
+      const res = await fetch(`/api/productQuantity?id=${deleteDialog.id}&productId=${roomId}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Failed to delete');
       toast.success('Deleted successfully');
       setDeleteDialog({ open: false, id: null });
@@ -160,39 +160,35 @@ const QuantityManagement = ({ productData, productId }) => {
       toast.error('Failed to delete');
     }
   };
-
-
-
   // --- FORM ---
   const form = (
     <form className="flex flex-col items-center" style={{ maxWidth: 1200 }} onSubmit={handleSubmit}>
-      <h3 className="font-semibold my-2 text-center text-xl">Product Total Quantity Management</h3>
+      <h3 className="font-semibold my-2 text-center text-xl">Create Room Price</h3>
       <div className="w-full bg-white rounded shadow p-4">
         <div className="mb-6 flex flex-col items-center justify-center">
-          <Label className="font-bold mb-2 text-md">Product Name</Label>
+          <Label className="font-bold mb-2 text-md">Room Name</Label>
           <Input
             className="mb-4 w-80 font-black text-center border-gray-300"
-            value={productName}
+            value={roomName}
             disabled
             // {productName ? {} : { border: '2px solid red', color: 'red' }}
-            placeholder={productName ? "Product Name" : "Product Name not found"}
+            placeholder={roomName ? "Room Name" : "Room Name not found"}
           />
-          {!productName && (
+          {!roomName && (
             <div style={{ color: 'red', marginTop: '4px', fontWeight: 'bold' }}>
-              Product name not found! Please check if the product was created successfully.
+              Room name not found! 
             </div>
           )}
         </div>
-        <h5 className="font-semibold mb-2 text-center text-xl">Product Quantity Table</h5>
+        <h5 className="font-semibold mb-2 text-center text-xl">Room Price Table</h5>
         <div className="overflow-x-auto">
           <table className="min-w-full border text-sm">
             <thead>
               <tr>
-                <th className="border px-2 py-1 text-center">Size</th>
-                <th className="border px-2 py-1 text-center">Color</th>
-                <th className="border px-2 py-1 text-center">Price</th>
-                <th className="border px-2 py-1 text-center">Quantity</th>
-                <th className="border px-2 py-1 text-center">Weight (gram)</th>
+                <th className="border px-2 py-1 text-center">New Price</th>
+                <th className="border px-2 py-1 text-center">Old Price</th>
+                <th className="border px-2 py-1 text-center">CGST Tax (%)</th>
+                <th className="border px-2 py-1 text-center">SGST Tax (%)</th>
                 <th className="border px-2 py-1 text-center">Action</th>
               </tr>
             </thead>
@@ -200,48 +196,11 @@ const QuantityManagement = ({ productData, productId }) => {
               {rows.map((row, idx) => (
                 <tr key={idx}>
                   <td className="border px-2 py-1"><div className="flex justify-center">
-                    <Select value={row.size ?? ''} onValueChange={val => handleRowChange(idx, 'size', val)}>
-                      <SelectTrigger className="bg-gray-50 rounded border w-32">
-                        <SelectValue placeholder="Select Size" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {sizes.map((size, i) => {
-                            let value = typeof size === 'string' ? size : (size._id || size.label || String(i));
-                            let label = typeof size === 'string' ? size : (size.label || size._id || String(value));
-                            return (
-                              <SelectItem key={value} value={String(value)}>{label}</SelectItem>
-                            );
-                          })}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div></td>
-
-                  <td className="border px-2 py-1"><div className="flex justify-center">
-                    <Select value={row.color ?? ''} onValueChange={val => handleRowChange(idx, 'color', val)}>
-                      <SelectTrigger className="bg-gray-50 rounded border w-32">
-                        <SelectValue placeholder="Select Color" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {allColors.map((c, i) => {
-                            let value = typeof c === 'string' ? c : (c.hex || c.name || String(i));
-                            let label = typeof c === 'string' ? c : (c.name || c.hex || String(value));
-                            return (
-                              <SelectItem key={value} value={String(value)}>{label}</SelectItem>
-                            );
-                          })}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div></td>
-                  <td className="border px-2 py-1"><div className="flex justify-center">
                     <Input
                       type="number"
                       min={0}
                       className="w-32 bg-gray-100 rounded"
-                      placeholder="Set Price"
+                      placeholder="New Price"
                       value={row.price ?? ''}
                       onChange={e => handleRowChange(idx, 'price', e.target.value)}
                     />
@@ -251,7 +210,7 @@ const QuantityManagement = ({ productData, productId }) => {
                       type="number"
                       min={0}
                       className="w-24 bg-gray-50 rounded"
-                      placeholder="Qty"
+                      placeholder="Old Price"
                       value={row.qty ?? ''}
                       onChange={e => handleRowChange(idx, 'qty', e.target.value)}
                     />
@@ -260,10 +219,20 @@ const QuantityManagement = ({ productData, productId }) => {
                     <Input
                       type="number"
                       min={0}
+                      className="w-32 bg-gray-100 rounded"
+                      placeholder="CGST Tax (%)"
+                      value={row.price ?? ''}
+                      onChange={e => handleRowChange(idx, 'price', e.target.value)}
+                    />
+                  </div></td>
+                  <td className="border px-2 py-1"><div className="flex justify-center">
+                    <Input
+                      type="number"
+                      min={0}
                       className="w-24 bg-gray-50 rounded"
-                      placeholder="Weight"
-                      value={row.weight ?? ''}
-                      onChange={e => handleRowChange(idx, 'weight', e.target.value)}
+                      placeholder="SGST Tax (%)"
+                      value={row.qty ?? ''}
+                      onChange={e => handleRowChange(idx, 'qty', e.target.value)}
                     />
                   </div></td>
                   <td className="border px-2 py-1 text-center"><div className="flex justify-center gap-2">
@@ -293,16 +262,15 @@ const QuantityManagement = ({ productData, productId }) => {
     </form>
   );
 
-  // --- TABLE ---
   const table = (
     <div className="w-full mt-10">
-      <h4 className="font-bold mb-2 text-lg">All Product Quantities</h4>
+      <h4 className="font-bold mb-2 text-lg">All Room Price</h4>
       <div className="overflow-x-auto">
         <table className="min-w-full border text-sm">
           <thead>
             <tr>
               <th className="border px-2 py-1 text-center">S.No</th>
-              <th className="border px-2 py-1 text-center">Product Name</th>
+              <th className="border px-2 py-1 text-center">Room Name</th>
               <th className="border px-2 py-1 text-center">Actions</th>
             </tr>
           </thead>

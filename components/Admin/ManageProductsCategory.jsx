@@ -400,7 +400,7 @@ const ManageProductsCategory = () => {
                                         .flatMap(menuItem => menuItem.subMenu.sort((a, b) => a.order - b.order).map((subItem) => (
                                             <TableRow key={subItem._id}>
                                                 <TableCell className="border font-semibold border-blue-600">
-                                                    <Link href={`/admin/manage_products_category/addSubMenuPackage/${subItem._id}`} variant="outline" className="bg-white border-2 border-blue-500 p-2 rounded-full text-blue-600 hover:text-blue-500 focus:text-blue-500 flex items-center justify-center">
+                                                    <Link href={`/admin/manage_rooms_category/addSubMenuPackage/${subItem._id}`} variant="outline" className="bg-white border-2 border-blue-500 p-2 rounded-full text-blue-600 hover:text-blue-500 focus:text-blue-500 flex items-center justify-center">
                                                         <span className="xl:mr-6 mr-2 bg-blue-100 rounded py-1 px-3">{subItem?.products?.length !== 0 ? subItem?.products?.length : 0}</span>
                                                         <Plus className="w-4 h-4" />
                                                         <span>Add Product</span>

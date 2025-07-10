@@ -15,16 +15,17 @@ import ApplyTax from './ApplyTax';
 import ProductTagLine from './ProductTagLine';
 import { ArrowLeftIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Amenities from './Amenities';
 
-const AddDirectProduct = ({ productId }) => {
+const AddDirectProduct = ({ roomId }) => {
   const router = useRouter();
-  const [productData, setProductData] = useState(null);
+  const [roomData, setRoomData] = useState(null);
   const [loading, setLoading] = useState(false);
-  // console.log(productData)
+  console.log(roomData)
   useEffect(() => {
-    if (productId) {
+    if (roomId) {
       setLoading(true);
-      fetch(`/api/product/${productId}`, {
+      fetch(`/api/room/${roomId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -32,26 +33,18 @@ const AddDirectProduct = ({ productId }) => {
       })
         .then(res => res.json())
         .then(data => {
-          setProductData(data);
+          setRoomData(data);
           setLoading(false);
         })
         .catch(() => setLoading(false));
-    }
-  }, [productId]);
+    } 
+  }, [roomId]);
 
   const sectionConfig = [
-    { key: 'size', label: 'Size Management', component: (props) => <SizeManagement {...props} productData={productData} productId={productId} /> },
-    { key: 'color', label: 'Color Management', component: (props) => <ColorManagement {...props} productData={productData} productId={productId} /> },
-    { key: 'quantity', label: 'Price / Quantity', component: (props) => <QuantityManagement {...props} productData={productData} productId={productId} /> },
-    { key: 'apply', label: 'Apply Coupon', component: (props) => <ApplyCoupon {...props} productData={productData} productId={productId} /> },
-    { key: 'tax', label: 'Apply Tax', component: (props) => <ApplyTax {...props} productData={productData} productId={productId} /> },
-    { key: 'gallery', label: 'Product Gallery', component: (props) => <ProductGallery {...props} productData={productData} productId={productId} /> },
-    { key: 'video', label: 'Video Management', component: (props) => <VideoManagement {...props} productData={productData} productId={productId} /> },
-    { key: 'description', label: 'Product Description', component: (props) => <ProductDescription {...props} productData={productData} productId={productId} /> },
-    { key: 'info', label: 'Product Information', component: (props) => <ProductInfo {...props} productData={productData} productId={productId} /> },
-    { key: 'review', label: 'Create Review', component: (props) => <ProductReview {...props} productData={productData} productId={productId} /> },
-    { key: 'tag', label: 'Category Tag', component: (props) => <CategoryTag {...props} productData={productData} productId={productId} /> },
-    { key: 'productTag', label: 'Product Tag', component: (props) => <ProductTagLine {...props} productData={productData} productId={productId} /> },
+    { key: 'info', label: 'Basic Info', component: (props) => <ProductInfo {...props} roomData={roomData} roomId={roomId} /> },
+    { key: 'review', label: 'Create Review', component: (props) => <ProductReview {...props} roomData={roomData} roomId={roomId} /> },
+    { key: 'quantity', label: 'Price', component: (props) => <QuantityManagement {...props} roomData={roomData} roomId={roomId} /> },
+    { key: 'amenities', label: 'Amenities', component: (props) => <Amenities {...props} roomData={roomData} roomId={roomId} /> },
   ];
   const [activeSection, setActiveSection] = useState(sectionConfig[0].key);
 
@@ -59,12 +52,12 @@ const AddDirectProduct = ({ productId }) => {
   return (
     <div style={{ minHeight: '85vh', background: '#fff', padding: '20px' }}>
       {loading ? (
-        <div className="text-center text-lg font-semibold">Loading product...</div>
+        <div className="text-center text-lg font-semibold">Loading rooms...</div>
       ) : (
         <Tabs value={activeSection} onValueChange={setActiveSection} className="w-full h-full">
           <div className="back mb-2">
             <button className='px-4 py-1 bg-gray-500 text-white rounded flex items-center' onClick={() => router.back()}>
-              <ArrowLeftIcon className="w-4 h-4 mr-2" /> Back to View Product
+              <ArrowLeftIcon className="w-4 h-4 mr-2" /> Back to View Rooms
             </button>
           </div>
           <div className="flex h-full">
@@ -90,7 +83,7 @@ const AddDirectProduct = ({ productId }) => {
             <div className="flex-1 p-4 rounded-r-lg shadow-sm min-h-[400px]">
               {sectionConfig.map(section => (
                 <TabsContent key={section.key} value={section.key} className="h-full">
-                  {section.component({ productData })}
+                  {section.component({ roomData })}
                 </TabsContent>
               ))}
             </div>
