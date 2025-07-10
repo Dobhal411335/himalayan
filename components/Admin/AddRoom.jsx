@@ -24,7 +24,8 @@ const generateCode = () => {
     return code;
 };
 
-const AddProduct = ({ id }) => {
+const AddRoom = () => {
+    const [editingRoomId, setEditingRoomId] = useState(null);
     // ...existing state and hooks...
 
     // Editing state
@@ -38,7 +39,6 @@ const AddProduct = ({ id }) => {
         // Use react-hook-form's reset to fill all fields
         reset({
             title: prod.title || '',
-
             order: prod.order || 1,
             active: typeof prod.active === 'boolean' ? prod.active : true,
             // Add other fields as needed
@@ -46,8 +46,8 @@ const AddProduct = ({ id }) => {
         setProductCode(prod.code || '');
         setActive(typeof prod.active === 'boolean' ? prod.active : true);
         setOrder(prod.order || 1);
-
         setTitle(prod.title || '');
+        setEditingRoomId(prod._id || null);
         setIsEditing(true);
         // Optionally scroll to form
         if (formRef.current) {
@@ -103,7 +103,7 @@ const AddProduct = ({ id }) => {
             const response = await fetch('/api/admin/website-manage/addPackage', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ pkgId: productId, active: !currentActive }),
+                body: JSON.stringify({ roomId: productId, active: !currentActive }),
             });
             const result = await response.json();
             if (response.ok) {
@@ -118,7 +118,6 @@ const AddProduct = ({ id }) => {
     }
 
     const { handleSubmit, register, setValue, reset } = useForm();
-    const subMenuId = id;
     const [productCode, setProductCode] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [products, setProducts] = useState([]);
@@ -133,20 +132,13 @@ const AddProduct = ({ id }) => {
     }, []);
 
     useEffect(() => {
-        // Fetch products for this submenu/category or all direct products
-        const fetchProducts = async () => {
+        // Fetch all rooms on mount
+        const fetchRooms = async () => {
             try {
-                let url = '';
-                if (subMenuId) {
-                    url = `/api/getSubMenuById/${subMenuId}`;
-                }
-                const response = await fetch(url);
+                const response = await fetch('/api/room');
                 const data = await response.json();
-                console.log(data)
-                if (subMenuId && Array.isArray(data.rooms)) {
+                if (Array.isArray(data.rooms)) {
                     setProducts(data.rooms);
-                } else if (!subMenuId && Array.isArray(data)) {
-                    setProducts(data);
                 } else {
                     setProducts([]);
                 }
@@ -154,44 +146,46 @@ const AddProduct = ({ id }) => {
                 setProducts([]);
             }
         };
-        fetchProducts();
-    }, [subMenuId]);
+        fetchRooms();
+    }, []);
     const deletePackage = async (id) => {
         setIsLoading(true);
         try {
-            const response = await fetch('/api/admin/website-manage/addPackage', {
+            const response = await fetch(`/api/room/${id}`, {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id }),
             });
             const result = await response.json();
             if (response.ok) {
                 setProducts((prev) => prev.filter((prod) => prod._id !== id));
-                toast.success('Product deleted successfully!');
+                toast.success('Room deleted successfully!');
             } else {
-                toast.error(result.message || 'Failed to delete product.');
+                toast.error(result.error || result.message || 'Failed to delete room.');
             }
         } catch (error) {
-            toast.error('Failed to delete product.');
+            toast.error('Failed to delete room.');
         } finally {
             setIsLoading(false);
         }
     };
+
     const onSubmit = async () => {
+        if (!title || !productCode) {
+            toast.error("All fields are required", { style: { borderRadius: "10px", border: "2px solid red" } });
+            return;
+        }
         setIsLoading(true);
         try {
             const payload = {
                 title,
                 code: productCode,
-
+                slug: slugify(title),
                 order,
                 active: typeof active === 'boolean' ? active : true, // always true by default
-                isDirect: !subMenuId,
-                ...(subMenuId ? { subMenuId, category: subMenuId } : {})
             };
+            // console.log('Room payload:', payload);
             let response, result;
             if (isEditing) {
-                response = await fetch('/api/admin/website-manage/addPackage', {
+                response = await fetch(`/api/room/${editingRoomId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ code: productCode, ...payload })
@@ -202,88 +196,51 @@ const AddProduct = ({ id }) => {
                     reset();
                     setProductCode(generateCode());
                     setIsEditing(false);
+                    setEditingRoomId(null);
                     // Refetch products
-                    if (subMenuId) {
-                        const res = await fetch(`/api/getSubMenuById/${subMenuId}`);
-                        const data = await res.json();
-                        if (Array.isArray(data.rooms)) {
-                            setProducts(data.rooms);
-                        }
-                    } else {
-                        const res = await fetch('/api/product?isDirect=true');
-                        const data = await res.json();
-                        if (Array.isArray(data)) {
-                            setProducts(data);
-                        }
+                    const res = await fetch(`/api/room`);
+                    const data = await res.json();
+                    if (Array.isArray(data.rooms)) {
+                        setProducts(data.rooms);
                     }
                 } else {
                     toast.error(result.message || 'Failed to update room');
                 }
             } else {
-                response = await fetch('/api/admin/website-manage/addPackage', {
+                response = await fetch(`/api/room`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 result = await response.json();
+                // console.log('Room API result:', result);
                 if (response.ok) {
                     toast.success('Room added successfully!');
+                    window.location.reload();
                     reset();
                     setProductCode(generateCode());
                     // Refetch products
-                    if (subMenuId) {
-                        const res = await fetch(`/api/getSubMenuById/${subMenuId}`);
-                        const data = await res.json();
-                        if (Array.isArray(data.rooms)) {
-                            setProducts(data.rooms);
-                        }
-                    } else {
-                        const res = await fetch('/api/product?isDirect=true');
-                        const data = await res.json();
-                        if (Array.isArray(data)) {
-                            setProducts(data);
-                        }
+                    const res = await fetch('/api/room');
+                    const data = await res.json();
+                    if (Array.isArray(data.rooms)) {
+                        setProducts(data.rooms);
                     }
+
                 } else {
-                    toast.error(result.message || 'Failed to add room');
+                    toast.error(result.error || result.message || 'Failed to add room');
                 }
             }
         } catch (error) {
-            toast.error('Something went wrong');
+            // console.error('Room creation error:', error);
+            toast.error(error?.message || 'Something went wrong');
         } finally {
             setIsLoading(false);
         }
-
-
-        if (!title) {
-            toast.error("All fields are required", { style: { borderRadius: "10px", border: "2px solid red" } });
-            return;
-        }
-        try {
-            const response = await fetch("/api/admin/website-manage/addPackage", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ code: productCode, title }),
-            });
-
-            const res = await response.json();
-
-            if (response.ok) {
-                toast.success("Package added successfully!", { style: { borderRadius: "10px", border: "2px solid green" } })
-                window.location.reload();
-            } else {
-                toast.error("Failed to add package", { style: { borderRadius: "10px", border: "2px solid red" } })
-            }
-        } catch (error) {
-            toast.error("Something went wrong", { style: { borderRadius: "10px", border: "2px solid red" } })
-        }
-
     };
+
     return (
         <>
-            <form className="flex flex-col items-center justify-center gap-8 my-20 bg-blue-100 w-[50%] max-w-xl md:max-w-7xl mx-auto p-4 rounded-lg" onSubmit={handleSubmit(onSubmit)}>
+            <form className="flex flex-col items-center justify-center gap-8 my-20 bg-blue-100 w-[30%] max-w-xl md:max-w-7xl mx-auto p-4 rounded-lg" onSubmit={handleSubmit(onSubmit)}>
                 <div className="flex md:flex-row flex-col items-center md:items-end gap-6 w-full">
                     <div className="flex flex-col gap-2">
                         <label htmlFor="productCode" className="font-semibold">Room Code</label>
@@ -380,4 +337,4 @@ const AddProduct = ({ id }) => {
     )
 
 }
-export default AddProduct
+export default AddRoom

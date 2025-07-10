@@ -5,13 +5,62 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { Star, Upload, Trash2 } from 'lucide-react';
+import { Star, Upload, Trash2, AlignJustify } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useRef } from 'react';
 import { Label } from "../ui/label";
 import Image from 'next/image';
+import Underline from '@tiptap/extension-underline';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import TextStyle from '@tiptap/extension-text-style';
+import { FontFamily } from '@tiptap/extension-font-family';
+import Typography from '@tiptap/extension-typography';
+import TextAlign from '@tiptap/extension-text-align';
+import Link from '@tiptap/extension-link';
+import { Color } from '@tiptap/extension-color';
+import ListItem from '@tiptap/extension-list-item';
+import { Extension } from '@tiptap/core';
+import {
+  Bold,
+  Italic,
+  Underline as UnderlineIcon,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Link as LinkIcon,
+  List,
+  ListOrdered,
+  Quote,
+  Undo,
+  Redo,
+  Strikethrough,
+  Code,
+  Heading1,
+  Heading2,
+  Heading3,
+  PilcrowSquare,
+} from 'lucide-react'
+const FontSize = Extension.create({
+  name: 'fontSize',
+  addOptions() {
+    return {
+      types: ['textStyle'],
+    };
+  },
+  addCommands() {
+    return {
+      setFontSize: (fontSize) => ({ commands }) => {
+        return commands.setFontStyle({ fontSize });
+      },
+      unsetFontSize: () => ({ commands }) => {
+        return commands.setFontStyle({ fontSize: undefined });
+      },
+    };
+  },
+});
+
 const ProductReview = ({ roomData, roomId }) => {
-  // Image upload state
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [imageObj, setImageObj] = useState({ url: '', key: '' });
@@ -25,7 +74,7 @@ const ProductReview = ({ roomData, roomId }) => {
     if (file) {
       setUploading(true);
       toast.loading('Uploading image to Cloudinary...', { id: 'review-image-upload' });
-      
+
       // Preview
       const reader = new FileReader();
       reader.onloadend = () => setImagePreview(reader.result);
@@ -59,7 +108,6 @@ const ProductReview = ({ roomData, roomId }) => {
     }
   };
 
-  // Reset file input after successful upload
   useEffect(() => {
     if (imageObj.url && fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -105,6 +153,38 @@ const ProductReview = ({ roomData, roomId }) => {
   const [loading, setLoading] = useState(false);
   const roomTitle = roomData?.title || "";
 
+  // Tiptap review editor setup
+  const reviewEditor = useEditor({
+    extensions: [
+      StarterKit,
+      TextStyle,
+      FontFamily,
+      Typography,
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      Underline,
+      Link,
+      Color,
+      ListItem,
+      FontSize,
+    ],
+    content: review,
+    onUpdate: ({ editor }) => {
+      setReview(editor.getHTML());
+    },
+    editorProps: {
+      attributes: {
+        class: 'min-h-[120px] focus:outline-none',
+      },
+    },
+  });
+
+  // Clean up editor on unmount
+  useEffect(() => {
+    return () => {
+      if (reviewEditor) reviewEditor.destroy();
+    };
+  }, [reviewEditor]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!roomId || !rating || !review || !createdBy) {
@@ -116,11 +196,11 @@ const ProductReview = ({ roomData, roomId }) => {
       const res = await fetch('/api/productReviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          roomId, 
-          rating, 
-          title, 
-          review, 
+        body: JSON.stringify({
+          roomId,
+          rating,
+          title,
+          review: review,
           createdBy,
           image: imageObj.url ? {
             url: imageObj.url,
@@ -163,6 +243,8 @@ const ProductReview = ({ roomData, roomId }) => {
   const [editId, setEditId] = useState(null);
   const [tableLoading, setTableLoading] = useState(false);
 
+  console.log(reviews)
+
   // Fetch reviews for this product
   const fetchReviews = async () => {
     if (!roomId) return;
@@ -186,22 +268,25 @@ const ProductReview = ({ roomData, roomId }) => {
 
   // Handle edit: populate form
   const handleEdit = (review) => {
-    setRating(review.rating);
+    setEditMode(true);
+    setEditId(review._id);
     setTitle(review.title || "");
-    setReview(review.review || "");
+    setRating(review.rating || 0);
     setCreatedBy(review.createdBy || "");
+    setReview(review.review || "");
+    // Pre-fill editor content
+    if (reviewEditor) {
+      setTimeout(() => {
+        reviewEditor.commands.setContent(review.review || "", false);
+      }, 100);
+    }
     if (review.image?.url) {
       setImagePreview(review.image.url);
-      setImageObj({
-        url: review.image.url,
-        key: review.image.key
-      });
+      setImageObj({ url: review.image.url, key: review.image.key });
     } else {
       setImagePreview(null);
       setImageObj({ url: '', key: '' });
     }
-    setEditMode(true);
-    setEditId(review._id);
   };
 
   // Delete modal state
@@ -227,18 +312,18 @@ const ProductReview = ({ roomData, roomId }) => {
       const res = await fetch('/api/productReviews', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reviewId: deleteTargetId, productId })
+        body: JSON.stringify({ roomId })
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
         toast.error(data.error || 'Failed to delete review');
         return;
       }
-      
+
       // Update UI immediately
       setReviews(reviews.filter(r => r._id !== deleteTargetId));
       toast.success('Review deleted successfully!');
-      
+
       // Refresh reviews to ensure consistency
       fetchReviews();
     } catch (err) {
@@ -248,47 +333,48 @@ const ProductReview = ({ roomData, roomId }) => {
       setDeleteTargetId(null);
     }
   };
+
   // Handle update (edit mode)
   const handleUpdate = async (e) => {
     e.preventDefault();
-    if (!editId || !rating || !review) {
-      toast.error('Please provide a rating and review.');
+    if (!editId || !roomId || !rating || !review || !createdBy) {
+      toast.error('Please provide a rating, review, createdBy, and valid product.');
       return;
     }
     setLoading(true);
     try {
-      const res = await fetch('/api/productReviews', {
+      // PATCH to update review
+      const res = await fetch(`/api/productReviews`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          reviewId: editId, 
-          productId,
-          rating, 
-          title, 
-          review,
-          image: imageObj.url ? {
-            url: imageObj.url,
-            key: imageObj.key
-          } : null
+        body: JSON.stringify({
+          reviewId: editId,
+          roomId,
+          title: title.trim(),
+          review: review,
+          rating,
+          createdBy,
+          image: imageObj
         })
       });
       const data = await res.json();
       if (!res.ok || data.error) {
         toast.error(data.error || 'Failed to update review');
       } else {
+        toast.success('Review updated successfully!');
         setEditMode(false);
         setEditId(null);
-        setRating(0);
-        setHoverRating(0);
         setTitle("");
         setReview("");
+        if (reviewEditor) {
+          reviewEditor.commands.clearContent();
+        }
         setCreatedBy("");
-        // Clear image state
+        setRating(0);
+        setHoverRating(0);
         setImageFile(null);
         setImagePreview(null);
         setImageObj({ url: '', key: '' });
-        // Reset file input
-        // fileInputRef.current?.value = '';
         fetchReviews();
       }
     } catch (err) {
@@ -306,12 +392,14 @@ const ProductReview = ({ roomData, roomId }) => {
     setHoverRating(0);
     setTitle("");
     setReview("");
+    if (reviewEditor) {
+      reviewEditor.commands.clearContent();
+    }
     setCreatedBy("");
     setImageFile(null);
     setImagePreview(null);
     setImageObj({ url: '', key: '' });
   };
-
 
   return (
     <>
@@ -461,34 +549,66 @@ const ProductReview = ({ roomData, roomId }) => {
                     </div>
                   </div>
 
-                  
+
                   <div className="mb-4">
                     <label className="form-label">Review Title</label>
                     <Input type="text" className="form-control" placeholder="Review title" value={title} onChange={e => setTitle(e.target.value)} />
                   </div>
                   <div className="mb-4">
                     <label className="form-label">Review</label>
-                    <Textarea
-                      id="review"
-                      value={review}
-                      onChange={e => {
-                        const value = e.target ? e.target.value : e; // fallback for direct string
-                        const safeValue = typeof value === 'string' ? value : String(value ?? '');
-                        const wordCount = safeValue.trim().split(/\s+/).filter(Boolean).length;
-                        if (wordCount >100) {
-                          toast.error('Word limit exceeded! Maximum 100 words allowed.');
-                          return;
-                        }
-                        setReview(safeValue);
-                      }}
-                      // onChange={(e) => setReview(e.target.value)}
-                      rows={4}
-                      className="w-full border rounded mt-1 px-3 py-2"
-                      placeholder="Write your review here... (max 100 characters)"
-                      required
-                    />
+                    {/* Tiptap Rich Text Editor */}
+                    <div className="border rounded mt-1 px-3 py-2 bg-white">
+                      {/* Toolbar */}
+                      {reviewEditor && (
+                        <>
+                          <div className="flex gap-2 border-b pb-2 mb-2">
+                            <button type="button" onClick={() => reviewEditor.chain().focus().toggleBold().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${reviewEditor.isActive('bold') ? 'bg-gray-200' : ''}`}><Bold className="w-4 h-4" /></button>
+                            <button type="button" onClick={() => reviewEditor.chain().focus().toggleItalic().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${reviewEditor.isActive('italic') ? 'bg-gray-200' : ''}`}><Italic className="w-4 h-4" /></button>
+                            <button type="button" onClick={() => reviewEditor.chain().focus().toggleUnderline().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${reviewEditor.isActive('underline') ? 'bg-gray-200' : ''}`}><UnderlineIcon className="w-4 h-4" /></button>
+                            <button type="button" onClick={() => reviewEditor.chain().focus().setParagraph().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${reviewEditor.isActive('paragraph') ? 'bg-gray-200' : ''}`}><PilcrowSquare className="w-4 h-4" /></button>
+                            <button type="button" onClick={() => reviewEditor.chain().focus().toggleHeading({ level: 1 }).run()} className={`p-2 rounded-lg hover:bg-gray-100 ${reviewEditor.isActive('heading', { level: 1 }) ? 'bg-gray-200' : ''}`}><Heading1 className="w-4 h-4" /></button>
+                            <button type="button" onClick={() => reviewEditor.chain().focus().toggleHeading({ level: 2 }).run()} className={`p-2 rounded-lg hover:bg-gray-100 ${reviewEditor.isActive('heading', { level: 2 }) ? 'bg-gray-200' : ''}`}><Heading2 className="w-4 h-4" /></button>
+                            <button type="button" onClick={() => reviewEditor.chain().focus().toggleHeading({ level: 3 }).run()} className={`p-2 rounded-lg hover:bg-gray-100 ${reviewEditor.isActive('heading', { level: 3 }) ? 'bg-gray-200' : ''}`}><Heading3 className="w-4 h-4" /></button>
+                            <button type="button" onClick={() => reviewEditor.chain().focus().toggleBulletList().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${reviewEditor.isActive('bulletList') ? 'bg-gray-200' : ''}`}><List className="w-4 h-4" /></button>
+                            <button type="button" onClick={() => reviewEditor.chain().focus().toggleOrderedList().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${reviewEditor.isActive('orderedList') ? 'bg-gray-200' : ''}`}><ListOrdered className="w-4 h-4" /></button>
+                            <button type="button" onClick={() => reviewEditor.chain().focus().toggleBlockquote().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${reviewEditor.isActive('blockquote') ? 'bg-gray-200' : ''}`}><Quote className="w-4 h-4" /></button>
+                            <button
+                              type="button"
+                              onClick={() => reviewEditor.chain().focus().setTextAlign('left').run()}
+                              className={`p-2 rounded-lg hover:bg-gray-100 ${reviewEditor.isActive({ textAlign: 'left' }) ? 'bg-gray-200' : ''}`}
+                            >
+                              <AlignLeft className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => reviewEditor.chain().focus().setTextAlign('center').run()}
+                              className={`p-2 rounded-lg hover:bg-gray-100 ${reviewEditor.isActive({ textAlign: 'center' }) ? 'bg-gray-200' : ''}`}
+                            >
+                              <AlignCenter className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => reviewEditor.chain().focus().setTextAlign('right').run()}
+                              className={`p-2 rounded-lg hover:bg-gray-100 ${reviewEditor.isActive({ textAlign: 'right' }) ? 'bg-gray-200' : ''}`}
+                            >
+                              <AlignRight className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => reviewEditor.chain().focus().setTextAlign('justify').run()}
+                              className={`p-2 rounded-lg hover:bg-gray-100 ${reviewEditor.isActive({ textAlign: 'justify' }) ? 'bg-gray-200' : ''}`}
+                            >
+                              <AlignJustify className="w-4 h-4" />
+                            </button>
+                            <button type="button" onClick={() => reviewEditor.chain().focus().undo().run()} className="p-2 rounded-lg hover:bg-gray-100"><Undo className="w-4 h-4" /></button>
+                            <button type="button" onClick={() => reviewEditor.chain().focus().redo().run()} className="p-2 rounded-lg hover:bg-gray-100"><Redo className="w-4 h-4" /></button>
+                          </div>
+                          <EditorContent editor={reviewEditor} />
+                        </>
+                      )}
+                    </div>
                   </div>
-                  
+
                   <div className="text-center space-x-2">
                     <Button type="submit" className="bg-blue-600 px-5" disabled={loading}>{loading ? (editMode ? 'Updating...' : 'Saving...') : (editMode ? 'Update Review' : 'Submit Review')}</Button>
                     {editMode && <Button type="button" className="bg-gray-400 px-5" onClick={handleCancelEdit}>Cancel</Button>}

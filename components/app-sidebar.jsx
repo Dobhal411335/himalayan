@@ -50,19 +50,19 @@ const data = {
     },
     { divider: true },
     {
-      name: "Create Instructor",
+      name: "Create Experts",
       url: "/admin/create_instructor",
       icon: User,
     },
     {
-      name: "View / Edit Instructor",
+      name: "View / Edit Experts",
       url: "/admin/edit_instructor",
       icon: User,
     },
     { divider: true },
 
     {
-      name: "Add Direct Product",
+      name: "Add Direct Packages",
       url: "/admin/add_direct_product",
       icon: Plus,
     },
@@ -75,15 +75,9 @@ const data = {
     },
     { divider: true },
     {
-      name: "Create Discount",
-      url: "/admin/create_discount",
-      icon: Plus
-    },
-    { divider: true },
-    {
-      name: "Shipping Charges",
-      url: "/admin/shipping_charges",
-      icon: Plus
+      name: "Add Room",
+      url: "/admin/add_room",
+      icon: Plus,
     },
     { divider: true },
     {
@@ -131,7 +125,7 @@ const data = {
 
     // Third group: Content management
     {
-      name: "Manage Featured Product",
+      name: "Manage Featured Packages",
       url: "/admin/manage_featured_packages",
       icon: Image,
     },
@@ -151,11 +145,6 @@ const data = {
       icon: Boxes,
     },
     {
-      name: "View All Rooms",
-      url: "/admin/all_rooms",
-      icon: Boxes,
-    },
-    {
       name: "Approve/Reject Reviews",
       url: "/admin/manage_reviews",
       icon: Star,
@@ -167,45 +156,17 @@ const data = {
     },
     { divider: true },
     {
-      name: "Enquiry Order",
+      name: "Room Order",
       url: "/admin/enquiry_order",
       icon: ShoppingCart,
     },
     {
-      name: "All Orders",
+      name: "Package Booking Orders",
       url: "/admin/all_orders",
       icon: ShoppingCart,
     },
-    {
-      name: "COD Order Log",
-      url: "/admin/cod_order_log",
-      icon: ShoppingCart,
-    },
-    {
-      name: "Online Order Log",
-      url: "/admin/online_order_log",
-      icon: ShoppingCart,
-    },
-  
-    {
-      name: "Sales Section",
-      url: "/admin/sales_section",
-      icon: BarChart,
-    },
-    {
-      name: "Payment Report",
-      url: "/admin/payment_report",
-      icon: ClipboardList,
-    },
     // Space (empty item)
     { divider: true },
-    {
-      name: "Stock Management",
-      url: "/admin/stock_management",
-      icon: ClipboardList,
-    },
-    { divider: true },
-
     // Fourth group: Blog & pages
     {
       name: "Manage Webpages",

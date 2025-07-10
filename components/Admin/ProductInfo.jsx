@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect,useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -66,7 +66,7 @@ const productInfo = ({ roomData, roomId }) => {
   const [editIndex, setEditIndex] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTargetIndex, setDeleteTargetIndex] = useState(null);
-  const [description, setDescription] = useState("");  
+  const [description, setDescription] = useState("");
   const [galleries, setGalleries] = useState([]);
   const [loadingGalleries, setLoadingGalleries] = useState(false);
   const imageInputRef = useRef(null);
@@ -75,10 +75,10 @@ const productInfo = ({ roomData, roomId }) => {
   const [imageUploading, setImageUploading] = useState(false);
   const [subImagesUploading, setSubImagesUploading] = useState(false);
   const subImagesInputRef = useRef(null);
-  
+
   const [editGallery, setEditGallery] = useState(null);
   const [editMainImage, setEditMainImage] = useState(null); // should be {url, key} or null
-  const [editSubImages, setEditSubImages] = useState([]); 
+  const [editSubImages, setEditSubImages] = useState([]);
   const [heading, setHeading] = useState("");
   const [paragraph, setParagraph] = useState("");
   const editor = useEditor({
@@ -104,9 +104,6 @@ const productInfo = ({ roomData, roomId }) => {
       }
     }
   });
-
-  // should be array of {url, key}
-  // --- Gallery Actions State ---
 
   useEffect(() => {
     if (!roomId) return;
@@ -134,13 +131,6 @@ const productInfo = ({ roomData, roomId }) => {
 
   const [viewGallery, setViewGallery] = useState(null)
 
-  // --- Handlers for Gallery Actions ---
-  const handleViewGallery = (gallery) => setViewGallery(gallery);
-  const handleEditGallery = (gallery) => {
-    setEditGallery(gallery);
-    setEditMainImage(gallery.mainImage);
-    setEditSubImages(gallery.subImages || []);
-  };
   // Remove uploaded main image before save
   const handleRemoveMainImageUpload = async () => {
     if (selectedMainImage && selectedMainImage.key) {
@@ -189,7 +179,7 @@ const productInfo = ({ roomData, roomId }) => {
     setSelectedSubImages(prev => prev.filter((_, i) => i !== idx));
   };
 
-  const handleDeleteGallery = (gallery) => openDeleteModal(gallery._id);
+
   // Fetch all sections for the current product
   const fetchSections = async () => {
     setTableLoading(true);
@@ -232,66 +222,10 @@ const productInfo = ({ roomData, roomId }) => {
   const productTitle = roomData?.title || "";
   const [loading, setLoading] = useState(false);
 
-  // Handlers
-  const handleView = (section) => {
-    setViewedSection(section);
-    setViewModal(true);
-  };
-
-  const handleEdit = (section, idx) => {
-    setEditMode(true);
-    setEditIndex(idx);
-    setTitle(section.title);
-    setSelectedMainImage(section.mainImage);
-    setSelectedSubImages(section.subImages);
-    // Set description with a small delay to ensure editor is initialized
-    setTimeout(() => {
-      if (editor) {
-        editor.commands.setContent(section.description, false);
-        setDescription(section.description);
-      }
-    }, 100);
-  };
-
   const openDeleteModal = (idx) => {
     setDeleteTargetIndex(idx);
     setShowDeleteModal(true);
   };
-  const cancelDelete = () => {
-    setShowDeleteModal(false);
-    setDeleteTargetIndex(null);
-  };
-  const confirmDelete = async () => {
-    if (!roomId || deleteTargetIndex === null) return;
-    setLoading(true);
-    try {
-      const res = await fetch('/api/productInfo', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roomId, sectionIndex: Number(deleteTargetIndex) })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        toast.success('Section deleted!');
-        fetchSections();
-        if (editIndex === deleteTargetIndex) {
-          setEditMode(false);
-          setEditIndex(null);
-          setTitle("");
-          setDescription("");
-        }
-      } else {
-        toast.error(data.error || 'Failed to delete section');
-      }
-    } catch (err) {
-      toast.error('Error deleting section.');
-    } finally {
-      setShowDeleteModal(false);
-      setDeleteTargetIndex(null);
-      setLoading(false);
-    }
-  };
-
 
   const handleMainImageUpload = async (event) => {
     const file = event.target.files[0];
@@ -437,261 +371,266 @@ const productInfo = ({ roomData, roomId }) => {
                     <Input value={heading} onChange={e => setHeading(e.target.value)} className="mb-2" placeholder="Enter Room Name" />
                     <div className="my-4">
                       <label className="form-label font-semibold">Room Description</label>
-                      <div className="flex flex-col gap-2">
-                        <div className="flex gap-2">
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().toggleBold().run()}
-                            className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('bold') ? 'bg-gray-200' : ''}`}
+                      <div className="border rounded mt-1 px-3 py-2 bg-white">
+                        {editor && (
+                          <>
+                            <div className="flex gap-2 pb-2 mb-2">
+                              <button type="button"
+                                onClick={() => editor.chain().focus().toggleBold().run()}
+                                className={`p-2 rounded-lg hover:bg-gray-100 ${editor.isActive('bold') ? 'bg-gray-200' : ''}`}
+                              >
+                                <Bold className="w-4 h-4" />
+                              </button>
+                              <button type="button"
+                                onClick={() => editor?.chain().focus().toggleItalic().run()}
+                                className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('italic') ? 'bg-gray-200' : ''}`}
+                              >
+                                <Italic className="w-4 h-4" />
+                              </button>
+                              <button type="button"
+                                onClick={() => editor?.chain().focus().toggleUnderline().run()}
+                                className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('underline') ? 'bg-gray-200' : ''}`}
+                              >
+                                <UnderlineIcon className="w-4 h-4" />
+                              </button>
+                              <button type="button"
+                                onClick={() => editor?.chain().focus().setParagraph().run()}
+                                className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('paragraph') ? 'bg-gray-200' : ''}`}
+                              >
+                                <PilcrowSquare className="w-4 h-4" />
+                              </button>
+                              <button type="button"
+                                onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
+                                className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('heading', { level: 1 }) ? 'bg-gray-200' : ''}`}
+                              >
+                                <Heading1 className="w-4 h-4" />
+                              </button>
+                              <button type="button"
+                                onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
+                                className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('heading', { level: 2 }) ? 'bg-gray-200' : ''}`}
+                              >
+                                <Heading2 className="w-4 h-4" />
+                              </button>
+                              <button type="button"
+                                onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
+                                className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('heading', { level: 3 }) ? 'bg-gray-200' : ''}`}
+                              >
+                                <Heading3 className="w-4 h-4" />
+                              </button>
+                              <button type="button"
+                                onClick={() => editor?.chain().focus().toggleBulletList().run()}
+                                className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('bulletList') ? 'bg-gray-200' : ''}`}
+                              >
+                                <List className="w-4 h-4" />
+                              </button>
+                              <button type="button"
+                                onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+                                className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('orderedList') ? 'bg-gray-200' : ''}`}
+                              >
+                                <ListOrdered className="w-4 h-4" />
+                              </button>
+                              <button type="button"
+                                onClick={() => editor?.chain().focus().toggleBlockquote().run()}
+                                className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('blockquote') ? 'bg-gray-200' : ''}`}
+                              >
+                                <Quote className="w-4 h-4" />
+                              </button>
+                              <button type="button"
+                                onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
+                                className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('codeBlock') ? 'bg-gray-200' : ''}`}
+                              >
+                                <Code className="w-4 h-4" />
+                              </button>
+                              <button type="button"
+                                onClick={() => editor?.chain().focus().toggleStrike().run()}
+                                className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('strike') ? 'bg-gray-200' : ''}`}
+                              >
+                                <Strikethrough className="w-4 h-4" />
+                              </button>
+                              <button type="button"
+                                onClick={() => editor?.chain().focus().undo().run()}
+                                className="p-2 rounded-lg hover:bg-gray-100"
+                              >
+                                <Undo className="w-4 h-4" />
+                              </button>
+                              <button type="button"
+                                onClick={() => editor?.chain().focus().redo().run()}
+                                className="p-2 rounded-lg hover:bg-gray-100"
+                              >
+                                <Redo className="w-4 h-4" />
+                              </button>
+                              <button type="button"
+                                onClick={() => editor?.chain().focus().setTextAlign('left').run()}
+                                className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('textAlign', 'left') ? 'bg-gray-200' : ''}`}
+                              >
+                                <AlignLeft className="w-4 h-4" />
+                              </button>
+                              <button type="button"
+                                onClick={() => editor?.chain().focus().setTextAlign('center').run()}
+                                className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('textAlign', 'center') ? 'bg-gray-200' : ''}`}
+                              >
+                                <AlignCenter className="w-4 h-4" />
+                              </button>
+                              <button type="button"
+                                onClick={() => editor?.chain().focus().setTextAlign('right').run()}
+                                className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('textAlign', 'right') ? 'bg-gray-200' : ''}`}
+                              >
+                                <AlignRight className="w-4 h-4" />
+                              </button>
+                            </div>
+                            <EditorContent editor={editor} />
+                            </>
+                         
+                        )}
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <label className="font-semibold">Room Main Photo</label>
+                    <div className="border rounded p-4 bg-gray-50">
+                      <div className="text-center">
+                        {(editGallery ? editMainImage?.url : selectedMainImage?.url) ? (
+                          <div className="relative mb-3 inline-block">
+                            <img
+                              src={editGallery ? editMainImage?.url : selectedMainImage.url}
+                              alt="Preview"
+                              className="rounded object-contain mx-auto"
+                              style={{ maxHeight: '150px', display: 'block' }}
+                            />
+                            <button
+                              type="button"
+                              className="absolute top-2 right-2 bg-red-500 text-white rounded-full px-2"
+                              onClick={() => {
+                                if (editGallery) setEditMainImage("");
+                                else {
+                                  handleRemoveMainImageUpload();
+                                }
+                              }}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ) : (
+                          <div
+                            className="upload-placeholder border border-dashed border-gray-400 rounded-lg p-6 bg-white cursor-pointer"
+                            onClick={handleFileUpload}
                           >
-                            <Bold className="w-4 h-4" />
-                          </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().toggleItalic().run()}
-                            className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('italic') ? 'bg-gray-200' : ''}`}
-                          >
-                            <Italic className="w-4 h-4" />
-                          </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().toggleUnderline().run()}
-                            className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('underline') ? 'bg-gray-200' : ''}`}
-                          >
-                            <UnderlineIcon className="w-4 h-4" />
-                          </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().setParagraph().run()}
-                            className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('paragraph') ? 'bg-gray-200' : ''}`}
-                          >
-                            <PilcrowSquare className="w-4 h-4" />
-                          </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
-                            className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('heading', { level: 1 }) ? 'bg-gray-200' : ''}`}
-                          >
-                            <Heading1 className="w-4 h-4" />
-                          </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-                            className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('heading', { level: 2 }) ? 'bg-gray-200' : ''}`}
-                          >
-                            <Heading2 className="w-4 h-4" />
-                          </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
-                            className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('heading', { level: 3 }) ? 'bg-gray-200' : ''}`}
-                          >
-                            <Heading3 className="w-4 h-4" />
-                          </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().toggleBulletList().run()}
-                            className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('bulletList') ? 'bg-gray-200' : ''}`}
-                          >
-                            <List className="w-4 h-4" />
-                          </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().toggleOrderedList().run()}
-                            className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('orderedList') ? 'bg-gray-200' : ''}`}
-                          >
-                            <ListOrdered className="w-4 h-4" />
-                          </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().toggleBlockquote().run()}
-                            className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('blockquote') ? 'bg-gray-200' : ''}`}
-                          >
-                            <Quote className="w-4 h-4" />
-                          </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
-                            className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('codeBlock') ? 'bg-gray-200' : ''}`}
-                          >
-                            <Code className="w-4 h-4" />
-                          </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().toggleStrike().run()}
-                            className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('strike') ? 'bg-gray-200' : ''}`}
-                          >
-                            <Strikethrough className="w-4 h-4" />
-                          </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().undo().run()}
-                            className="p-2 rounded-lg hover:bg-gray-100"
-                          >
-                            <Undo className="w-4 h-4" />
-                          </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().redo().run()}
-                            className="p-2 rounded-lg hover:bg-gray-100"
-                          >
-                            <Redo className="w-4 h-4" />
-                          </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().setTextAlign('left').run()}
-                            className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('textAlign', 'left') ? 'bg-gray-200' : ''}`}
-                          >
-                            <AlignLeft className="w-4 h-4" />
-                          </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().setTextAlign('center').run()}
-                            className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('textAlign', 'center') ? 'bg-gray-200' : ''}`}
-                          >
-                            <AlignCenter className="w-4 h-4" />
-                          </button>
-                          <button type="button"
-                            onClick={() => editor?.chain().focus().setTextAlign('right').run()}
-                            className={`p-2 rounded-lg hover:bg-gray-100 ${editor?.isActive('textAlign', 'right') ? 'bg-gray-200' : ''}`}
-                          >
-                            <AlignRight className="w-4 h-4" />
-                          </button>
-                        </div>
-                        <EditorContent editor={editor} />
+                            <div className="flex flex-col items-center">
+                              <span className="text-4xl">📷</span>
+                              <h5 className="mb-2">Browse Image</h5>
+                              <p className="text-md mb-0">From Drive</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <input
+                        type="file"
+                        id="imageUpload"
+                        className="hidden"
+                        accept="image/*"
+                        ref={imageInputRef}
+                        onChange={handleMainImageUpload}
+                      />
+                      <div className="text-center mt-3">
+                        <Button
+                          type="button"
+                          className="bg-gray-800 text-white px-4 py-2"
+                          onClick={handleFileUpload}
+                        >
+                          {imageUploading ? 'Uploading...' : ((editGallery ? editMainImage : selectedMainImage) ? 'Change Image' : 'Choose Image')}
+                        </Button>
                       </div>
                     </div>
-                    <div className="mb-4">
-                      <label className="font-semibold">Room Main Photo</label>
-                      <div className="border rounded p-4 bg-gray-50">
-                        <div className="text-center">
-                          {(editGallery ? editMainImage?.url : selectedMainImage?.url) ? (
-                            <div className="relative mb-3 inline-block">
+                  </div>
+                  {/* Sub Images */}
+                  <div className="mb-4">
+                    <label className="font-semibold">Room Sub Images</label>
+                    <div className="border rounded p-4 bg-gray-50">
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {(editGallery ? editSubImages : selectedSubImages).length > 0 ? (
+                          (editGallery ? editSubImages : selectedSubImages).map((img, idx) => (
+                            <div key={img.key || idx} className="relative inline-block group">
                               <img
-                                src={editGallery ? editMainImage?.url : selectedMainImage.url}
-                                alt="Preview"
-                                className="rounded object-contain mx-auto"
-                                style={{ maxHeight: '150px', display: 'block' }}
+                                src={img.url}
+                                alt={`Sub ${idx + 1}`}
+                                className="rounded object-contain"
+                                style={{ maxHeight: '100px', maxWidth: '100px', display: 'block' }}
                               />
                               <button
                                 type="button"
-                                className="absolute top-2 right-2 bg-red-500 text-white rounded-full px-2"
+                                className="absolute top-0 right-0 bg-red-500 text-white rounded-full px-2 text-md opacity-80 hover:opacity-100 group-hover:opacity-100"
+                                style={{ transform: 'translate(40%,-40%)' }}
                                 onClick={() => {
-                                  if (editGallery) setEditMainImage("");
-                                  else {
-                                    handleRemoveMainImageUpload();
+                                  if (editGallery) {
+                                    setEditSubImages(editSubImages.filter((s, i) => i !== idx));
+                                  } else {
+                                    handleRemoveSubImageUpload(idx);
                                   }
                                 }}
+                                aria-label={`Remove sub image ${idx + 1}`}
                               >
                                 ×
                               </button>
                             </div>
-                          ) : (
-                            <div
-                              className="upload-placeholder border border-dashed border-gray-400 rounded-lg p-6 bg-white cursor-pointer"
-                              onClick={handleFileUpload}
-                            >
-                              <div className="flex flex-col items-center">
-                                <span className="text-4xl">📷</span>
-                                <h5 className="mb-2">Browse Image</h5>
-                                <p className="text-md mb-0">From Drive</p>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                        <input
-                          type="file"
-                          id="imageUpload"
-                          className="hidden"
-                          accept="image/*"
-                          ref={imageInputRef}
-                          onChange={handleMainImageUpload}
-                        />
-                        <div className="text-center mt-3">
-                          <Button
-                            type="button"
-                            className="bg-gray-800 text-white px-4 py-2"
-                            onClick={handleFileUpload}
-                          >
-                            {imageUploading ? 'Uploading...' : ((editGallery ? editMainImage : selectedMainImage) ? 'Change Image' : 'Choose Image')}
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                    {/* Sub Images */}
-                    <div className="mb-4">
-                      <label className="font-semibold">Room Sub Images</label>
-                      <div className="border rounded p-4 bg-gray-50">
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          {(editGallery ? editSubImages : selectedSubImages).length > 0 ? (
-                            (editGallery ? editSubImages : selectedSubImages).map((img, idx) => (
-                              <div key={img.key || idx} className="relative inline-block group">
-                                <img
-                                  src={img.url}
-                                  alt={`Sub ${idx + 1}`}
-                                  className="rounded object-contain"
-                                  style={{ maxHeight: '100px', maxWidth: '100px', display: 'block' }}
-                                />
-                                <button
-                                  type="button"
-                                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full px-2 text-md opacity-80 hover:opacity-100 group-hover:opacity-100"
-                                  style={{ transform: 'translate(40%,-40%)' }}
-                                  onClick={() => {
-                                    if (editGallery) {
-                                      setEditSubImages(editSubImages.filter((s, i) => i !== idx));
-                                    } else {
-                                      handleRemoveSubImageUpload(idx);
-                                    }
-                                  }}
-                                  aria-label={`Remove sub image ${idx + 1}`}
-                                >
-                                  ×
-                                </button>
-                              </div>
-                            ))
-                          ) : (
-                            <span className="text-gray-400">No sub images selected.</span>
-                          )}
-                        </div>
-                        <input
-                          type="file"
-                          id="subImagesUpload"
-                          className="hidden"
-                          accept="image/*"
-                          multiple
-                          ref={subImagesInputRef}
-                          onChange={handleSubImagesUpload}
-                        />
-                        <div className="text-center mt-3">
-                          <Button
-                            type="button"
-                            className="bg-gray-800 text-white px-4 py-2"
-                            onClick={handleSubImagesUploadClick}
-                          >
-                            {subImagesUploading ? 'Uploading...' : ((editGallery ? editSubImages : selectedSubImages).length > 0 ? 'Add More Images' : 'Choose Images')}
-                          </Button>
-                          <div className="text-xs text-gray-500 mt-1">Max 10 images. Selected: {(editGallery ? editSubImages : selectedSubImages).length}</div>
-                        </div>
-                      </div>
-                      {/* Submit Button */}
-                      <div className="text-center">
-                        {editGallery ? (
-                          <>
-                            <Button type="submit" className="bg-green-600 px-5 font-semibold mt-3 mr-2">Update</Button>
-                            <Button type="button" className="bg-gray-400 px-5 font-semibold mt-3" onClick={() => setEditGallery(null)}>Cancel</Button>
-
-                          </>
+                          ))
                         ) : (
-                          <Button type="submit" className="bg-red-500 px-5 font-semibold mt-3">
-                            Save Data
-                          </Button>
+                          <span className="text-gray-400">No sub images selected.</span>
                         )}
                       </div>
+                      <input
+                        type="file"
+                        id="subImagesUpload"
+                        className="hidden"
+                        accept="image/*"
+                        multiple
+                        ref={subImagesInputRef}
+                        onChange={handleSubImagesUpload}
+                      />
+                      <div className="text-center mt-3">
+                        <Button
+                          type="button"
+                          className="bg-gray-800 text-white px-4 py-2"
+                          onClick={handleSubImagesUploadClick}
+                        >
+                          {subImagesUploading ? 'Uploading...' : ((editGallery ? editSubImages : selectedSubImages).length > 0 ? 'Add More Images' : 'Choose Images')}
+                        </Button>
+                        <div className="text-xs text-gray-500 mt-1">Max 10 images. Selected: {(editGallery ? editSubImages : selectedSubImages).length}</div>
+                      </div>
                     </div>
-                    <div className="flex gap-2 mt-2">
-                      {editMode && (
-                        <Button variant="outline" onClick={() => {
-                          setEditMode(false);
-                          setEditIndex(null);
-                          setTitle("");
-                          setDescription("");
-                          setSelectedMainImage(null);
-                          setSelectedSubImages([]);
-                        }}>Cancel</Button>
+                    {/* Submit Button */}
+                    <div className="text-center">
+                      {editGallery ? (
+                        <>
+                          <Button type="submit" className="bg-green-600 px-5 font-semibold mt-3 mr-2">Update</Button>
+                          <Button type="button" className="bg-gray-400 px-5 font-semibold mt-3" onClick={() => setEditGallery(null)}>Cancel</Button>
+
+                        </>
+                      ) : (
+                        <Button type="submit" className="bg-red-500 px-5 font-semibold mt-3">
+                          Save Data
+                        </Button>
                       )}
                     </div>
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    {editMode && (
+                      <Button variant="outline" onClick={() => {
+                        setEditMode(false);
+                        setEditIndex(null);
+                        setTitle("");
+                        setDescription("");
+                        setSelectedMainImage(null);
+                        setSelectedSubImages([]);
+                      }}>Cancel</Button>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </form>
     </div>
+      </form >
+    </div >
   );
 }
 

@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 const ProductReviewSchema = new mongoose.Schema({
-  product: {
+  room: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
+    ref: 'Room',
     required: true,
   },
   rating: {

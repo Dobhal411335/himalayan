@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const roomSchema = new mongoose.Schema({
   title: { type: String, required: true },
   slug: { type: String, required: true, unique: true },
+  active:{type:Boolean,default:true},
   code:{type:String,required:true},
   heading:{type:String},
   paragraph: { type: String },

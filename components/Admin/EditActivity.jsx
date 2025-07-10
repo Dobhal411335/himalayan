@@ -421,26 +421,28 @@ const EditActivity = ({ activityId }) => {
       </div>
       {/* Short Para */}
       <div className="mb-4">
-        <label className="block mb-1 font-semibold">Short Para</label>
-        {shortParaEditor && (
-          <>
-            <div className="flex gap-2 border-b pb-2 mb-2">
-              <button type="button" onClick={() => shortParaEditor.chain().focus().toggleBold().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('bold') ? 'bg-gray-200' : ''}`}><Bold className="w-4 h-4" /></button>
-              <button type="button" onClick={() => shortParaEditor.chain().focus().toggleItalic().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('italic') ? 'bg-gray-200' : ''}`}><Italic className="w-4 h-4" /></button>
-              <button type="button" onClick={() => shortParaEditor.chain().focus().toggleUnderline().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('underline') ? 'bg-gray-200' : ''}`}><UnderlineIcon className="w-4 h-4" /></button>
-              <button type="button" onClick={() => shortParaEditor.chain().focus().setParagraph().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('paragraph') ? 'bg-gray-200' : ''}`}><PilcrowSquare className="w-4 h-4" /></button>
-              <button type="button" onClick={() => shortParaEditor.chain().focus().toggleHeading({ level: 1 }).run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('heading', { level: 1 }) ? 'bg-gray-200' : ''}`}><Heading1 className="w-4 h-4" /></button>
-              <button type="button" onClick={() => shortParaEditor.chain().focus().toggleHeading({ level: 2 }).run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('heading', { level: 2 }) ? 'bg-gray-200' : ''}`}><Heading2 className="w-4 h-4" /></button>
-              <button type="button" onClick={() => shortParaEditor.chain().focus().toggleHeading({ level: 3 }).run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('heading', { level: 3 }) ? 'bg-gray-200' : ''}`}><Heading3 className="w-4 h-4" /></button>
-              <button type="button" onClick={() => shortParaEditor.chain().focus().toggleBulletList().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('bulletList') ? 'bg-gray-200' : ''}`}><List className="w-4 h-4" /></button>
-              <button type="button" onClick={() => shortParaEditor.chain().focus().toggleOrderedList().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('orderedList') ? 'bg-gray-200' : ''}`}><ListOrdered className="w-4 h-4" /></button>
-              <button type="button" onClick={() => shortParaEditor.chain().focus().toggleBlockquote().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('blockquote') ? 'bg-gray-200' : ''}`}><Quote className="w-4 h-4" /></button>
-              <button type="button" onClick={() => shortParaEditor.chain().focus().undo().run()} className="p-2 rounded-lg hover:bg-gray-100"><Undo className="w-4 h-4" /></button>
-              <button type="button" onClick={() => shortParaEditor.chain().focus().redo().run()} className="p-2 rounded-lg hover:bg-gray-100"><Redo className="w-4 h-4" /></button>
-            </div>
-            <EditorContent editor={shortParaEditor} />
-          </>
-        )}
+        <label className="block mb-1 font-semibold">Short Paragraph </label>
+        <div className="border rounded mt-1 px-3 py-2 bg-white">
+          {shortParaEditor && (
+            <>
+              <div className="flex gap-2 pb-2 mb-2">
+                <button type="button" onClick={() => shortParaEditor.chain().focus().toggleBold().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('bold') ? 'bg-gray-200' : ''}`}><Bold className="w-4 h-4" /></button>
+                <button type="button" onClick={() => shortParaEditor.chain().focus().toggleItalic().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('italic') ? 'bg-gray-200' : ''}`}><Italic className="w-4 h-4" /></button>
+                <button type="button" onClick={() => shortParaEditor.chain().focus().toggleUnderline().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('underline') ? 'bg-gray-200' : ''}`}><UnderlineIcon className="w-4 h-4" /></button>
+                <button type="button" onClick={() => shortParaEditor.chain().focus().setParagraph().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('paragraph') ? 'bg-gray-200' : ''}`}><PilcrowSquare className="w-4 h-4" /></button>
+                <button type="button" onClick={() => shortParaEditor.chain().focus().toggleHeading({ level: 1 }).run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('heading', { level: 1 }) ? 'bg-gray-200' : ''}`}><Heading1 className="w-4 h-4" /></button>
+                <button type="button" onClick={() => shortParaEditor.chain().focus().toggleHeading({ level: 2 }).run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('heading', { level: 2 }) ? 'bg-gray-200' : ''}`}><Heading2 className="w-4 h-4" /></button>
+                <button type="button" onClick={() => shortParaEditor.chain().focus().toggleHeading({ level: 3 }).run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('heading', { level: 3 }) ? 'bg-gray-200' : ''}`}><Heading3 className="w-4 h-4" /></button>
+                <button type="button" onClick={() => shortParaEditor.chain().focus().toggleBulletList().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('bulletList') ? 'bg-gray-200' : ''}`}><List className="w-4 h-4" /></button>
+                <button type="button" onClick={() => shortParaEditor.chain().focus().toggleOrderedList().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('orderedList') ? 'bg-gray-200' : ''}`}><ListOrdered className="w-4 h-4" /></button>
+                <button type="button" onClick={() => shortParaEditor.chain().focus().toggleBlockquote().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${shortParaEditor.isActive('blockquote') ? 'bg-gray-200' : ''}`}><Quote className="w-4 h-4" /></button>
+                <button type="button" onClick={() => shortParaEditor.chain().focus().undo().run()} className="p-2 rounded-lg hover:bg-gray-100"><Undo className="w-4 h-4" /></button>
+                <button type="button" onClick={() => shortParaEditor.chain().focus().redo().run()} className="p-2 rounded-lg hover:bg-gray-100"><Redo className="w-4 h-4" /></button>
+              </div>
+              <EditorContent editor={shortParaEditor} />
+            </>
+          )}
+        </div>
       </div>
       {/* Third Title Tag Line */}
       <div className="mb-4">
@@ -450,9 +452,10 @@ const EditActivity = ({ activityId }) => {
       {/* Third Paragraph */}
       <div className="mb-4">
         <label className="block mb-1 font-semibold">Third Paragraph</label>
+        <div className="border rounded mt-1 px-3 py-2 bg-white">  
         {thirdParaEditor && (
           <>
-            <div className="flex gap-2 border-b pb-2 mb-2">
+            <div className="flex gap-2 pb-2 mb-2">
               <button type="button" onClick={() => thirdParaEditor.chain().focus().toggleBold().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${thirdParaEditor.isActive('bold') ? 'bg-gray-200' : ''}`}><Bold className="w-4 h-4" /></button>
               <button type="button" onClick={() => thirdParaEditor.chain().focus().toggleItalic().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${thirdParaEditor.isActive('italic') ? 'bg-gray-200' : ''}`}><Italic className="w-4 h-4" /></button>
               <button type="button" onClick={() => thirdParaEditor.chain().focus().toggleUnderline().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${thirdParaEditor.isActive('underline') ? 'bg-gray-200' : ''}`}><UnderlineIcon className="w-4 h-4" /></button>
@@ -469,6 +472,7 @@ const EditActivity = ({ activityId }) => {
             <EditorContent editor={thirdParaEditor} />
           </>
         )}
+        </div>
       </div>
       {/* Type Video URL */}
       <div className="mb-4">
@@ -567,9 +571,9 @@ const EditActivity = ({ activityId }) => {
       {/* Long Paragraph Tag Line */}
       <div className="mb-4">
         <label className="block mb-1 font-semibold">Long Paragraph Tag Line</label>
-        {longParaEditor && (
+        <div className="border rounded mt-1 px-3 py-2 bg-white">{longParaEditor && (
           <>
-            <div className="flex gap-2 border-b pb-2 mb-2">
+            <div className="flex gap-2 pb-2 mb-2">
               <button type="button" onClick={() => longParaEditor.chain().focus().toggleBold().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${longParaEditor.isActive('bold') ? 'bg-gray-200' : ''}`}><Bold className="w-4 h-4" /></button>
               <button type="button" onClick={() => longParaEditor.chain().focus().toggleItalic().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${longParaEditor.isActive('italic') ? 'bg-gray-200' : ''}`}><Italic className="w-4 h-4" /></button>
               <button type="button" onClick={() => longParaEditor.chain().focus().toggleUnderline().run()} className={`p-2 rounded-lg hover:bg-gray-100 ${longParaEditor.isActive('underline') ? 'bg-gray-200' : ''}`}><UnderlineIcon className="w-4 h-4" /></button>
@@ -585,7 +589,8 @@ const EditActivity = ({ activityId }) => {
             </div>
             <EditorContent editor={longParaEditor} />
           </>
-        )}
+        )}</div>
+
       </div>
       {/* Data Save Button */}
       <button type="submit" className="w-full bg-green-800 text-white font-bold py-3 rounded mt-6 text-lg">Data Save</button>

@@ -1,19 +1,19 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/connectDB';
 import ProductReview from '@/models/ProductReview';
-import Product from "@/models/Product";
+import Room from "@/models/Room";
 import { deleteFileFromCloudinary } from "@/utils/cloudinary";
 
 // POST: Add a new product review
 export async function POST(req) {
   await connectDB();
   try {
-    const { productId, rating, title, review, createdBy, image } = await req.json();
-    if (!productId || !rating || !title || !review || !createdBy) {
+    const { roomId, rating, title, review, createdBy, image } = await req.json();
+    if (!roomId || !rating || !title || !review || !createdBy) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
     const reviewDoc = await ProductReview.create({
-      product: productId,
+      room: roomId,
       rating,
       title,
       review,
@@ -21,7 +21,7 @@ export async function POST(req) {
       image
     });
     // Push review _id to Product's reviews array
-    await Product.findByIdAndUpdate(productId, { $push: { reviews: reviewDoc._id } });
+    await Room.findByIdAndUpdate(roomId, { $push: { reviews: reviewDoc._id } });
     return NextResponse.json({ success: true, review: reviewDoc });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -31,11 +31,11 @@ export async function POST(req) {
 export async function PATCH(req) {
   await connectDB();
   try {
-    const { reviewId, productId, rating, title, review, image } = await req.json();
-    if (!reviewId || !productId) {
-      return NextResponse.json({ error: 'Missing reviewId or productId' }, { status: 400 });
+    const { reviewId, roomId, rating, title, review, image, createdBy } = await req.json();
+    if (!reviewId || !roomId) {
+      return NextResponse.json({ error: 'Missing reviewId or roomId' }, { status: 400 });
     }
-    
+
     // Get existing review
     const existingReview = await ProductReview.findById(reviewId);
     if (!existingReview) {
@@ -44,11 +44,6 @@ export async function PATCH(req) {
 
     // Handle image update if new image is provided and different
     if (image && image.url && image.key) {
-      // Delete old image if it exists and is different
-      if (existingReview.image?.key && image.key !== existingReview.image.key) {
-        await deleteFileFromCloudinary(existingReview.image.key);
-      }
-      // Update with new image
       await ProductReview.findByIdAndUpdate(reviewId, {
         image: {
           url: image.url,
@@ -68,7 +63,7 @@ export async function PATCH(req) {
         rating,
         title,
         review,
-        
+        createdBy,
         updatedAt: new Date()
       },
       { new: true }
@@ -83,13 +78,13 @@ export async function PATCH(req) {
 export async function DELETE(req) {
   await connectDB();
   try {
-    const { reviewId, productId } = await req.json();
-    if (!reviewId || !productId) {
-      return NextResponse.json({ error: 'Missing reviewId or productId' }, { status: 400 });
+    const { roomId } = await req.json();
+    if (!roomId) {
+      return NextResponse.json({ error: 'Missing roomId' }, { status: 400 });
     }
 
     // Find the review
-    const review = await ProductReview.findById(reviewId);
+    const review = await ProductReview.findById(roomId);
     if (!review) {
       return NextResponse.json({ error: 'Review not found' }, { status: 404 });
     }
@@ -105,10 +100,10 @@ export async function DELETE(req) {
     }
 
     // Remove review from Product's reviews array
-    await Product.findByIdAndUpdate(productId, { $pull: { reviews: reviewId } });
+    await Room.findByIdAndUpdate(roomId, { $pull: { reviews: roomId } });
 
     // Delete the review
-    await ProductReview.findByIdAndDelete(reviewId);
+    await ProductReview.findByIdAndDelete(roomId);
 
     return NextResponse.json({ success: true, message: 'Review deleted successfully' });
   } catch (err) {
@@ -121,12 +116,12 @@ export async function GET(req) {
   await connectDB();
   try {
     const { searchParams } = new URL(req.url);
-    const productId = searchParams.get('productId');
-    if (!productId) {
-      return NextResponse.json({ error: 'Missing productId' }, { status: 400 });
+    const roomId = searchParams.get('roomId');
+    if (!roomId) {
+      return NextResponse.json({ error: 'Missing roomId' }, { status: 400 });
     }
     // Only fetch approved reviews
-    const reviews = await ProductReview.find({ product: productId, approved: true }).sort({ createdAt: -1 });
+    const reviews = await ProductReview.find({ room: roomId}).sort({ createdAt: -1 });
     return NextResponse.json({ reviews });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });

@@ -8,53 +8,24 @@ import toast from "react-hot-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTrigger, DialogTitle } from '@/components/ui/dialog';
 import { Trash2, Plus } from "lucide-react";
 const QuantityManagement = ({ roomData, roomId }) => {
-  // Remove a row by index, but always keep at least one row
-  const handleRemoveRow = (idx) => {
-    setRows(rows => rows.length > 1 ? rows.filter((_, i) => i !== idx) : rows);
-  };
 
-  const [rows, setRows] = useState([
-    { size: '', price: '', qty: '', color: '', weight: '' }
-  ]);
-  const [sizes, setSizes] = useState([]); // fetched from API
-  const [allColors, setAllColors] = useState([]); // fetched from API
+  const [selectedPax, setSelectedPax] = useState(); // Only one of 01 or 02 Pax
+  const [showExtraBed, setShowExtraBed] = useState(false);
+  const [prices, setPrices] = useState({
+    "01 Pax": { price: '', oldPrice: '', cgst: '', sgst: '' },
+    "02 Pax": { price: '', oldPrice: '', cgst: '', sgst: '' },
+    "Extra Bed": { price: '', oldPrice: '', cgst: '', sgst: '' }
+  });
+  const [editablePax, setEditablePax] = useState("01 Pax");
 
-  useEffect(() => {
-    if (!roomId) return;
-    // Fetch sizes
-    fetch(`/api/productSize?product=${roomId}`)
-      .then(async res => {
-        if (!res.ok) { setSizes([]); return; }
-        const data = await res.json();
-        setSizes(Array.isArray(data?.sizes) ? data.sizes : []);
-      })
-      .catch(() => setSizes([]));
-    // Fetch colors
-    fetch(`/api/productColor?product=${roomId}`)
-      .then(async res => {
-        if (!res.ok) { setAllColors([]); return; }
-        const data = await res.json();
-        setAllColors(Array.isArray(data?.colors) ? data.colors : []);
-      })
-      .catch(() => setAllColors([]));
 
-  }, [roomId]);
 
   const roomName = roomData?.title || "";
 
-  const handleRowChange = (idx, field, value) => {
-    setRows(rows => rows.map((row, i) => i === idx ? { ...row, [field]: value } : row));
-  }; // qty now supported
-
-  const handleAddRow = () => {
-    setRows(rows => [...rows, { size: '', price: '', qty: '', color: '', weight: '' }]);
-  };
 
   const [saving, setSaving] = useState(false);
   const [allQuantities, setAllQuantities] = useState([]);
-  const [viewDialog, setViewDialog] = useState({ open: false, data: null });
   const [editMode, setEditMode] = useState(false);
-  const [deleteDialog, setDeleteDialog] = useState({ open: false, id: null });
 
   // Fetch quantity records for the current product only
   const fetchQuantities = async () => {
@@ -73,31 +44,70 @@ const QuantityManagement = ({ roomData, roomId }) => {
     }
   };
 
-  useEffect(() => { fetchQuantities(); }, []);
+  // Fetch RoomPrice data and populate form fields
+  useEffect(() => {
+    async function fetchRoomPrice() {
+      if (!roomId) return;
+      try {
+        const res = await fetch(`/api/productQuantity?product=${roomId}`);
+        const data = await res.json();
+        if (data && Array.isArray(data.prices)) {
+          const newPrices = {
+            "01 Pax": { price: '', oldPrice: '', cgst: '', sgst: '' },
+            "02 Pax": { price: '', oldPrice: '', cgst: '', sgst: '' },
+            "Extra Bed": { price: '', oldPrice: '', cgst: '', sgst: '' }
+          };
+          data.prices.forEach(p => {
+            if (p.type === "01 Pax" || p.type === "02 Pax" || p.type === "Extra Bed") {
+              newPrices[p.type] = {
+                price: p.amount?.toString() ?? '',
+                oldPrice: p.oldPrice?.toString() ?? '',
+                cgst: p.cgst?.toString() ?? '',
+                sgst: p.sgst?.toString() ?? ''
+              }
+            }
+          });
+          setPrices(newPrices);
+          setShowExtraBed(!!data.prices.find(p => p.type === "Extra Bed"));
+        }
+      } catch (err) {
+        // Optionally handle error
+      }
+    }
+    fetchRoomPrice();
+  }, [roomId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     try {
-      // Convert table rows to variants
-      const variants = rows.map(row => {
-        let sizeValue = row.size;
-        if (Array.isArray(sizes)) {
-          const found = sizes.find(s => (typeof s === 'object' ? (s._id === row.size || s.label === row.size) : s === row.size));
-          if (found) sizeValue = found.label || found.name || found._id || found;
-        }
-        return {
-          size: sizeValue,
-          color: row.color,
-          price: Number(row.price),
-          qty: Number(row.qty),
-          weight: Number(row.weight),
-          optional: false // Default optional as false (customize as needed)
-        };
-      });
+      // Prepare variants for RoomPrice model: type, price, oldPrice, cgst, sgst
+      const variants = [
+        {
+          type: "01 Pax",
+          amount: prices["01 Pax"].price ? Number(prices["01 Pax"].price) : 0,
+          oldPrice: prices["01 Pax"].oldPrice ? Number(prices["01 Pax"].oldPrice) : 0,
+          cgst: prices["01 Pax"].cgst ? Number(prices["01 Pax"].cgst) : 0,
+          sgst: prices["01 Pax"].sgst ? Number(prices["01 Pax"].sgst) : 0,
+        },
+        {
+          type: "02 Pax",
+          amount: prices["02 Pax"].price ? Number(prices["02 Pax"].price) : 0,
+          oldPrice: prices["02 Pax"].oldPrice ? Number(prices["02 Pax"].oldPrice) : 0,
+          cgst: prices["02 Pax"].cgst ? Number(prices["02 Pax"].cgst) : 0,
+          sgst: prices["02 Pax"].sgst ? Number(prices["02 Pax"].sgst) : 0,
+        },
+        ...(showExtraBed ? [{
+          type: "Extra Bed",
+          amount: prices["Extra Bed"].price ? Number(prices["Extra Bed"].price) : 0,
+          oldPrice: prices["Extra Bed"].oldPrice ? Number(prices["Extra Bed"].oldPrice) : 0,
+          cgst: prices["Extra Bed"].cgst ? Number(prices["Extra Bed"].cgst) : 0,
+          sgst: prices["Extra Bed"].sgst ? Number(prices["Extra Bed"].sgst) : 0,
+        }] : [])
+      ];
       const payload = {
-        product: roomId,
-        variants
+        room: roomId,
+        prices: variants
       };
       const res = await fetch('/api/productQuantity', {
         method: 'POST',
@@ -109,7 +119,6 @@ const QuantityManagement = ({ roomData, roomId }) => {
         throw new Error(error.error || 'Failed to save quantity');
       }
       toast.success(editMode ? 'Quantity data updated successfully' : 'Quantity data saved successfully');
-      setRows([{ size: '', price: '', color: '', }]); // clear form
       setEditMode(false);
       fetchQuantities();
     } catch (err) {
@@ -119,46 +128,11 @@ const QuantityManagement = ({ roomData, roomId }) => {
     }
   };
 
-  // Edit
-  const handleEdit = (record) => {
-    setRows(record.variants.map(v => {
-      let sizeValue = v.size;
-      if (Array.isArray(sizes)) {
-        // Try to find the object whose label or name matches v.size, and use its _id
-        const found = sizes.find(s => (typeof s === 'object' ? (s.label === v.size || s.name === v.size) : s === v.size));
-        if (found && found._id) sizeValue = found._id;
-      }
-      return {
-        size: sizeValue || '',
-        price: v.price || '',
-        qty: v.qty || '',
-        color: v.color || '',
-        weight: v.weight || '',
-      };
-    }));
-    setEditMode(true);
-  };
-
 
   // Cancel edit
   const handleCancelEdit = () => {
     setRows([{ size: '', price: '', qty: '', color: '', weight: '' }]);
     setEditMode(false);
-  };
-
-  // Delete
-  const handleDelete = async () => {
-    if (!deleteDialog.id) return;
-    try {
-      // Include productId in the DELETE request so backend can clear Product.quantity
-      const res = await fetch(`/api/productQuantity?id=${deleteDialog.id}&productId=${roomId}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Failed to delete');
-      toast.success('Deleted successfully');
-      setDeleteDialog({ open: false, id: null });
-      fetchQuantities();
-    } catch {
-      toast.error('Failed to delete');
-    }
   };
   // --- FORM ---
   const form = (
@@ -176,79 +150,193 @@ const QuantityManagement = ({ roomData, roomId }) => {
           />
           {!roomName && (
             <div style={{ color: 'red', marginTop: '4px', fontWeight: 'bold' }}>
-              Room name not found! 
+              Room name not found!
             </div>
           )}
         </div>
         <h5 className="font-semibold mb-2 text-center text-xl">Room Price Table</h5>
+        <div className="flex gap-4 mb-2">
+          <label>
+            <input
+              type="radio"
+              name="editablePax"
+              checked={editablePax === "01 Pax"}
+              onChange={() => setEditablePax("01 Pax")}
+            />
+            01 Pax
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="editablePax"
+              checked={editablePax === "02 Pax"}
+              onChange={() => setEditablePax("02 Pax")}
+            />
+            02 Pax
+          </label>
+          <div className="flex items-center gap-2 ml-8">
+            <label htmlFor="extrabed-switch">Extra Bed</label>
+            <input
+              id="extrabed-switch"
+              type="checkbox"
+              checked={showExtraBed}
+              onChange={e => setShowExtraBed(e.target.checked)}
+            />
+          </div>
+        </div>
         <div className="overflow-x-auto">
           <table className="min-w-full border text-sm">
             <thead>
               <tr>
+                <th className="border px-2 py-1 text-center">Price For</th>
                 <th className="border px-2 py-1 text-center">New Price</th>
                 <th className="border px-2 py-1 text-center">Old Price</th>
                 <th className="border px-2 py-1 text-center">CGST Tax (%)</th>
                 <th className="border px-2 py-1 text-center">SGST Tax (%)</th>
-                <th className="border px-2 py-1 text-center">Action</th>
               </tr>
             </thead>
             <tbody>
-              {rows.map((row, idx) => (
-                <tr key={idx}>
-                  <td className="border px-2 py-1"><div className="flex justify-center">
+              {/* Only one of 01 Pax or 02 Pax */}
+              <tr>
+                <td className="border px-2 py-1 text-center">01 Pax</td>
+                <td className="border px-2 py-1 text-center">
+                  <Input
+                    type="number"
+                    min={0}
+                    className="w-32 bg-gray-100 rounded"
+                    placeholder="New Price"
+                    value={prices["01 Pax"].price}
+                    onChange={e => setPrices(p => ({ ...p, ["01 Pax"]: { ...p["01 Pax"], price: e.target.value } }))}
+                    disabled={editablePax !== "01 Pax"}
+                  />
+                </td>
+                <td className="border px-2 py-1 text-center">
+                  <Input
+                    type="number"
+                    min={0}
+                    className="w-32 bg-gray-100 rounded"
+                    placeholder="Old Price"
+                    value={prices["01 Pax"].oldPrice}
+                    onChange={e => setPrices(p => ({ ...p, ["01 Pax"]: { ...p["01 Pax"], oldPrice: e.target.value } }))}
+                    disabled={editablePax !== "01 Pax"}
+                  />
+                </td>
+                <td className="border px-2 py-1 text-center">
+                  <Input
+                    type="number"
+                    min={0}
+                    className="w-24 bg-gray-100 rounded"
+                    placeholder="CGST %"
+                    value={prices["01 Pax"].cgst}
+                    onChange={e => setPrices(p => ({ ...p, ["01 Pax"]: { ...p["01 Pax"], cgst: e.target.value } }))}
+                    disabled={editablePax !== "01 Pax"}
+                  />
+                </td>
+                <td className="border px-2 py-1 text-center">
+                  <Input
+                    type="number"
+                    min={0}
+                    className="w-24 bg-gray-100 rounded"
+                    placeholder="SGST %"
+                    value={prices["01 Pax"].sgst}
+                    onChange={e => setPrices(p => ({ ...p, ["01 Pax"]: { ...p["01 Pax"], sgst: e.target.value } }))}
+                    disabled={editablePax !== "01 Pax"}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td className="border px-2 py-1 text-center">02 Pax</td>
+                <td className="border px-2 py-1 text-center">
+                  <Input
+                    type="number"
+                    min={0}
+                    className="w-32 bg-gray-100 rounded"
+                    placeholder="New Price"
+                    value={prices["02 Pax"].price}
+                    onChange={e => setPrices(p => ({ ...p, ["02 Pax"]: { ...p["02 Pax"], price: e.target.value } }))}
+                    disabled={editablePax !== "02 Pax"}
+                  />
+                </td>
+                <td className="border px-2 py-1 text-center">
+                  <Input
+                    type="number"
+                    min={0}
+                    className="w-32 bg-gray-100 rounded"
+                    placeholder="Old Price"
+                    value={prices["02 Pax"].oldPrice}
+                    onChange={e => setPrices(p => ({ ...p, ["02 Pax"]: { ...p["02 Pax"], oldPrice: e.target.value } }))}
+                    disabled={editablePax !== "02 Pax"}
+                  />
+                </td>
+                <td className="border px-2 py-1 text-center">
+                  <Input
+                    type="number"
+                    min={0}
+                    className="w-24 bg-gray-100 rounded"
+                    placeholder="CGST %"
+                    value={prices["02 Pax"].cgst}
+                    onChange={e => setPrices(p => ({ ...p, ["02 Pax"]: { ...p["02 Pax"], cgst: e.target.value } }))}
+                    disabled={editablePax !== "02 Pax"}
+                  />
+                </td>
+                <td className="border px-2 py-1 text-center">
+                  <Input
+                    type="number"
+                    min={0}
+                    className="w-24 bg-gray-100 rounded"
+                    placeholder="SGST %"
+                    value={prices["02 Pax"].sgst}
+                    onChange={e => setPrices(p => ({ ...p, ["02 Pax"]: { ...p["02 Pax"], sgst: e.target.value } }))}
+                    disabled={editablePax !== "02 Pax"}
+                  />
+                </td>
+              </tr>
+              {showExtraBed && (
+                <tr>
+                  <td className="border px-2 py-1 text-center">Extra Bed</td>
+                  <td className="border px-2 py-1 text-center">
                     <Input
                       type="number"
                       min={0}
                       className="w-32 bg-gray-100 rounded"
                       placeholder="New Price"
-                      value={row.price ?? ''}
-                      onChange={e => handleRowChange(idx, 'price', e.target.value)}
+                      value={prices["Extra Bed"].price}
+                      onChange={e => setPrices(p => ({ ...p, ["Extra Bed"]: { ...p["Extra Bed"], price: e.target.value } }))}
                     />
-                  </div></td>
-                  <td className="border px-2 py-1"><div className="flex justify-center">
-                    <Input
-                      type="number"
-                      min={0}
-                      className="w-24 bg-gray-50 rounded"
-                      placeholder="Old Price"
-                      value={row.qty ?? ''}
-                      onChange={e => handleRowChange(idx, 'qty', e.target.value)}
-                    />
-                  </div></td>
-                  <td className="border px-2 py-1"><div className="flex justify-center">
+                  </td>
+                  <td className="border px-2 py-1 text-center">
                     <Input
                       type="number"
                       min={0}
                       className="w-32 bg-gray-100 rounded"
-                      placeholder="CGST Tax (%)"
-                      value={row.price ?? ''}
-                      onChange={e => handleRowChange(idx, 'price', e.target.value)}
+                      placeholder="Old Price"
+                      value={prices["Extra Bed"].oldPrice}
+                      onChange={e => setPrices(p => ({ ...p, ["Extra Bed"]: { ...p["Extra Bed"], oldPrice: e.target.value } }))}
                     />
-                  </div></td>
-                  <td className="border px-2 py-1"><div className="flex justify-center">
+                  </td>
+                  <td className="border px-2 py-1 text-center">
                     <Input
                       type="number"
                       min={0}
-                      className="w-24 bg-gray-50 rounded"
-                      placeholder="SGST Tax (%)"
-                      value={row.qty ?? ''}
-                      onChange={e => handleRowChange(idx, 'qty', e.target.value)}
+                      className="w-24 bg-gray-100 rounded"
+                      placeholder="CGST %"
+                      value={prices["Extra Bed"].cgst}
+                      onChange={e => setPrices(p => ({ ...p, ["Extra Bed"]: { ...p["Extra Bed"], cgst: e.target.value } }))}
                     />
-                  </div></td>
-                  <td className="border px-2 py-1 text-center"><div className="flex justify-center gap-2">
-                    {idx === rows.length - 1 && (
-                      <Button type="button" className="bg-green-500 font-bold px-3 py-1 flex items-center justify-center gap-1" onClick={handleAddRow}>
-                        <Plus size={18} />
-                      </Button>
-                    )}
-                    {rows.length > 1 && (
-                      <Button type="button" className="bg-red-500 font-bold px-3 py-1 flex items-center justify-center" onClick={() => handleRemoveRow(idx)}>
-                        <Trash2 size={18} />
-                      </Button>
-                    )}
-                  </div></td>
+                  </td>
+                  <td className="border px-2 py-1 text-center">
+                    <Input
+                      type="number"
+                      min={0}
+                      className="w-24 bg-gray-100 rounded"
+                      placeholder="SGST %"
+                      value={prices["Extra Bed"].sgst}
+                      onChange={e => setPrices(p => ({ ...p, ["Extra Bed"]: { ...p["Extra Bed"], sgst: e.target.value } }))}
+                    />
+                  </td>
                 </tr>
-              ))}
+              )}
+             
             </tbody>
           </table>
         </div>
@@ -260,93 +348,12 @@ const QuantityManagement = ({ roomData, roomId }) => {
         </div>
       </div>
     </form>
-  );
+  )
 
-  const table = (
-    <div className="w-full mt-10">
-      <h4 className="font-bold mb-2 text-lg">All Room Price</h4>
-      <div className="overflow-x-auto">
-        <table className="min-w-full border text-sm">
-          <thead>
-            <tr>
-              <th className="border px-2 py-1 text-center">S.No</th>
-              <th className="border px-2 py-1 text-center">Room Name</th>
-              <th className="border px-2 py-1 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allQuantities.map((q, i) => (
-              <tr key={q._id}>
-                <td className="border px-2 py-1 text-center">{i + 1}</td>
-                <td className="border px-2 py-1 text-center">{productName || '-'}</td>
-                <td className="border px-2 py-1 text-center flex flex-wrap gap-2 justify-center">
-                  {/* View Dialog Trigger */}
-                  <Dialog open={viewDialog.open && viewDialog.data?._id === q._id} onOpenChange={open => setViewDialog(open ? { open: true, data: q } : { open: false, data: null })}>
-                    <DialogTrigger asChild>
-                      <Button size="sm" className="bg-blue-500 text-white">View</Button>
-                    </DialogTrigger>
-                    <DialogContent style={{ maxWidth: 650 }}>
-                      <DialogTitle>Product Quantity Details</DialogTitle>
-                      <div className="bg-gray-50 rounded p-4 mb-2">
-                        <div><b>Product:</b> {productName || '-'}</div>
-                        <div className="mt-2">
-                          <b className=''>Variants:</b>
-                          <div className="flex flex-col gap-2 items-start justify-center mt-2">
-                            {q.variants.map((v, idx) => {
-                              // Try to find the size label from sizes array
-                              let sizeLabel = v.size;
-                              if (Array.isArray(sizes)) {
-                                const found = sizes.find(s => (typeof s === 'object' ? (s._id === v.size || s.label === v.size) : s === v.size));
-                                if (found) sizeLabel = found.label || found.name || found._id || found;
-                              }
-                              return (
-                                <div key={idx} className="flex flex-wrap gap-2 ">
-                                  <span className="bg-gray-200 rounded px-2 py-1 font-medium">Size: {sizeLabel}</span>
-                                  <span className="bg-blue-100 rounded px-2 py-1 font-medium">Price: ₹{v.price}</span>
-                                  <span className="bg-green-100 rounded px-2 py-1 font-medium">Qty: {v.qty}</span>
-                                  <span className="bg-yellow-100 rounded px-2 py-1 font-medium">Color: {v.color}</span>
-                                  <span className="bg-yellow-100 rounded px-2 py-1 font-medium">Weight: {v.weight}</span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                  {/* Edit Button */}
-                  <Button size="sm" className="bg-yellow-500 text-white" onClick={() => handleEdit(q)}>
-                    Edit
-                  </Button>
-                  {/* Delete Dialog Trigger */}
-                  <Dialog open={deleteDialog.open && deleteDialog.id === q._id} onOpenChange={open => setDeleteDialog(open ? { open: true, id: q._id } : { open: false, id: null })}>
-                    <DialogTrigger asChild>
-                      <Button size="sm" className="bg-red-500 text-white">Delete</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Delete Quantity</DialogTitle>
-                      </DialogHeader>
-                      <p>Are you sure you want to delete this quantity record?</p>
-                      <div className="flex gap-4 mt-4 justify-end">
-                        <Button variant="secondary" onClick={() => setDeleteDialog({ open: false, id: null })}>Cancel</Button>
-                        <Button variant="destructive" onClick={handleDelete}>Delete</Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
 
   return (
     <div className="flex flex-col items-center w-full">
       {form}
-      {table}
     </div>
   );
 };
