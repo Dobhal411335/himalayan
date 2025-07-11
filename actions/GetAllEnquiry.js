@@ -2,7 +2,7 @@
 
 import connectDB from "@/lib/connectDB";
 import Enquiry from "@/models/Enquiry";
-import Package from "@/models/Package";
+import Packages from "@/models/Packages";
 
 export async function GetAllEnquiry() {
     await connectDB();

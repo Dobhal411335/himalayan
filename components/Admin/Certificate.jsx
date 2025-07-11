@@ -288,11 +288,11 @@ const Certificate = ({ artisanId, artisanDetails = null }) => {
       <div className="container-fluid">
         <div className="row justify-center">
           <div className="w-full max-w-5xl mx-auto">
-            <h3 className="my-4 text-center font-bold text-2xl">Create Artisan Certificate</h3>
+            <h3 className="my-4 text-center font-bold text-2xl">Create Team Person Certificate</h3>
             <div className="bg-white rounded shadow p-6 mb-6">
               <form id="certificateForm" onSubmit={handleSubmit}>
                 <div className="mb-4">
-                  <label className="block font-semibold mb-1">Artisan User</label>
+                  <label className="block font-semibold mb-1">Team Person User</label>
                   <input
                     type="text"
                     className="w-full border rounded px-3 py-2 bg-gray-100"
@@ -305,7 +305,7 @@ const Certificate = ({ artisanId, artisanDetails = null }) => {
                         })()
                     }
                     readOnly
-                    placeholder="Artisan Name"
+                    placeholder="Team Person Name"
                   />
                 </div>
                 <div className="mb-3">

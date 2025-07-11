@@ -50,20 +50,20 @@ const data = {
     },
     { divider: true },
     {
-      name: "Create Experts",
-      url: "/admin/create_instructor",
+      name: "Create Team",
+      url: "/admin/create_team",
       icon: User,
     },
     {
-      name: "View / Edit Experts",
-      url: "/admin/edit_instructor",
+      name: "View / Edit Team",
+      url: "/admin/edit_team",
       icon: User,
     },
     { divider: true },
 
     {
       name: "Add Direct Packages",
-      url: "/admin/add_direct_product",
+      url: "/admin/add_direct_packages",
       icon: Plus,
     },
     { divider: true },
@@ -140,8 +140,8 @@ const data = {
       icon: MenuIcon,
     },
     {
-      name: "Manage Rooms & Category",
-      url: "/admin/manage_rooms_category",
+      name: "Manage Packages & Category",
+      url: "/admin/manage_packages_category",
       icon: Boxes,
     },
     {

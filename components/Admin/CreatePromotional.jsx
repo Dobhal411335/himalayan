@@ -67,31 +67,6 @@ const CreatePromotional = ({ artisanId, artisanDetails = null }) => {
       setUploadProgress(0);
     }
   };
-
-  // Handler to remove uploaded image and delete from Cloudinary
-  const handleRemoveImageUpload = async () => {
-    if (imageObj && imageObj.key) {
-      toast.loading('Deleting image from Cloudinary...', { id: 'cloud-delete-promo' });
-      try {
-        const res = await fetch('/api/cloudinary', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ publicId: imageObj.key }),
-        });
-        const data = await res.json();
-        if (res.ok) {
-          toast.success('Image deleted from Cloudinary!', { id: 'cloud-delete-promo' });
-        } else {
-          toast.error('Cloudinary error: ' + (data.error || 'Failed to delete image'), { id: 'cloud-delete-promo' });
-        }
-      } catch (err) {
-        toast.error('Failed to delete image from Cloudinary (network or server error)', { id: 'cloud-delete-promo' });
-      }
-    }
-    setImageObj({ url: '', key: '' });
-    setImagePreview(null);
-  };
-
   // Modal state for view, edit, delete
   const [showViewModal, setShowViewModal] = useState(false);
 
@@ -289,7 +264,7 @@ const CreatePromotional = ({ artisanId, artisanDetails = null }) => {
             <Input type="text" value={title} placeholder="Review Title" onChange={e => setTitle(e.target.value)} required />
           </div>
           <div>
-            <label className="block font-semibold mb-1">Artisan User</label>
+            <label className="block font-semibold mb-1">Team Person User</label>
             <Input
               type="text"
               className="w-full border rounded p-2 bg-gray-100"

@@ -1,7 +1,7 @@
 import connectDB from "@/lib/connectDB";
 import { NextResponse } from "next/server";
 import MenuBar from "@/models/MenuBar";
-import Product from "@/models/Product";
+import Packages from "@/models/Packages"
 import { deleteFileFromCloudinary } from "@/utils/cloudinary";
 
 export async function POST(req) {

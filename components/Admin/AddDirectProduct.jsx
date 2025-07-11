@@ -1,31 +1,28 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import ProductGallery from './ProductGallery';
-// import ProductInfo from './RoomInfo';
+import ProductInfo from './ProductInfo';
 import CategoryTag from './CategoryTag';
 import ProductReview from './ProductReview';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import ColorManagement from './ColorManagement';
 import VideoManagement from './VideoManagement';
 import ProductDescription from './ProductDescription';
-import SizeManagement from './SizeManagement';
 import QuantityManagement from './QuantityManagement';
 import ApplyCoupon from './ApplyCoupon';
 import ApplyTax from './ApplyTax';
-import ProductTagLine from './ProductTagLine';
-import { ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Amenities from './Amenities';
-
-const AddDirectProduct = ({ roomId }) => {
+import PackagePdf from "./PackagePdf"
+const AddDirectProduct = ({ productId }) => {
+  // console.log(productId)
   const router = useRouter();
-  const [roomData, setRoomData] = useState(null);
+  const [productData, setProductData] = useState(null);
   const [loading, setLoading] = useState(false);
-  console.log(roomData)
+  // console.log(productData)
   useEffect(() => {
-    if (roomId) {
+    if (productId) {
       setLoading(true);
-      fetch(`/api/room/${roomId}`, {
+      fetch(`/api/packages/${productId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -33,18 +30,25 @@ const AddDirectProduct = ({ roomId }) => {
       })
         .then(res => res.json())
         .then(data => {
-          setRoomData(data);
+          setProductData(data);
           setLoading(false);
         })
         .catch(() => setLoading(false));
-    } 
-  }, [roomId]);
+    }
+  }, [productId]);
 
   const sectionConfig = [
-    // { key: 'info', label: 'Basic Info', component: (props) => <ProductInfo {...props} roomData={roomData} roomId={roomId} /> },
-    { key: 'review', label: 'Create Review', component: (props) => <ProductReview {...props} roomData={roomData} roomId={roomId} /> },
-    { key: 'quantity', label: 'Price', component: (props) => <QuantityManagement {...props} roomData={roomData} roomId={roomId} /> },
-    { key: 'amenities', label: 'Amenities', component: (props) => <Amenities {...props} roomData={roomData} roomId={roomId} /> },
+    { key: 'quantity', label: 'Price Management', component: (props) => <QuantityManagement {...props} productData={productData} productId={productId} /> },
+    { key: 'apply', label: 'Apply Coupon', component: (props) => <ApplyCoupon {...props} productData={productData} productId={productId} /> },
+    { key: 'tax', label: 'Apply Tax', component: (props) => <ApplyTax {...props} productData={productData} productId={productId} /> },
+    { key: 'gallery', label: 'Package Gallery', component: (props) => <ProductGallery {...props} productData={productData} productId={productId} /> },
+    { key: 'video', label: 'Video Management', component: (props) => <VideoManagement {...props} productData={productData} productId={productId} /> },
+    { key: 'description', label: 'Package Description', component: (props) => <ProductDescription {...props} productData={productData} productId={productId} /> },
+    { key: 'info', label: 'Package Information', component: (props) => <ProductInfo {...props} productData={productData} productId={productId} /> },
+    { key: 'review', label: 'Create Review', component: (props) => <ProductReview {...props} productData={productData} productId={productId} /> },
+    { key: 'tag', label: 'Category Tag', component: (props) => <CategoryTag {...props} productData={productData} productId={productId} /> },
+    { key: 'pdf', label: 'Upload Package PDF', component: (props) => <PackagePdf {...props} productData={productData} productId={productId} /> },
+
   ];
   const [activeSection, setActiveSection] = useState(sectionConfig[0].key);
 
@@ -52,12 +56,12 @@ const AddDirectProduct = ({ roomId }) => {
   return (
     <div style={{ minHeight: '85vh', background: '#fff', padding: '20px' }}>
       {loading ? (
-        <div className="text-center text-lg font-semibold">Loading rooms...</div>
+        <div className="text-center text-lg font-semibold flex items-center justify-center"><Loader2 className='animate-spin mx-2'/><span>Loading packages...</span></div>
       ) : (
         <Tabs value={activeSection} onValueChange={setActiveSection} className="w-full h-full">
           <div className="back mb-2">
             <button className='px-4 py-1 bg-gray-500 text-white rounded flex items-center' onClick={() => router.back()}>
-              <ArrowLeftIcon className="w-4 h-4 mr-2" /> Back to View Rooms
+              <ArrowLeftIcon className="w-4 h-4 mr-2" /> Back to View Packages
             </button>
           </div>
           <div className="flex h-full">
@@ -83,7 +87,7 @@ const AddDirectProduct = ({ roomId }) => {
             <div className="flex-1 p-4 rounded-r-lg shadow-sm min-h-[400px]">
               {sectionConfig.map(section => (
                 <TabsContent key={section.key} value={section.key} className="h-full">
-                  {section.component({ roomData })}
+                  {section.component({ productData })}
                 </TabsContent>
               ))}
             </div>

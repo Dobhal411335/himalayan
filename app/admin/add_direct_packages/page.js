@@ -1,7 +1,9 @@
-import ManageProductsCategory from "@/components/Admin/ManageProductsCategory"
+import ProductProfile from "@/components/Admin/ProductProfile"
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 
-const page = () => {
+// export const dynamic = "force-dynamic"
+
+const AddDirectProductPage = async () => {
 
     return (
         <SidebarInset>
@@ -11,11 +13,11 @@ const page = () => {
                 </div>
             </header>
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                <h1 className="text-3xl md:text-4xl px-12 font-semibold">Manage Products & Category</h1>
-                <ManageProductsCategory />
+                <h1 className="text-4xl px-12 font-semibold mb-5">Add Direct Package</h1>
+                <ProductProfile />
             </div>
         </SidebarInset>
     )
 }
 
-export default page
+export default AddDirectProductPage

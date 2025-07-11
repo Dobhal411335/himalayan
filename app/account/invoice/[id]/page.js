@@ -3,7 +3,7 @@ import InvoicePage from "@/components/MyAccount/Invoice";
 import connectDB from "@/lib/connectDB";
 import CustomOrder from "@/models/CustomOrder";
 import Order from "@/models/Order";
-import Package from "@/models/Package";
+import Packages from "@/models/Packages";
 import { getServerSession } from "next-auth";
 
 const page = async ({ params }) => {

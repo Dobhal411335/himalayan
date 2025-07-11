@@ -83,7 +83,7 @@ export default function EditArtisan({ artisan }) {
       {/* Filter Section */}
       <div className="flex flex-wrap gap-4 mb-4 items-end bg-gray-50 p-4 rounded-lg border border-gray-200">
         <div>
-          <label className="block text-sm font-medium mb-1">Name</label>
+          <label className="block text-sm font-medium mb-1">Team Person Name</label>
           <input
             type="text"
             value={filterName}
@@ -93,7 +93,7 @@ export default function EditArtisan({ artisan }) {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Artisan Number</label>
+          <label className="block text-sm font-medium mb-1">Team Person Number</label>
           <input
             type="text"
             value={filterNumber}
@@ -125,8 +125,8 @@ export default function EditArtisan({ artisan }) {
           <TableHeader>
             <TableRow className="bg-gray-100">
               <TableHead className="px-4 py-3">S.No.</TableHead>
-              <TableHead className="px-4 py-3">Artisan Name</TableHead>
-              <TableHead className="px-4 py-3">Artisan Number</TableHead>
+              <TableHead className="px-4 py-3">Team Person Name</TableHead>
+              <TableHead className="px-4 py-3">Team Person Number</TableHead>
               <TableHead className="px-4 py-3">Edit Info</TableHead>
               <TableHead className="px-4 py-3">Actions</TableHead>
             </TableRow>
@@ -177,9 +177,9 @@ export default function EditArtisan({ artisan }) {
       <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Artisan</DialogTitle>
+            <DialogTitle>Delete Team</DialogTitle>
           </DialogHeader>
-          <p>Are you sure you want to delete this artisan?</p>
+          <p>Are you sure you want to delete this team?</p>
           <DialogFooter>
             <Button variant="secondary" onClick={cancelDelete}>Cancel</Button>
             <Button variant="destructive" onClick={confirmDelete}>Delete</Button>

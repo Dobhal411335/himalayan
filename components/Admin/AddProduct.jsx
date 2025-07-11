@@ -142,9 +142,9 @@ const AddProduct = ({ id }) => {
                 }
                 const response = await fetch(url);
                 const data = await response.json();
-                console.log(data)
-                if (subMenuId && Array.isArray(data.rooms)) {
-                    setProducts(data.rooms);
+                // console.log(data)
+                if (subMenuId && Array.isArray(data.packages)) {
+                    setProducts(data.packages);
                 } else if (!subMenuId && Array.isArray(data)) {
                     setProducts(data);
                 } else {
@@ -183,7 +183,6 @@ const AddProduct = ({ id }) => {
             const payload = {
                 title,
                 code: productCode,
-
                 order,
                 active: typeof active === 'boolean' ? active : true, // always true by default
                 isDirect: !subMenuId,
@@ -206,8 +205,8 @@ const AddProduct = ({ id }) => {
                     if (subMenuId) {
                         const res = await fetch(`/api/getSubMenuById/${subMenuId}`);
                         const data = await res.json();
-                        if (Array.isArray(data.rooms)) {
-                            setProducts(data.rooms);
+                        if (Array.isArray(data.packages)) {
+                            setProducts(data.packages);
                         }
                     } else {
                         const res = await fetch('/api/product?isDirect=true');
@@ -234,8 +233,8 @@ const AddProduct = ({ id }) => {
                     if (subMenuId) {
                         const res = await fetch(`/api/getSubMenuById/${subMenuId}`);
                         const data = await res.json();
-                        if (Array.isArray(data.rooms)) {
-                            setProducts(data.rooms);
+                        if (Array.isArray(data.packages)) {
+                            setProducts(data.packages);
                         }
                     } else {
                         const res = await fetch('/api/product?isDirect=true');
@@ -249,53 +248,53 @@ const AddProduct = ({ id }) => {
                 }
             }
         } catch (error) {
-            toast.error('Something went wrong');
+            toast.error(error.message);
         } finally {
             setIsLoading(false);
         }
 
 
-        if (!title) {
-            toast.error("All fields are required", { style: { borderRadius: "10px", border: "2px solid red" } });
-            return;
-        }
-        try {
-            const response = await fetch("/api/admin/website-manage/addPackage", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ code: productCode, title }),
-            });
+        // if (!title) {
+        //     toast.error("All fields are required", { style: { borderRadius: "10px", border: "2px solid red" } });
+        //     return;
+        // }
+        // try {
+        //     const response = await fetch("/api/admin/website-manage/addPackage", {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //         },
+        //         body: JSON.stringify({ code: productCode, title }),
+        //     });
 
-            const res = await response.json();
+        //     const res = await response.json();
 
-            if (response.ok) {
-                toast.success("Package added successfully!", { style: { borderRadius: "10px", border: "2px solid green" } })
-                window.location.reload();
-            } else {
-                toast.error("Failed to add package", { style: { borderRadius: "10px", border: "2px solid red" } })
-            }
-        } catch (error) {
-            toast.error("Something went wrong", { style: { borderRadius: "10px", border: "2px solid red" } })
-        }
+        //     if (response.ok) {
+        //         toast.success("Packages added successfully!", { style: { borderRadius: "10px", border: "2px solid green" } })
+        //         window.location.reload();
+        //     } else {
+        //         toast.error("Failed to add package", { style: { borderRadius: "10px", border: "2px solid red" } })
+        //     }
+        // } catch (error) {
+        //     toast.error("Something went wrong", { style: { borderRadius: "10px", border: "2px solid red" } })
+        // }
 
     };
     return (
         <>
-            <form className="flex flex-col items-center justify-center gap-8 my-20 bg-blue-100 w-[50%] max-w-xl md:max-w-7xl mx-auto p-4 rounded-lg" onSubmit={handleSubmit(onSubmit)}>
-                <div className="flex md:flex-row flex-col items-center md:items-end gap-6 w-full">
+            <form className="flex flex-col items-center justify-center gap-8 my-20 bg-blue-100 w-[30%] max-w-xl md:max-w-7xl mx-auto p-4 rounded-lg" onSubmit={handleSubmit(onSubmit)}>
+                <div className="flex md:flex-row flex-col items-center md:items-end gap-6 w-full mx-auto">
                     <div className="flex flex-col gap-2">
-                        <label htmlFor="productCode" className="font-semibold">Room Code</label>
+                        <label htmlFor="productCode" className="font-semibold">Package Code</label>
                         <Input name="productCode" className="w-32 border-2 border-blue-600 focus:border-dashed focus:border-blue-500 focus:outline-none focus-visible:ring-0 font-bold" readOnly value={productCode} />
                     </div>
                     <div className="flex flex-col gap-2 ">
-                        <label htmlFor="productTitle" className="font-semibold">Room Title</label>
-                        <Input name="productTitle" className="w-full border-2 font-bold border-blue-600 " value={title} onChange={e => setTitle(e.target.value)} />
+                        <label htmlFor="productTitle" className="font-semibold">Package Title</label>
+                        <Input name="productTitle" placeholder="Enter Package Name.." className="w-full border-2 font-bold border-blue-600 " value={title} onChange={e => setTitle(e.target.value)} />
                     </div>
 
                 </div>
-                <Button type="submit" className="bg-blue-600 hover:bg-blue-500">Add Product</Button>
+                <Button type="submit" className="bg-blue-600 hover:bg-blue-500">Add Package</Button>
             </form>
 
             <div className="bg-blue-100 p-4 rounded-lg shadow max-w-5xl mx-auto w-full overflow-x-auto lg:overflow-visible text-center">
@@ -303,7 +302,7 @@ const AddProduct = ({ id }) => {
                     <TableHeader>
                         <TableRow>
                             <TableHead className="text-center !text-black w-1/6">Order</TableHead>
-                            <TableHead className="text-center !text-black w-1/4">Product Name</TableHead>
+                            <TableHead className="text-center !text-black w-1/4">Package Name</TableHead>
                             <TableHead className="text-center !text-black w-1/6">URL</TableHead>
                             <TableHead className="w-1/6 !text-black text-center">Action</TableHead>
                         </TableRow>
@@ -311,7 +310,7 @@ const AddProduct = ({ id }) => {
                     <TableBody>
                         {products && products.length > 0 ? (
                             products.map((prod, index) => {
-                                const url = typeof window !== 'undefined' ? `${window.location.origin}/room/${slugify(prod.title)}` : '';
+                                const url = typeof window !== 'undefined' ? `${window.location.origin}/package/${slugify(prod.title)}` : '';
                                 return (
                                     <TableRow key={prod._id}>
                                         <TableCell className="border font-semibold border-blue-600">{index + 1}</TableCell>
@@ -333,7 +332,7 @@ const AddProduct = ({ id }) => {
                                         <TableCell className="border font-semibold border-blue-600">
                                             <div className="flex items-center justify-center gap-6">
                                                 <Button size="icon" variant="outline" asChild>
-                                                    <Link href={`/admin/add_direct_rooms/${prod._id}`}>
+                                                    <Link href={`/admin/add_direct_packages/${prod._id}`}>
                                                         Edit
                                                     </Link>
                                                 </Button>

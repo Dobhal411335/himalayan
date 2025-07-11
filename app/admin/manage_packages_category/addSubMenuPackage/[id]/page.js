@@ -1,8 +1,10 @@
-import EditArtisan from "@/components/Admin/EditArtisan"
+import ProductProfile from "@/components/Admin/ProductProfile"
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
+import AddProduct from "@/components/Admin/AddProduct"
+const page = async ({ params }) => {
+    const { id } = await params
+    // console.log(id)
 
-
-const  EditArtisanPage = () => {
     return (
         <SidebarInset>
             <header className="flex h-16 shrink-0 items-center gap-2">
@@ -11,11 +13,12 @@ const  EditArtisanPage = () => {
                 </div>
             </header>
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                <h1 className="text-4xl px-12 font-semibold">Edit Artisan</h1>
-                <EditArtisan />
+                <h1 className="text-4xl px-12 font-semibold">Add Packages</h1>
+                <AddProduct id={id} />
+                {/* <ProductProfile id={id}/> */}
             </div>
         </SidebarInset>
     )
 }
 
-export default EditArtisanPage
+export default page

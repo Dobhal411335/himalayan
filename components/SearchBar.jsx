@@ -42,18 +42,18 @@ export default function SearchBar({ placeholder }) {
             }
         };
 
-        const fetchPackages = async () => {
-            try {
-                const res = await fetch("/api/getSearchPackages");
-                const data = await res.json();
-                if (data.packages) setPackages(data.packages);
-            } catch (error) {
-                // console.error("Error fetching packages:", error);
-            }
-        };
+        // const fetchPackages = async () => {
+        //     try {
+        //         const res = await fetch("/api/getSearchPackages");
+        //         const data = await res.json();
+        //         if (data.packages) setPackages(data.packages);
+        //     } catch (error) {
+        //         // console.error("Error fetching packages:", error);
+        //     }
+        // };
 
         fetchCategories();
-        fetchPackages();
+        // fetchPackages();
 
         const storedSearches = JSON.parse(localStorage.getItem("recentSearches")) || [];
         setRecentSearches(storedSearches);

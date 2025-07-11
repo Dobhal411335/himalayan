@@ -1,8 +1,5 @@
 import { Schema, models, model } from "mongoose";
-import Room from "@/models/Room"
-import RoomAmenities from '@/models/RoomAmenities';
-import RoomPrice from '@/models/RoomPrice';
-import RoomReview from '@/models/RoomReview';
+import Packages from "@/models/Packages"
 const MenuBarSchema = new Schema(
     {
         active: { type: Boolean },
@@ -16,7 +13,7 @@ const MenuBarSchema = new Schema(
                 order: { type: Number },
                 banner: { url: { type: String }, key: { type: String } },
                 profileImage: { url: { type: String }, key: { type: String } },
-                rooms: { type: [Schema.Types.ObjectId], ref: "Room", default: [] },
+                packages: { type: [Schema.Types.ObjectId], ref: "Packages"},
             }
         ]
     },

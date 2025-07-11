@@ -544,7 +544,7 @@ const CreateArtisan = () => {
         <div className="flex-1 space-y-4">
           {/* Artisan Name & Father/Husband Info */}
           <div>
-            <div className="font-semibold mb-1">Artisan Name</div>
+            <div className="font-semibold mb-1">Team Person Name</div>
             {/* Name/Title Row */}
             <div className="flex gap-2 mb-3">
               <Select
@@ -630,7 +630,7 @@ const CreateArtisan = () => {
           </div>
           {/* Artisan Detail */}
           <div>
-            <div className="font-semibold mb-1">Artisan Detail</div>
+            <div className="font-semibold mb-1">Team Person Detail</div>
             <div className="flex gap-2 mb-2">
               <Input
                 placeholder="SHG Name"
@@ -638,7 +638,7 @@ const CreateArtisan = () => {
               />
               {renderError("shgName")}
               <Input
-                placeholder="Artisan Number"
+                placeholder="Team Person Number"
                 {...register("artisanNumber", { required: "Artisan Number is required" })}
               />
               {renderError("artisanNumber")}
@@ -956,10 +956,10 @@ const CreateArtisan = () => {
                   Order
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Artisan Name
+                Team Person Name
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Artisan Number
+                Team Person Number
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
@@ -1025,8 +1025,8 @@ const CreateArtisan = () => {
           {showDeleteModal && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
               <div className="bg-white rounded shadow-lg p-8">
-                <h2 className="text-lg font-semibold mb-4">Delete Artisan</h2>
-                <p>Are you sure you want to delete this artisan?</p>
+                <h2 className="text-lg font-semibold mb-4">Delete Team Person</h2>
+                <p>Are you sure you want to delete this Team Person?</p>
                 <div className="flex justify-end mt-6 gap-3">
                   <button
                     className="px-4 py-2 border rounded"
@@ -1055,7 +1055,7 @@ const CreateArtisan = () => {
             style={{ maxHeight: "90vh" }}
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Artisan Profile</h2>
+              <h2 className="text-xl font-bold">Team Person Profile</h2>
               <button
                 onClick={closeUserModal}
                 className="text-gray-500 hover:text-black text-4xl leading-none focus:outline-none transition-transform duration-150 transform hover:scale-110"
@@ -1161,7 +1161,7 @@ const CreateArtisan = () => {
                       "-"
                     }
                   />
-                       <DetailBox
+                  <DetailBox
                     label="Order Number"
                     value={
                       selectedUser.order ||
@@ -1191,7 +1191,7 @@ const CreateArtisan = () => {
             style={{ maxHeight: "90vh" }}
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Edit Artisan</h2>
+              <h2 className="text-xl font-bold">Edit Team Person</h2>
               <button
                 onClick={closeEditModal}
                 className="text-gray-500 hover:text-black"
@@ -1315,7 +1315,7 @@ const CreateArtisan = () => {
                 />
               </div>
               <div>
-                <label className="font-semibold">Artisan Number</label>
+                <label className="font-semibold">Team Person Number</label>
                 <Input
                   name="artisanNumber"
                   value={editForm.artisanNumber || ""}

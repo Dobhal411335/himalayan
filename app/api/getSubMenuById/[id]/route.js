@@ -1,7 +1,7 @@
 import connectDB from "@/lib/connectDB";
 import { NextResponse } from "next/server";
 import MenuBar from "@/models/MenuBar";
-import Room from "@/models/Room";
+import Packages from "@/models/Packages";
 
 export async function GET(req, { params }) {
     await connectDB();
@@ -11,7 +11,7 @@ export async function GET(req, { params }) {
     try {
 
         const menu = await MenuBar.findOne({ "subMenu._id": id })
-            .populate({ path: "subMenu.rooms", strictPopulate: false })
+            .populate({ path: "subMenu.packages", strictPopulate: false })
             .lean();
 
         if (!menu) {
@@ -27,9 +27,9 @@ export async function GET(req, { params }) {
 
         // Manually populate rooms array
         const mongoose = (await import('mongoose')).default;
-        const Room = mongoose.model('Room');
-        const roomDocs = await Room.find({ _id: { $in: subMenu.rooms || [] } });
-        const populatedSubMenu = { ...subMenu, rooms: roomDocs };
+        const Packages = mongoose.model('Packages');
+        const roomDocs = await Packages.find({ _id: { $in: subMenu.packages || [] } });
+        const populatedSubMenu = { ...subMenu, packages: roomDocs };
 
         return NextResponse.json(populatedSubMenu);
     } catch (error) {
