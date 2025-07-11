@@ -109,7 +109,7 @@ const productInfo = ({ roomData, roomId }) => {
     if (!roomId) return;
     const fetchRoomInfo = async () => {
       try {
-        const res = await fetch(`/api/productInfo?roomId=${roomId}`);
+        const res = await fetch(`/api/roomInfo?roomId=${roomId}`);
         const data = await res.json();
         if (res.ok && data.room) {
           setHeading(data.room.heading || "");
@@ -184,7 +184,7 @@ const productInfo = ({ roomData, roomId }) => {
   const fetchSections = async () => {
     setTableLoading(true);
     try {
-      const res = await fetch(`/api/productInfo?roomId=${roomId}`);
+      const res = await fetch(`/api/roomInfo?roomId=${roomId}`);
       const data = await res.json();
       if (res.ok && data.info && Array.isArray(data.info.info)) {
         setSections(data.info.info);
@@ -309,7 +309,7 @@ const productInfo = ({ roomData, roomId }) => {
     try {
       if (editMode && editIndex !== null) {
         // PATCH to update section
-        const res = await fetch('/api/productInfo', {
+        const res = await fetch('/api/roomInfo', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ roomId, heading: heading.trim(), paragraph: description, mainPhoto: selectedMainImage, relatedPhotos: selectedSubImages })
@@ -327,7 +327,7 @@ const productInfo = ({ roomData, roomId }) => {
         }
       } else {
         // POST to add section
-        const res = await fetch('/api/productInfo', {
+        const res = await fetch('/api/roomInfo', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ roomId, heading: heading.trim(), paragraph: description, mainPhoto: selectedMainImage, relatedPhotos: selectedSubImages })

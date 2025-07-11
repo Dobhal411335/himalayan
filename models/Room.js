@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const roomSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -15,4 +15,4 @@ const roomSchema = new mongoose.Schema({
   reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'RoomReview' }],
 });
 
-module.exports = mongoose.models.Room || mongoose.model('Room', roomSchema);
+export default mongoose.models.Room || mongoose.model('Room', roomSchema);

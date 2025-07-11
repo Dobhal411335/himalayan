@@ -11,7 +11,7 @@ export async function GET(req, { params }) {
         return new Response(JSON.stringify({ error: "Room ID is required" }), { status: 400 });
     }
     try {
-        const room = await Room.findById(id);
+        const room = await Room.findById(id).populate('amenities');
         if (!room) {
             return new Response(JSON.stringify({ error: "Room not found" }), { status: 404 });
         }

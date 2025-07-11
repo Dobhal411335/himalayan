@@ -94,28 +94,28 @@ const AddRoom = () => {
     }
 
     // Toggle product active status
-    const toggleSwitch = async (productId, currentActive, isDirect) => {
-        if (isDirect) {
-            toast.error('Only non-direct products can be toggled.');
-            return;
-        }
-        try {
-            const response = await fetch('/api/admin/website-manage/addPackage', {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ roomId: productId, active: !currentActive }),
-            });
-            const result = await response.json();
-            if (response.ok) {
-                setProducts(prev => prev.map(prod => prod._id === productId ? { ...prod, active: !currentActive } : prod));
-                toast.success(`Product is now ${!currentActive ? 'active' : 'inactive'}`);
-            } else {
-                toast.error(result.message || 'Failed to update product status.');
-            }
-        } catch (error) {
-            toast.error('Failed to update product status.');
-        }
-    }
+    // const toggleSwitch = async (productId, currentActive, isDirect) => {
+    //     if (isDirect) {
+    //         toast.error('Only non-direct products can be toggled.');
+    //         return;
+    //     }
+    //     try {
+    //         const response = await fetch('/api/admin/website-manage/addPackage', {
+    //             method: 'PATCH',
+    //             headers: { 'Content-Type': 'application/json' },
+    //             body: JSON.stringify({ roomId: productId, active: !currentActive }),
+    //         });
+    //         const result = await response.json();
+    //         if (response.ok) {
+    //             setProducts(prev => prev.map(prod => prod._id === productId ? { ...prod, active: !currentActive } : prod));
+    //             toast.success(`Product is now ${!currentActive ? 'active' : 'inactive'}`);
+    //         } else {
+    //             toast.error(result.message || 'Failed to update product status.');
+    //         }
+    //     } catch (error) {
+    //         toast.error('Failed to update product status.');
+    //     }
+    // }
 
     const { handleSubmit, register, setValue, reset } = useForm();
     const [productCode, setProductCode] = useState("");
@@ -248,7 +248,7 @@ const AddRoom = () => {
                     </div>
                     <div className="flex flex-col gap-2 ">
                         <label htmlFor="productTitle" className="font-semibold">Room Title</label>
-                        <Input name="productTitle" className="w-full border-2 font-bold border-blue-600 " value={title} onChange={e => setTitle(e.target.value)} />
+                        <Input name="productTitle" placeholder="Enter Room Title .." className="w-full border-2 font-bold border-blue-600 " value={title} onChange={e => setTitle(e.target.value)} />
                     </div>
 
                 </div>
@@ -290,7 +290,7 @@ const AddRoom = () => {
                                         <TableCell className="border font-semibold border-blue-600">
                                             <div className="flex items-center justify-center gap-6">
                                                 <Button size="icon" variant="outline" asChild>
-                                                    <Link href={`/admin/add_direct_rooms/${prod._id}`}>
+                                                    <Link href={`/admin/edit_room/${prod._id}`}>
                                                         Edit
                                                     </Link>
                                                 </Button>
@@ -305,7 +305,7 @@ const AddRoom = () => {
                                                 <Button size="icon" disabled={isLoading} onClick={() => deletePackage(prod._id)} variant="destructive">
                                                     {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                                                 </Button>
-                                                <div className="flex items-center gap-2">
+                                                {/* <div className="flex items-center gap-2">
                                                     <Switch
                                                         id={`switch-${prod._id}`}
                                                         checked={prod.active}
@@ -316,7 +316,7 @@ const AddRoom = () => {
                                                     <Label htmlFor={`switch-${prod._id}`} className="text-black">
                                                         {prod.active ? "ON" : "OFF"}
                                                     </Label>
-                                                </div>
+                                                </div> */}
                                             </div>
                                         </TableCell>
                                     </TableRow>

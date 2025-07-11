@@ -1,27 +1,19 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import ProductGallery from './ProductGallery';
-import ProductInfo from './ProductInfo';
-import CategoryTag from './CategoryTag';
-import ProductReview from './ProductReview';
+import RoomInfo from './RoomInfo';
+import RoomReview from './RoomReview';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import ColorManagement from './ColorManagement';
-import VideoManagement from './VideoManagement';
-import ProductDescription from './ProductDescription';
-import SizeManagement from './SizeManagement';
 import QuantityManagement from './QuantityManagement';
-import ApplyCoupon from './ApplyCoupon';
-import ApplyTax from './ApplyTax';
-import ProductTagLine from './ProductTagLine';
 import { ArrowLeftIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Amenities from './Amenities';
+import RoomPrice from './RoomPrice';
 
 const EditRoom = ({ roomId }) => {
   const router = useRouter();
   const [roomData, setRoomData] = useState(null);
   const [loading, setLoading] = useState(false);
-  console.log(roomData)
+//   console.log(roomData)
   useEffect(() => {
     if (roomId) {
       setLoading(true);
@@ -41,9 +33,9 @@ const EditRoom = ({ roomId }) => {
   }, [roomId]);
 
   const sectionConfig = [
-    { key: 'info', label: 'Basic Info', component: (props) => <ProductInfo {...props} roomData={roomData} roomId={roomId} /> },
-    { key: 'review', label: 'Create Review', component: (props) => <ProductReview {...props} roomData={roomData} roomId={roomId} /> },
-    { key: 'quantity', label: 'Price', component: (props) => <QuantityManagement {...props} roomData={roomData} roomId={roomId} /> },
+    { key: 'info', label: 'Basic Info', component: (props) => <RoomInfo {...props} roomData={roomData} roomId={roomId} /> },
+    { key: 'review', label: 'Create Review', component: (props) => <RoomReview {...props} roomData={roomData} roomId={roomId} /> },
+    { key: 'quantity', label: 'Price', component: (props) => <RoomPrice {...props} roomData={roomData} roomId={roomId} /> },
     { key: 'amenities', label: 'Amenities', component: (props) => <Amenities {...props} roomData={roomData} roomId={roomId} /> },
   ];
   const [activeSection, setActiveSection] = useState(sectionConfig[0].key);

@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import ProductGallery from './ProductGallery';
-import ProductInfo from './ProductInfo';
+// import ProductInfo from './RoomInfo';
 import CategoryTag from './CategoryTag';
 import ProductReview from './ProductReview';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -41,7 +41,7 @@ const AddDirectProduct = ({ roomId }) => {
   }, [roomId]);
 
   const sectionConfig = [
-    { key: 'info', label: 'Basic Info', component: (props) => <ProductInfo {...props} roomData={roomData} roomId={roomId} /> },
+    // { key: 'info', label: 'Basic Info', component: (props) => <ProductInfo {...props} roomData={roomData} roomId={roomId} /> },
     { key: 'review', label: 'Create Review', component: (props) => <ProductReview {...props} roomData={roomData} roomId={roomId} /> },
     { key: 'quantity', label: 'Price', component: (props) => <QuantityManagement {...props} roomData={roomData} roomId={roomId} /> },
     { key: 'amenities', label: 'Amenities', component: (props) => <Amenities {...props} roomData={roomData} roomId={roomId} /> },

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const RoomAmenitiesSchema = new mongoose.Schema({
   label: {
@@ -14,4 +14,4 @@ const RoomAmenitiesSchema = new mongoose.Schema({
   }
 });
 
-export default mongoose.models.RoomAmenities || mongoose.model('RoomAmenities', RoomAmenitiesSchema);
+module.exports = mongoose.models.RoomAmenities || mongoose.model('RoomAmenities', RoomAmenitiesSchema);
