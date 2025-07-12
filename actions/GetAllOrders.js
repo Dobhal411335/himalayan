@@ -3,7 +3,7 @@
 import connectDB from "@/lib/connectDB";
 import CustomOrder from "@/models/CustomOrder";
 import Order from "@/models/Order";
-import Package from "@/models/Package";
+import Packages from "@/models/Packages";
 
 export async function GetAllOrders(page = 1, limit = 20) {
     await connectDB();
