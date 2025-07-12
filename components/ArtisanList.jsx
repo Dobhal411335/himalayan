@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Star, Eye, Globe, Loader2 } from 'lucide-react';
+import { Star, Eye, Globe, Loader2, Bed, Phone, ParkingCircle, ShowerHead, Wifi, Tv, Bath, Elevator, Luggage, Coffee, Snowflake, Utensils } from 'lucide-react';
 import {
     Carousel,
     CarouselContent,
@@ -10,8 +10,10 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel";
 import Image from "next/image";
-
-
+import { X } from "lucide-react";
+import CategoryAds from "@/components/CategoryAds";
+import { useSession } from 'next-auth/react';
+import { useRouter, usePathname } from 'next/navigation';
 const BannerSection = () => (
     <div className="relative h-64 md:h-80 flex items-center justify-center">
         <img
@@ -21,79 +23,112 @@ const BannerSection = () => (
         />
     </div>
 );
+const amenityIcons = {
+    'Restaurant': <Utensils size={24} />,
+    'Bed': <Bed size={24} />,
+    'Room Phone': <Phone size={24} />,
+    'Parking': <ParkingCircle size={24} />,
+    'Shower': <ShowerHead size={24} />,
+    'Towel In Room': (
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M8 16V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v10M4 20h16M4 20a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2M4 20h16" /></svg>
+    ),
+    'Wi-Fi': <Wifi size={24} />,
+    'Telivision': <Tv size={24} />,
+    'Bath Tub': <Bath size={24} />,
+    'Elevator': (
+        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <rect x="6" y="3" width="12" height="18" rx="2" strokeWidth="2" />
+            <path d="M9 9h6M9 13h6M12 16v2" strokeWidth="2" />
+            <path d="M10.5 6l1.5-2 1.5 2" strokeWidth="2" />
+        </svg>
+    ),
+    'Laggage': <Luggage size={24} />,
+    'Team Maker': <Coffee size={24} />,
+    'Room AC': <Snowflake size={24} />,
+};
 
-const LeftTextBlock = () => (
-    <div className="bg-black text-white flex flex-col justify-center items-center p-8 h-96 w-full md:w-[25%] mt-4">
-        <h2 className="text-5xl font-extrabold mb-4 text-center">ARTISAN</h2>
-        <div className="text-md font-medium mb-2 text-center">Celebrating the Art of Craftsmanship.<br />Honoring the Hands That Shape Beauty</div>
-    </div>
-);
 
-const ArtisanCard = ({ card }) => {
+const ReviewModal = ({ open, onClose, reviews }) => {
+    if (!open) return null;
     return (
-        <div key={card.id} className="relative group transition-all h-full w-[340px] flex flex-col bg-[#fbeff2] overflow-hidden">
-            {/* Date Badge */}
-            <div className="absolute top-5 left-5 z-20 flex items-center gap-2">
-                <span className="bg-white rounded px-3 py-1 text-md font-bold shadow text-gray-800">{card.subtitle}</span>
-            </div>
-            {/* Card Image */}
-            <div className="relative w-full h-96">
-                <img
-                    src={card.image}
-                    alt={card.name}
-                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                    style={{ objectFit: 'cover' }}
-                />
-            </div>
-            {/* Card Content Overlay */}
-            <div className="absolute left-0 bottom-0 w-full flex justify-between items-end p-6 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
-                <div>
-                    <Link
-                        href={`/artisan/${card.id}`}
-                        className="font-bold text-2xl text-white mb-3 leading-tight drop-shadow-md hover:underline hover:decoration-2 hover:underline-offset-4 transition cursor-pointer"
-                        title={card.name}
-                    >
-                        {card.name}
-                    </Link>
-                    <div className="text-md text-white drop-shadow-md">{card.title}</div>
-                </div>
-                {/* Arrow Button with Socials on Hover */}
-                <div className="relative group/arrow">
-                    <button className="bg-white text-black rounded-full w-12 h-12 flex items-center justify-center shadow transition group-hover/arrow:bg-[#e84393] group-hover/arrow:text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                    {/* Social Icons: show on arrow hover */}
-                    <div className="absolute bottom-12 right-0 flex flex-col gap-4 opacity-0 group-hover/arrow:opacity-100 transition-opacity duration-300 z-30 items-center">
-                        {card.socials.slice(0, 6).map((s, i) => (
-                            <a
-                                key={i}
-                                href={s.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={
-                                    `bg-white rounded-full w-12 h-12 flex items-center justify-center shadow hover:bg-gray-100 transition transform translate-y-5 group-hover/arrow:translate-y-0`
-                                }
-                                style={{
-                                    transitionProperty: 'transform, opacity, background-color, box-shadow',
-                                    transitionDuration: '0.6s',
-                                    transitionTimingFunction: 'cubic-bezier(0.4,0,0.2,1)',
-                                    transitionDelay: `${i * 60}ms`
-                                }}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40" onClick={onClose}>
+            <div
+                className="max-w-xl w-full p-4 relative bg-white rounded-lg shadow-lg overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <button
+                    className="absolute z-50 bg-gray-200 rounded-full p-2 top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl"
+                    onClick={onClose}
+                >
+                    <X />
+                </button>
+
+                {reviews && reviews.length > 0 ? (
+                    <div className="h-[400px] overflow-y-auto px-2 py-5">
+                        {reviews.map((review, idx) => (
+                            <div
+                                key={idx}
+                                className="bg-[#f9fafb] border border-gray-200 rounded-xl p-6 mb-6 shadow-sm"
                             >
-                                {s.icon}
-                            </a>
+                                <div className="flex items-center justify-between gap-2">
+                                    {/* Avatar and Name */}
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <Image
+                                            src={review.image?.url || "/placeholder.jpeg"}
+                                            alt={review.createdBy}
+                                            width={48}
+                                            height={48}
+                                            className="rounded-full object-cover border border-gray-300"
+                                            style={{ minWidth: 48, minHeight: 48 }}
+                                        />
+                                        <span className="font-semibold text-base text-gray-900">
+                                            {review.createdBy}
+                                        </span>
+                                    </div>
+
+                                    {/* Stars and Verified */}
+                                    <div className="flex items-center gap-2 mb-3">
+                                        {[...Array(review.rating)].map((_, i) => (
+                                            <Star key={i} size={20} color="#12b76a" fill="#12b76a" />
+                                        ))}
+                                        <span className="text-green-600 font-medium flex items-center gap-1 text-sm ml-2">
+                                            <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
+                                                <path fill="#12b76a" d="M9.5 17.5l-5-5 1.4-1.4 3.6 3.6 7.6-7.6 1.4 1.4-9 9z" />
+                                            </svg>
+                                            Verified
+                                        </span>
+                                    </div>
+
+                                </div>
+
+                                {/* Title */}
+                                <div className="text-[16px] font-bold text-gray-800 mb-1">
+                                    {review.title}
+                                </div>
+
+                                {/* Review Text */}
+                                <div
+                                    className="text-gray-500 text-[15px] font-normal leading-relaxed"
+                                    dangerouslySetInnerHTML={{ __html: review.review }}
+                                />
+                            </div>
                         ))}
                     </div>
-                </div>
+                ) : (
+                    <div className="text-center text-gray-500">No reviews yet.</div>
+                )}
             </div>
         </div>
     );
 };
 
+import BookingDetails from './BookingDetails';
+
 const ArtisanList = () => {
-    const [artisan, setArtisan] = useState([]);
+    const { data: session, status } = useSession();
+    const router = useRouter();
+    const pathname = usePathname();
+    const [rooms, setRooms] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [page, setPage] = useState(1);
     const pageSize = 6; // for second row pagination
@@ -103,23 +138,38 @@ const ArtisanList = () => {
             gridRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
         }
     }, [page]);
-    // console.log(artisan)
+
+    const [categoryAdList, setCategoryAdList] = useState([]);
+    console.log(rooms)
+
+    useEffect(() => {
+        // Fetch category ads on mount
+        fetch("/api/categoryAdvertisment")
+            .then(res => res.json())
+            .then(data => {
+                // If your API returns an array directly:
+                setCategoryAdList(Array.isArray(data) ? data : []);
+                // If your API returns { ads: [...] }:
+                // setCategoryAdList(Array.isArray(data.ads) ? data.ads : []);
+            })
+            .catch(() => setCategoryAdList([]));
+    }, []);
 
     // Fetch Artisan (copied from RandomTourPackageSection)
     useEffect(() => {
         const fetchArtisan = async () => {
             try {
-                const res = await fetch("/api/createArtisan");
+                const res = await fetch("/api/room");
                 const data = await res.json();
                 if (Array.isArray(data)) {
-                    setArtisan(data);
-                } else if (Array.isArray(data.artisans)) {
-                    setArtisan(data.artisans);
+                    setRooms(data);
+                } else if (Array.isArray(data.rooms)) {
+                    setRooms(data.rooms);
                 } else {
-                    setArtisan([]);
+                    setRooms([]);
                 }
             } catch (error) {
-                setArtisan([]);
+                setRooms([]);
             } finally {
                 setIsLoading(false);
             }
@@ -127,19 +177,22 @@ const ArtisanList = () => {
         fetchArtisan();
     }, []);
 
+    const [reviewModalOpen, setReviewModalOpen] = useState(false);
+    const [selectedReviews, setSelectedReviews] = useState([]);
+    // Booking modal state
+    const [bookingModalOpen, setBookingModalOpen] = useState(false);
+    const [selectedRoom, setSelectedRoom] = useState(null);
 
-    // Row calculations
-    const firstRowArtisans = artisan.slice(0, 6);
-    const paginatedArtisans = artisan.slice(6 + (page - 1) * pageSize, 6 + page * pageSize);
-    const totalPaginated = artisan.length > 6 ? artisan.length - 6 : 0;
+    const paginatedArtisans = rooms.slice(0 + (page - 1) * pageSize, 6 + page * pageSize);
+    const totalPaginated = rooms.length > 5 ? rooms.length - 5 : 0;
     const totalPages = Math.ceil(totalPaginated / pageSize);
-    const startIdx = 6 + (page - 1) * pageSize + 1;
-    const endIdx = Math.min(6 + page * pageSize, artisan.length);
+    const startIdx = 5 + (page - 1) * pageSize + 1;
+    const endIdx = Math.min(5 + page * pageSize, rooms.length);
 
     if (isLoading) {
         return (
             <div className="w-full min-h-screen flex items-center justify-center bg-white">
-                <div className="text-2xl font-bold text-gray-600 animate-pulse flex items-center"><Loader2 className="animate-spin mr-2"/>Loading Instructor...</div>
+                <div className="text-2xl font-bold text-gray-600 animate-pulse flex items-center"><Loader2 className="animate-spin mr-2" />Loading Accommodation...</div>
             </div>
         );
     }
@@ -149,167 +202,199 @@ const ArtisanList = () => {
             {/* Below banner: left text, right carousel */}
             <div className="w-full max-w-[1500px] mx-auto ">
                 {/* Row 1: First 6 artisans */}
-                <div className="flex flex-col md:flex-row w-full bg-black">
-                    <LeftTextBlock />
-                
-                {/* Row 2: Feature Table (full width) */}
-                {artisan.length > 0 && (
-                    <div className="w-full flex flex-row gap-2 md:w-[90%] mx-auto">
-                        <div className="left w-[25%] p-2">
-                            {/* Left: Heading and description */}
-                            <div className="flex flex-col justify-center px-4">
-                                <h2 className="text-xl font-bold mb-4">Celebrating the Art of Craftsmanship. Honoring the Hands That Shape Beauty</h2>
-                                <div className="text-md text-gray-700 text-justify mb-6">
-                                    We are proud to recognize and celebrate your exceptional talent and dedication as a skilled handicraft artisan. Your ability to transform raw materials into beautiful, meaningful works of art speaks to your creativity, precision, and passion for the craft. Each piece you create is a testament to the enduring value of handmade artistry and the cultural richness it preserves. With deep appreciation, we commend you for achieving this milestone and look forward to witnessing your continued journey of artistic excellence.
+                <div className="flex flex-col md:flex-row w-full">
+                    {/* Row 2: Feature Table (full width) */}
+                    {rooms.length > 0 && (
+                        <div className="w-full flex flex-row gap-2 md:w-[95%] mx-auto">
+                            <div className="left w-[30%] p-4">
+                                {/* Left: Heading and description */}
+                                <div className="flex flex-col items-center">
+                                    {/* Tagline Card */}
+                                    <div className="bg-white border rounded-xl shadow p-5 mb-5 w-72 max-w-xs">
+                                        <h2 className="text-lg font-bold mb-2">First Tag Line H2 Type</h2>
+                                        <div className="text-sm text-gray-700 text-justify">
+                                            At our Wellness Retreats in Tapovan, Rishikesh, we offer a complete and immersive wellness experience that nurtures the body, mind, and soul. Whether you’re a beginner or an advanced practitioner, our programs are designed to guide you on a journey of inner healing and mindful living—amidst the spiritual energy of the Himalayas.
+                                        </div>
+                                    </div>
+                                    {/* Category Advertisement Banner(s) */}
+                                    <div className="flex flex-col w-72 max-w-xs flex-shrink-0 justify-start items-center">
+                                        <CategoryAds categoryAdList={categoryAdList} />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="right w-[75%] p-2">
-                            {(page === 1
-                                ? artisan.slice(6)
-                                : paginatedArtisans
-                            ).map((item, idx) => {
-                                return (
-                                    <div key={item._id || idx} className="relative flex flex-col md:flex-row bg-[#f8f5ef] rounded-2xl my-2 md:items-center gap-6">
-                                        {/* Image */}
-                                        <div className="flex-shrink-0 flex justify-center items-center">
-                                            <img
-                                                src={item.profileImage?.url || item.image || "/bg-custom-1.jpg"}
-                                                alt={item.firstName || 'Artisan'}
-                                                className="w-72 h-72 rounded-xl object-cover"
-                                            />
-                                        </div>
-                                        {/* Details */}
-                                        <div className="flex-1 flex flex-col gap-2 justify-center">
-                                            {/* Name and Specializations */}
-                                            <div className="flex flex-col">
-                                                <div className="flex items-center justify-between gap-4 mb-1 w-full">
-                                                    {/* Name directly here without extra wrapping div */}
-                                                    <h3 className="text-2xl font-extrabold text-gray-900 m-0 p-0">
-                                                        {`${item.title ? item.title + " " : ""}${item.firstName || ''} ${item.lastName || ''}`.trim() || "Unknown Artisan"}
-                                                    </h3>
-                                                    {/* Reviews with stars */}
-                                                    <div className="flex items-center gap-1 flex-shrink-0">
-                                                        {(() => {
-                                                            const avgRating =
-                                                                item.promotions && item.promotions.length > 0
-                                                                    ? item.promotions.reduce((sum, p) => sum + (p.rating || 0), 0) /
-                                                                    item.promotions.length
-                                                                    : 0;
-                                                            return [...Array(5)].map((_, i) => (
-                                                                <Star
-                                                                    key={i}
-                                                                    size={18}
-                                                                    className={i < avgRating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}
-                                                                    fill={i < avgRating ? "#facc15" : "none"}
+                            <div className="right w-[70%] p-2">
+                                {(page === 1
+                                    ? rooms.slice(0)
+                                    : paginatedArtisans
+                                ).map((item, idx) => {
+                                    const imageUrls = [
+                                        ...(item.mainPhoto?.url ? [item.mainPhoto.url] : []),
+                                        ...(item.relatedPhotos?.length ? item.relatedPhotos.map(photo => photo.url) : [])
+                                    ];
+                                    if (imageUrls.length === 0) imageUrls.push('/placeholder.jpeg');
+                                    return (
+                                        <div key={item._id || idx} className="relative flex flex-col md:flex-row bg-[#f8f5ef] rounded-2xl my-2 md:items-center gap-6">
+                                            {/* Image Carousel */}
+                                            <div className="relative w-64 h-48 flex-shrink-0 flex items-center justify-center">
+
+                                                <Carousel className="w-full h-full" opts={{ loop: true }}>
+                                                    <CarouselContent>
+
+                                                        {imageUrls.map((img, i) => (
+                                                            <CarouselItem key={i} className="w-full h-full flex items-center justify-center">
+                                                                <Image
+                                                                    src={img}
+                                                                    alt={item.title || 'Room'}
+                                                                    width={300}
+                                                                    height={300}
+                                                                    className="object-contain rounded-xl"
+                                                                    style={{ height: "200px", maxHeight: "200px" }}
+                                                                    priority={i === 0}
                                                                 />
-                                                            ));
-                                                        })()}
-                                                        <span className="ml-2 text-gray-500 text-sm">
-                                                            {item.promotions?.length || 0} Reviews
+                                                            </CarouselItem>
+                                                        ))}
+                                                    </CarouselContent>
+                                                    <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 p-2" />
+                                                    <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 p-2" />
+                                                </Carousel>
+                                            </div>
+                                            {/* Details */}
+                                            <div className="flex-1 p-5 flex flex-col gap-2 justify-between min-h-[260px] relative">
+                                                <div className="flex items-start justify-between">
+                                                    <h3 className="text-2xl font-bold text-gray-900">{item.title || "Room Name"}</h3>
+                                                    <button
+                                                        className="flex items-start justify-between cursor-pointer group bg-transparent border-0 p-0"
+                                                        onClick={() => {
+                                                            setSelectedReviews(item.reviews || []);
+                                                            setReviewModalOpen(true);
+                                                        }}
+                                                        style={{ outline: 'none' }}
+                                                        aria-label="Show reviews"
+                                                    >
+                                                        {[...Array(Math.round((item.reviews?.[0]?.rating || 5)))].map((_, i) => (
+                                                            <Star key={i} size={16} color="#12b76a" fill="#12b76a" className="inline" />
+                                                        ))}
+
+                                                        <span className="text-xs text-gray-700 ml-1 group-hover:underline">
+                                                            Based On {item.reviews?.length || 0} Review{(item.reviews?.length || 0) !== 1 ? 's' : ''}
                                                         </span>
+                                                    </button>
+                                                </div>
+                                                <div className="text-gray-800 text-sm mb-1" dangerouslySetInnerHTML={{ __html: item.paragraph }} />
+                                                <div className="font-semibold text-gray-800 text-sm mt-1">Room Amenities</div>
+                                                <div className="flex gap-2 mb-1 text-lg">
+                                                    <div className="flex gap-2 mb-1 text-lg flex-wrap">
+                                                        {(item.amenities || []).map((am, i) => (
+                                                            <span key={am._id || i} title={am.label} className="bg-gray-100 px-1 rounded flex items-center justify-center">
+                                                                {amenityIcons[am.label] || am.label}
+                                                            </span>
+                                                        ))}
                                                     </div>
                                                 </div>
-                                                {/* Specializations */}
-                                                <div className="flex flex-wrap gap-2">
-                                                    {(item.specializations && item.specializations.length > 0
-                                                        ? item.specializations
-                                                        : ["No Specialization"]
-                                                    ).map((spec, i) => (
-                                                        <span
-                                                            key={i}
-                                                            className="bg-[#fff7f0] text-[#ff4f00] font-medium px-2 rounded-full text-sm border border-[#ff4f00]"
-                                                        >
-                                                            {spec}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <div className="font-bold text-md flex items-center pr-2">SHG Name: <span className="font-normal text-md">{item.shgName || 'No SHG Name Avaiable'}</span></div>
-                                                <div className="font-bold text-md flex items-center"> Artisan No: <span className="font-normal text-md">{item.artisanNumber || 'Artisan Number Not Available'}</span></div>
-                                            </div>
-                                            <div className="text-lg font-bold text-black">{item.yearsOfExperience || '0'} Years of Experience</div>
-                                            <div className="font-bold text-md">
-                                                {(item.artisanStories?.shortDescription?.split(" ").length > 40)
-                                                    ? item.artisanStories.shortDescription.split(" ").slice(0, 40).join(" ") + "..."
-                                                    : item.artisanStories?.shortDescription || "No Story"}
-                                            </div>
+                                                {(() => {
+                                                    const priceList = (item.prices && item.prices[0] && item.prices[0].prices) || [];
+                                                    return (
+                                                        <div className="flex gap-8 text-sm">
+                                                            <span>
+                                                                Max occupancy: {
+                                                                    priceList.some(p => p.type === '02 Pax')
+                                                                        ? '02 Pax'
+                                                                        : priceList.some(p => p.type === '01 Pax')
+                                                                            ? '01 Pax'
+                                                                            : 'N/A'
+                                                                }
+                                                            </span>
+                                                            <span>
+                                                                Extra bed available: {
+                                                                    priceList.some(p => p.type === 'Extra Bed') ? 'Yes' : 'No'
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                })()}
 
-                                            {/* Social icons top right */}
-                                            <div className="flex justify-start gap-2 my-2">
-                                                {item.socialPlugin?.facebook && (
-                                                    <a href={item.socialPlugin.facebook} target="_blank" rel="noopener noreferrer" title="Facebook">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-facebook-icon lucide-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
-                                                    </a>
-                                                )}
-                                                {item.socialPlugin?.instagram && (
-                                                    <a href={item.socialPlugin.instagram} target="_blank" rel="noopener noreferrer" title="Instagram">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-instagram-icon lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" x2="17.51" y1="6.5" y2="6.5" /></svg>
-                                                    </a>
-                                                )}
-                                                {item.socialPlugin?.youtube && (
-                                                    <a href={item.socialPlugin.youtube} target="_blank" rel="noopener noreferrer" title="YouTube">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-youtube-icon lucide-youtube"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" /><path d="m10 15 5-3-5-3z" /></svg>
-                                                    </a>
-                                                )}
-                                                {item.socialPlugin?.google && (
-                                                    <a href={item.socialPlugin.google} target="_blank" rel="noopener noreferrer" title="Google">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="black" viewBox="0 0 24 24">
-                                                            <path d="M21.35 11.1h-9.18v2.83h5.43c-.24 1.38-1.42 4.04-5.43 4.04-3.27 0-5.94-2.71-5.94-6.05s2.67-6.05 5.94-6.05c1.86 0 3.11.8 3.82 1.49l2.6-2.57C17.36 3.43 15.01 2.5 12 2.5 6.95 2.5 2.9 6.53 2.9 11.5S6.95 20.5 12 20.5c6.89 0 9.1-4.82 9.1-7.22 0-.48-.05-.8-.15-1.18z" />
-                                                        </svg>
-                                                    </a>
-                                                )}
-
-                                                {item.socialPlugin?.website && (
-                                                    <a href={item.socialPlugin.website} target="_blank" rel="noopener noreferrer" title="Website">
-                                                        <Globe />
-                                                    </a>
-                                                )}
+                                                {(() => {
+                                                    const priceList = (item.prices && item.prices[0] && item.prices[0].prices) || [];
+                                                    const mainPrice = priceList.find(p => p.type === '02 Pax') || priceList.find(p => p.type === '01 Pax');
+                                                    return (
+                                                        <div className="flex items-center gap-4">
+                                                            <span className="text-2xl font-bold text-black">Rs. {mainPrice ? mainPrice.amount : 'N/A'}</span>
+                                                            <span className="text-lg text-gray-800 line-through">{mainPrice && mainPrice.oldPrice ? mainPrice.oldPrice : 'N/A'}</span>
+                                                            <span className="text-md text-gray-700">Per Night</span>
+                                                            <button
+                                                                className="ml-auto bg-green-700 hover:bg-green-800 text-white font-semibold px-16 py-2 rounded-md"
+                                                                onClick={() => {
+                                                                    if (status === 'loading') return;
+                                                                    if (!session || !session.user) {
+                                                                        router.replace(`/sign-in?callbackUrl=${encodeURIComponent(pathname)}`);
+                                                                        return;
+                                                                    }
+                                                                    setSelectedRoom({ ...item, type: 'room' });
+                                                                    setBookingModalOpen(true);
+                                                                }}
+                                                            >Book Now</button>
+                                                        </div>
+                                                    );
+                                                })()}
                                             </div>
-                                            {/* Eye icon bottom right */}
-                                            <Link href={`/artisan/${item._id || idx}`} className="absolute bottom-4 right-4 bg-black text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:bg-[#ff4f00] transition-all z-10" title="View Artisan Details">
-                                                <Eye size={28} />
-                                            </Link>
                                         </div>
-                                    </div>
-
-                                );
-                            })}
-                            {totalPaginated > 0 && (
-                                <div className="w-full mt-8">
-                                    {/* Pagination Info and Controls */}
-                                    <div className="flex items-center justify-between mb-4">
-                                        <span className="text-md font-medium text-gray-800">
-                                            Showing {startIdx}-{endIdx} of {artisan.length} Results
-                                        </span>
-                                        <div className="flex items-center gap-3">
-                                            {[...Array(totalPages)].map((_, i) => (
+                                    );
+                                })}
+                                {totalPaginated > 0 && (
+                                    <div className="w-full mt-8">
+                                        {/* Pagination Info and Controls */}
+                                        <div className="flex items-center justify-between mb-4">
+                                            <span className="text-md font-medium text-gray-800">
+                                                Showing {startIdx}-{endIdx} of {artisan.length} Results
+                                            </span>
+                                            <div className="flex items-center gap-3">
+                                                {[...Array(totalPages)].map((_, i) => (
+                                                    <button
+                                                        key={i}
+                                                        className={`border rounded-full w-12 h-12 flex items-center justify-center text-lg ${page === i + 1 ? 'bg-black text-white' : 'bg-transparent text-black'} transition`}
+                                                        onClick={() => setPage(i + 1)}
+                                                    >
+                                                        {i + 1}
+                                                    </button>
+                                                ))}
                                                 <button
-                                                    key={i}
-                                                    className={`border rounded-full w-12 h-12 flex items-center justify-center text-lg ${page === i + 1 ? 'bg-black text-white' : 'bg-transparent text-black'} transition`}
-                                                    onClick={() => setPage(i + 1)}
+                                                    className="border rounded-full px-4 h-12 flex items-center justify-center text-lg bg-transparent text-black transition"
+                                                    onClick={() => setPage(page < totalPages ? page + 1 : page)}
+                                                    disabled={page === totalPages}
                                                 >
-                                                    {i + 1}
+                                                    NEXT
                                                 </button>
-                                            ))}
-                                            <button
-                                                className="border rounded-full px-4 h-12 flex items-center justify-center text-lg bg-transparent text-black transition"
-                                                onClick={() => setPage(page < totalPages ? page + 1 : page)}
-                                                disabled={page === totalPages}
-                                            >
-                                                NEXT
-                                            </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </div>
+                    )}
+                    <ReviewModal
+                        open={reviewModalOpen}
+                        onClose={() => setReviewModalOpen(false)}
+                        reviews={selectedReviews}
+                    />
+                </div>
+                {/* {data.longPara && ( */}
+                <div className="my-4 mx-10 rounded-xl overflow-hidden border-2 border-black p-5">
+                    <div
+                        className="custom-desc-list my-4"
+                    // dangerouslySetInnerHTML={{ __html: data.longPara }}
+                    >
+                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa beatae perspiciatis provident quisquam rerum qui voluptatum inventore cumque nesciunt blanditiis ducimus ipsa possimus impedit, suscipit, voluptas pariatur fugiat numquam dicta atque perferendis porro. Tempore sapiente minus tempora, quis minima modi alias consectetur, consequatur cumque facilis nemo nostrum voluptatem quae officia veniam. Dignissimos soluta dolore repudiandae fuga consequatur et consectetur, distinctio, dolores optio quas iste fugiat itaque! Beatae possimus molestias blanditiis culpa enim consequatur, ad vel numquam optio voluptates, eveniet architecto laboriosam adipisci repellat voluptatum pariatur obcaecati nesciunt! Debitis laborum quaerat, repellendus, natus distinctio a, non quam ea atque sit nostrum?
                     </div>
-                )}
-
+                </div>
+                {/* Booking Modal */}
+                {/* )} */}
             </div>
-            </div>
+            {bookingModalOpen && (
+                <BookingDetails
+                    room={selectedRoom}
+                    onClose={() => setBookingModalOpen(false)}
+                />
+            )}
         </div>
     );
 };

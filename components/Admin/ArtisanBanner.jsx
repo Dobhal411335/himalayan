@@ -240,11 +240,11 @@ const ArtisanBanner = ({ artisanId, artisanDetails = null }) => {
       <div className="container-fluid">
         <div className="row justify-center">
           <div className="w-full max-w-5xl mx-auto">
-            <h3 className="my-4 text-center font-bold text-2xl">Upload Artisan Banner</h3>
+            <h3 className="my-4 text-center font-bold text-2xl">Upload Team Person Banner</h3>
             <div className="bg-white rounded shadow p-6 mb-6">
               <form id="certificateForm" onSubmit={handleSubmit}>
                 <div className="mb-4">
-                  <label className="block font-semibold mb-1">Artisan User</label>
+                  <label className="block font-semibold mb-1">Team Person User</label>
                   <input
                     type="text"
                     className="w-full border rounded px-3 py-2 bg-gray-100"
@@ -257,7 +257,7 @@ const ArtisanBanner = ({ artisanId, artisanDetails = null }) => {
                         })()
                     }
                     readOnly
-                    placeholder="Artisan Name"
+                    placeholder="Team Person Name"
                   />
                 </div>               
                 <div className="mb-4">
@@ -399,52 +399,7 @@ const ArtisanBanner = ({ artisanId, artisanDetails = null }) => {
                   </DialogContent>
                 </Dialog>
               )}
-
-              {/* View Modal */}
-              {viewModal && selectedBanner && (
-                <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-                  <div className="bg-white rounded shadow-lg max-w-lg w-full p-8 relative">
-                    <h4 className="font-bold text-lg mb-4">Banner Details</h4>
-                    <h4 className="font-bold text-lg mb-4">Certificate Details</h4>
-                    <div className="grid grid-cols-1 gap-4 mb-2">
-                      <div className="bg-white p-3 rounded border border-gray-200 shadow-md mb-2">
-                        <div className="font-semibold text-gray-800">Artisan</div>
-                        <div className="text-gray-600">{selectedCertificate.artisan ? `${selectedCertificate.artisan.title ? selectedCertificate.artisan.title + ' ' : ''}${selectedCertificate.artisan.firstName} ${selectedCertificate.artisan.lastName}` : '-'}</div>
-                      </div>
-                      <div className="bg-white p-3 rounded border border-gray-200 shadow-md mb-2">
-                        <div className="font-semibold text-gray-800">Certificate Name</div>
-                        <div className="text-gray-600">{selectedCertificate.title}</div>
-                      </div>
-                      <div className="flex gap-2">
-                        <div className="bg-white p-3 rounded border border-gray-200 shadow-md mb-2 w-1/2">
-                          <div className="font-semibold text-gray-800">Year of Issue</div>
-                          <div className="text-gray-600">{selectedCertificate.issueDate}</div>
-                        </div>
-                        <div className="bg-white p-3 rounded border border-gray-200 shadow-md mb-2 w-1/2">
-                          <div className="font-semibold text-gray-800">Specialized In</div>
-                          <div className="text-gray-600">{selectedCertificate.description}</div>
-                        </div>
-                      </div>
-                      <div className="bg-white p-3 rounded border border-gray-200 shadow-md mb-2">
-                        <div className="font-semibold text-gray-800">Issued By</div>
-                        <div className="text-gray-600">{selectedCertificate.issuedBy}</div>
-                      </div>
-                      <div className="bg-white p-3 rounded border border-gray-200 shadow-md mb-2">
-                        <div className="font-semibold text-gray-800">Image</div>
-                        <div className="text-gray-600"><img src={selectedCertificate.imageUrl} alt="Certificate" className="w-56 h-36 object-cover rounded mt-2" /></div>
-                      </div>
-                    </div>
-                    <button className=" absolute w-8 h-8 top-2 right-2 text-gray-700 hover:text-red-600" onClick={handleCloseViewModal}>
-                      X
-                    </button>
-                    <button className=" absolute px-4 py-1 bottom-2 right-2 border border-gray-200 rounded  bg-red-500 text-white" onClick={handleCloseViewModal}>
-                      Close
-                    </button>
-                  </div>
-                </div>
-              )}
-
-            </div>
+              </div>
           </div>
         </div>
       </div>

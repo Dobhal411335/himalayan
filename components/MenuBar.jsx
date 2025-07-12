@@ -8,6 +8,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
 const staticMenuItems = [
     {
+        catTitle: "Accommodation",
+        subCat: [
+            {
+                subCatPackage: [
+                    { title: "", url: "", active: true }
+                ],
+                active: true,
+            }
+        ],
+        active: true,
+    },
+    {
         catTitle: "About Us",
         subCat: [
             {
@@ -63,7 +75,7 @@ const MenuBar = (props) => {
             fetch("/api/getAllMenuItems")
                 .then(res => res.json())
                 .then(data => {
-                    console.log(data)
+                    // console.log(data)
                     let arr = Array.isArray(data) ? data : (Array.isArray(data.packages) ? data.packages : []);
                     setMenuItems(arr.filter(item => item.active));
                 });
@@ -166,6 +178,10 @@ const MenuBar = (props) => {
                             <Link href="/contact-us" className="w-full block p-3 text-sm font-medium hover:bg-gray-100">
                                 {cat.catTitle}
                             </Link>
+                        ) : cat.catTitle === "Accommodation" ? (
+                            <Link href="/accommodation" className="w-full block p-3 text-sm font-medium hover:bg-gray-100">
+                                {cat.catTitle}
+                            </Link>
                         ) : (
                             <>
                                 <button
@@ -254,6 +270,10 @@ const MenuBar = (props) => {
                         <NavigationMenu.Item key={index} className="relative flex justify-center">
                             {cat.catTitle === "Contact Us" ? (
                                 <Link href="/contact" className="flex items-center px-4 py-2 text-sm font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md">
+                                    {cat.catTitle}
+                                </Link>
+                            ) : cat.catTitle === "Accommodation" ? (
+                                <Link href="/accommodation" className="flex items-center px-4 py-2 text-sm font-semibold hover:bg-blue-500 data-[state=open]:bg-blue-300 data-[state=open]:text-black rounded-md">
                                     {cat.catTitle}
                                 </Link>
                             ) : (
