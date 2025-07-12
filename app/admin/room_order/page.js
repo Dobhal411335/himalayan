@@ -11,7 +11,7 @@ const  EnquiryOrderPage = () => {
                 </div>
             </header>
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                <h1 className="text-4xl px-12 font-semibold">Enquiry Order</h1>
+                <h1 className="text-4xl px-12 font-semibold">Room Order</h1>
                 <EnquiryOrder />
             </div>
         </SidebarInset>

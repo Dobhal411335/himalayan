@@ -157,7 +157,7 @@ const data = {
     { divider: true },
     {
       name: "Room Order",
-      url: "/admin/enquiry_order",
+      url: "/admin/room_order",
       icon: ShoppingCart,
     },
     {

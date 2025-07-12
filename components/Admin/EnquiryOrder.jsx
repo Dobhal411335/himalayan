@@ -72,10 +72,10 @@ const EnquiryOrder = () => {
   useEffect(() => {
     async function fetchOrders() {
       try {
-        let res = await fetch("/api/orders/admin");
+        let res = await fetch("/api/bookingDetails?type=room");
         const data = await res.json();
-        if (data.success && Array.isArray(data.orders)) {
-          setOrders(data.orders);
+        if (data.success && Array.isArray(data.bookings)) {
+          setOrders(data.bookings);
         } else {
           setOrders([]);
         }
@@ -131,15 +131,11 @@ const EnquiryOrder = () => {
             <thead className="bg-gray-100">
               <tr>
                 <th className="p-3 text-left">S.No</th>
-                <th className="p-3 text-left">Customer</th>
-                <th className="p-3 text-left">Products</th>
-                <th className="p-3 text-center">Qty</th>
-                <th className="p-3 text-right">Total</th>
-                <th className="p-3 text-center">Payment</th>
-                <th className="p-3 text-center">Order Status</th>
-                <th className="p-3 text-center">Order Date</th>
-                {/* <th className="p-3 text-left">Delivery Address</th> */}
-                <th className="p-3 text-center">Actions</th>
+                <th className="p-3 text-center">Order No</th>
+                <th className="p-3 text-left">Customer Name</th>
+                <th className="p-3 text-left">Date</th>
+                <th className="p-3 text-center">View</th>
+                <th className="p-3 text-right">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -151,7 +147,9 @@ const EnquiryOrder = () => {
               {paginatedOrders.map((order, idx) => (
                 <tr key={order._id || idx} className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                   <td className="p-3 font-mono text-blue-700">{idx + 1}</td>
+                  <td className="p-3">{order.bookingId}</td>
                   <td className="p-3">{`${order.firstName || ''} ${order.lastName || ''}`.trim() || order.email || order.phone}</td>
+                  <td className="p-3">{order.createdAt}</td>
                   <td className="p-3 flex flex-col gap-1 items-start">
                     {order.products && order.products.slice(0, 2).map((p, i) => (
                       <span key={i} className="flex items-center gap-1">

@@ -1,7 +1,8 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import Image from 'next/image';
 import { X } from 'lucide-react';
+import InvoiceModal from './InvoiceModal';
 const stateList = [
     "Uttarakhand", "Uttar Pradesh", "Delhi", "Haryana", "Punjab", "Himachal Pradesh", "Rajasthan", "Maharashtra", "Karnataka", "Tamil Nadu", "Kerala", "West Bengal", "Gujarat", "Madhya Pradesh", "Bihar", "Jharkhand", "Goa", "Assam", "Odisha", "Chhattisgarh", "Telangana", "Andhra Pradesh", "Sikkim", "Tripura", "Nagaland", "Manipur", "Mizoram", "Meghalaya", "Arunachal Pradesh", "Jammu & Kashmir", "Ladakh"
 ];
@@ -10,6 +11,10 @@ import toast from 'react-hot-toast';
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 const BookingDetails = ({ room, onClose, type }) => {
+    
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [showInvoice, setShowInvoice] = useState(false);
+    const [bookingId, setBookingId] = useState('');
     const { data: session, status } = useSession();
     const router = useRouter();
     const pathname = usePathname();
@@ -38,8 +43,7 @@ const BookingDetails = ({ room, onClose, type }) => {
     const [promo, setPromo] = useState('');
     const [applied, setApplied] = useState(false);
     const [discount, setDiscount] = useState(100);
-    console.log(room)
-    const price = room?.price || 2999;
+    const [invoiceData, setInvoiceData] = useState(null);
     const roomName = room?.title || 'Room Name';
     const roomImg = room?.mainPhoto?.url || '/placeholder.jpeg';
 
@@ -359,30 +363,73 @@ const BookingDetails = ({ room, onClose, type }) => {
                             }
                             try {
                                 if ((room?.type || type) === 'room') {
-                                    // Compose sidebar price info
-                                    const priceObj = Array.isArray(room?.prices) && room.prices.length > 0 ? room.prices[0] : null;
-                                    const baseAmount = priceObj?.amount || 0;
-                                    const cgst = priceObj?.cgst || 0;
-                                    const sgst = priceObj?.sgst || 0;
-                                    const oldPrice = priceObj?.oldPrice || 0;
-                                    const finalAmount = baseAmount + cgst + sgst;
-                                    // Compose booking payload
+                                    // Generate a mixed alphanumeric booking ID
+                                    function generateBookingId() {
+                                        const now = new Date();
+                                        const pad = n => n.toString().padStart(2, '0');
+                                        const dateStr = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+                                        const rand = Math.random().toString(36).substring(2, 8).toUpperCase();
+                                        return `HWR-${dateStr}-${rand}`;
+                                    }
+                                    const bookingIdVal = generateBookingId();
+                                    // Extract detailed price breakdown as in sidebar
+                                    const priceList = (room.prices && room.prices[0] && room.prices[0].prices) || [];
+                                    const mainPrice = priceList.find(p => p.type === '02 Pax') || priceList.find(p => p.type === '01 Pax') || priceList[0] || {};
+                                    const baseAmount = mainPrice?.amount || 0;
+                                    const cgst = mainPrice?.cgst || 0;
+                                    const sgst = mainPrice?.sgst || 0;
+                                    const oldPrice = mainPrice?.oldPrice || 0;
+
+                                    const extrabed = priceList.find(p => p.type === 'Extra Bed') || {};
+                                    const extrabedAmount = extrabed?.amount || 0;
+                                    const extrabedOldPrice = extrabed?.oldPrice || 0;
+                                    const extrabedCgst = extrabed?.cgst || 0;
+                                    const extrabedSgst = extrabed?.sgst || 0;
+                                    const hasExtraBed = extrabedAmount > 0;
+
+                                    const totalCgst = cgst + (hasExtraBed ? extrabedCgst : 0);
+                                    const totalSgst = sgst + (hasExtraBed ? extrabedSgst : 0);
+                                    const totalTaxAmount = totalCgst + totalSgst;
+                                    const subtotal = baseAmount + (hasExtraBed ? extrabedAmount : 0);
+                                    const totalTaxPercent = subtotal > 0 ? ((totalTaxAmount / subtotal) * 100).toFixed(2) : 0;
+                                    const finalAmount = subtotal + totalTaxAmount;
+
+                                    // Compose booking payload with detailed breakdown
+                                    // Generate invoice number (date + random)
+                                    const invoiceNumber = `INV${new Date().getFullYear()}${(new Date().getMonth()+1).toString().padStart(2,'0')}${new Date().getDate().toString().padStart(2,'0')}-${Math.random().toString(36).substring(2,8).toUpperCase()}`;
+
                                     const payload = {
-                                        ...form,
+                                        ...form, // include all user fields (firstName, lastName, callNo, email, address, etc)
+                                        specialReq: form.specialReq,
+                                        offers: form.offers,
+                                        bookingId: bookingIdVal,
+                                        invoiceNumber,
                                         userId: session.user.id || session.user._id,
                                         roomId: room?._id,
                                         type: 'room',
                                         roomName: room?.title || '',
-                                        allPrices: room?.prices || [],
-                                        selectedPriceType: priceObj?.type || '',
-                                        priceDetails: {
-                                            priceId: priceObj?._id,
-                                            baseAmount,
-                                            cgst,
-                                            sgst,
-                                            oldPrice,
-                                            finalAmount,
-                                        }
+                                        priceBreakdown: {
+                                            main: {
+                                                type: mainPrice?.type || '',
+                                                amount: baseAmount,
+                                                oldPrice: oldPrice,
+                                                cgst: cgst,
+                                                sgst: sgst,
+                                            },
+                                            extraBed: hasExtraBed ? {
+                                                type: extrabed?.type || '',
+                                                amount: extrabedAmount,
+                                                oldPrice: extrabedOldPrice,
+                                                cgst: extrabedCgst,
+                                                sgst: extrabedSgst,
+                                            } : null,
+                                        },
+                                        subtotal,
+                                        totalCgst,
+                                        totalSgst,
+                                        totalTaxPercent,
+                                        totalTaxAmount,
+                                        finalAmount,
                                     };
                                     const res = await fetch('/api/bookingDetails', {
                                         method: 'POST',
@@ -392,7 +439,11 @@ const BookingDetails = ({ room, onClose, type }) => {
                                     const data = await res.json();
                                     if (data.success) {
                                         toast.success('Booking successful!');
-                                        if (onClose) onClose();
+                                        setBookingId(bookingIdVal);
+                                        setShowConfirmation(true); // Show confirmation UI
+                                        setInvoiceData(
+                                            payload
+                                        );
                                     } else {
                                         toast.error(data.error || 'Booking failed');
                                     }
@@ -411,8 +462,76 @@ const BookingDetails = ({ room, onClose, type }) => {
             </>
         );
     }
+    useEffect(() => {
+        document.body.style.overflow = (showConfirmation || step > 0) ? 'hidden' : '';
+        return () => { document.body.style.overflow = ''; };
+    }, [showConfirmation, step]);
+    if (showInvoice) {
+        // console.log('showInvoice', showInvoice, 'invoiceData', invoiceData);
+        return (
+            <InvoiceModal
+            open={showInvoice}
+            onClose={() => setShowInvoice(false)}
+            booking={invoiceData}
+            bookingId={bookingId}
+            bookingDate={new Date()}
+          />
+        );
+    }
+    if (showConfirmation) {
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40" onClick={onClose}>
+                <div className="bg-white rounded-2xl shadow-lg max-w-xl w-full p-8 relative flex flex-col items-start text-start" onClick={e => e.stopPropagation()}>
+                    <button
+                        className="absolute top-3 right-3 bg-gray-400 rounded-full text-white p-2 hover:text-gray-700 text-xl font-bold"
+                        onClick={onClose}
+                    >
+                        <span style={{ fontSize: '1.2em' }}><X /></span>
+                    </button>
+
+                    {/* Booking Order Number */}
+                    <div className="text-md font-bold mb-2 tracking-wider flex">
+                        Booking Order No.: <span className="ml-2 text-blue-800">{bookingId}</span>
+                    </div>
+
+                    {/* Confirmation Title */}
+                    <div className="text-2xl italic font-bold mb-4 text-[#7a5b2b]">
+                        Booking Order Confirmation
+                    </div>
+
+                    {/* Confirmation Message */}
+                    <div className="text-base text-black mb-6 leading-relaxed">
+                        Dear Guest, Thank you for choosing to stay with us. We are pleased to confirm that we have received your booking request.
+
+                        Our team is now reviewing the details and will ensure all necessary arrangements are in place for your comfortable stay. You will receive a confirmation via email or phone call shortly.
+
+                        If you have any special requests or need assistance, please feel free to contact us.
+                        <br /><br />
+                        <span className="font-semibold">We look forward to welcoming you!</span>
+                    </div>
+
+                    {/* Invoice Button */}
+                    <button className="w-full bg-black text-white rounded-md py-3 font-semibold text-lg mb-3 hover:bg-gray-900" onClick={() => setShowInvoice(true)}>
+                        Get receipt (Invoice)
+                    </button>
+
+                    {/* Dashboard Link */}
+                    <div className="w-full">
+                        <span
+                            className="text-red-600 font-semibold text-base italic cursor-pointer"
+                            onClick={onClose}
+                        >
+                            Or Go To Dashboard &gt;&gt;
+                        </span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40" onClick={onClose}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
             <div className="bg-[#fcf9f4] rounded-2xl shadow-lg max-w-4xl w-full flex flex-col md:flex-row p-5 gap-8 relative" onClick={e => e.stopPropagation()}>
                 {/* Close button */}
                 <button className="absolute top-2 right-2 bg-gray-500 rounded-full text-white p-2  hover:text-gray-700 text-2xl font-bold" onClick={onClose}><X /></button>
@@ -427,9 +546,6 @@ const BookingDetails = ({ room, onClose, type }) => {
                         <Image src={roomImg} alt={roomName} fill className="object-cover" />
                     </div>
                     {(() => {
-                        // Debug logs
-                        console.log('BookingDetails Sidebar room:', room);
-                        console.log('BookingDetails Sidebar room.prices:', room?.prices);
                         if (!room?.prices || !Array.isArray(room.prices) || room.prices.length === 0) {
                             return (
                                 <div className="text-red-600 font-semibold">No price data found for this room.<br />Check room.prices structure.</div>
@@ -437,53 +553,97 @@ const BookingDetails = ({ room, onClose, type }) => {
                         }
                         const priceList = (room.prices && room.prices[0] && room.prices[0].prices) || [];
                         const mainPrice = priceList.find(p => p.type === '02 Pax') || priceList.find(p => p.type === '01 Pax') || priceList[0];
+
                         const baseAmount = mainPrice?.amount || 0;
                         const cgst = mainPrice?.cgst || 0;
                         const sgst = mainPrice?.sgst || 0;
                         const oldPrice = mainPrice?.oldPrice || 0;
-                        const finalAmount = baseAmount + cgst + sgst;
-                        // const priceList = (item.prices && item.prices[0] && item.prices[0].prices) || [];
-                        // return (
-                        //     <div className="flex gap-8 text-sm">
-                        //         <span>
-                        //             Max occupancy: {
-                        //                 priceList.some(p => p.type === '02 Pax')
-                        //                     ? '02 Pax'
-                        //                     : priceList.some(p => p.type === '01 Pax')
-                        //                         ? '01 Pax'
-                        //                         : 'N/A'
-                        //             }
-                        //         </span>
-                        //         <span>
-                        //             Extra bed available: {
-                        //                 priceList.some(p => p.type === 'Extra Bed') ? 'Yes' : 'No'
-                        //             }
-                        //         </span>
-                        //     </div>
-                        // );
+
+                        const extrabed = priceList.find(p => p.type === 'Extra Bed');
+                        const extrabedAmount = extrabed?.amount || 0;
+                        const extrabedOldPrice = extrabed?.oldPrice || 0;
+                        const extrabedCgst = extrabed?.cgst || 0;
+                        const extrabedSgst = extrabed?.sgst || 0;
+
+                        const hasExtraBed = extrabedAmount > 0;
+
+                        const totalCgst = cgst + (hasExtraBed ? extrabedCgst : 0);
+                        const totalSgst = sgst + (hasExtraBed ? extrabedSgst : 0);
+                        const totalTaxAmount = totalCgst + totalSgst;
+
+                        const subtotal = baseAmount + (hasExtraBed ? extrabedAmount : 0);
+                        const totalTaxPercent = subtotal > 0 ? ((totalTaxAmount / subtotal) * 100).toFixed(2) : 0;
+                        const finalAmount = subtotal + totalTaxAmount;
+
                         return (
                             <>
-                                <div className="font-bold text-lg mb-1">Room Price <span className="text-xs text-gray-600 ml-2">{priceList.some(p => p.type === '02 Pax')
-                                    ? '02 Pax'
-                                    : priceList.some(p => p.type === '01 Pax')
-                                    ? '01 Pax'
-                                    : 'N/A'
-                                }</span><span className="float-right text-black">Rs&nbsp;{baseAmount.toLocaleString()}</span></div>
-                                {oldPrice > 0 && (
-                                    <div className="text-md text-gray-800 line-through mb-1">Old Price: Rs&nbsp;{oldPrice.toLocaleString()}</div>
+                                <div className="text-sm text-black mb-1">
+                                    Showing Price For&nbsp;
+                                    {priceList.some(p => p.type === '02 Pax')
+                                        ? '02 Pax'
+                                        : priceList.some(p => p.type === '01 Pax')
+                                            ? '01 Pax'
+                                            : 'N/A'}
+                                </div>
+
+                                <div className="font-bold text-lg mb-1">
+                                    Room Price
+                                    <span className="text-md text-gray-600 ml-2">
+                                        <span className="float-right text-black flex items-center gap-2">
+                                            Rs&nbsp;{baseAmount.toLocaleString()}
+                                            {oldPrice > 0 && (
+                                                <div className="text-sm text-gray-800 font-bold line-through">
+                                                    Rs&nbsp;{oldPrice.toLocaleString()}
+                                                </div>
+                                            )}
+                                        </span>
+                                    </span>
+                                </div>
+
+                                <span className="text-sm text-black my-1">
+                                    Extra bed available: {hasExtraBed ? 'Yes' : 'No'}
+                                </span>
+
+                                {hasExtraBed && (
+                                    <div className="flex justify-between mt-1">
+                                        <span className='text-md font-bold'>Extra Bed Amount</span>
+                                        <div className="flex items-center gap-2">
+                                            <span className='text-md text-black font-bold'>Rs&nbsp;{extrabedAmount.toLocaleString()}</span>
+                                            {extrabedOldPrice > 0 && (
+                                                <span className='text-sm text-black font-semibold line-through'>Rs&nbsp;{extrabedOldPrice.toLocaleString()}</span>
+                                            )}
+                                        </div>
+                                    </div>
                                 )}
-                                <div className="text-xs text-gray-500 mb-2">Showing Price For 01 Day</div>
-                                <span className="text-xs text-gray-500 mb-2">Extra bed available: {
-                                    priceList.some(p => p.type === 'Extra Bed') ? 'Yes' : 'No'
-                                }</span>
+
                                 <hr className="my-2 border-gray-300" />
+
                                 <div className="flex flex-col gap-1 text-sm">
-                                    <div className="flex justify-between"><span>Total CGST</span><span>Rs&nbsp;{cgst.toLocaleString()}</span></div>
-                                    <div className="flex justify-between"><span>Total SGST</span><span>Rs&nbsp;{sgst.toLocaleString()}</span></div>
-                                    <div className="flex justify-between font-semibold mt-1"><span>Final Amount</span><span>Rs&nbsp;{finalAmount.toLocaleString()}</span></div>
+                                    <div className="flex justify-between">
+                                        <span className='text-sm font-bold'>Subtotal ({hasExtraBed ? 'Room + Extra Bed' : 'Room'})</span>
+                                        <span className='text-sm font-semibold'>Rs&nbsp;{subtotal.toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className='text-sm font-bold'>CGST ({hasExtraBed ? 'Room + Extra Bed' : 'Room'})</span>
+                                        <span className='text-sm font-semibold'>Rs&nbsp;{totalCgst.toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className='text-sm font-bold'>SGST ({hasExtraBed ? 'Room + Extra Bed' : 'Room'})</span>
+                                        <span className='text-sm font-semibold'>Rs&nbsp;{totalSgst.toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className='text-sm font-bold'>Total Tax ({totalTaxPercent}%)</span>
+                                        <span className='text-sm font-semibold'>Rs&nbsp;{totalTaxAmount.toLocaleString()}</span>
+                                    </div>
+                                    <hr className="my-2 border-gray-300" />
+                                    <div className="flex justify-between font-semibold mt-1">
+                                        <span className='text-sm font-bold'>Final Amount</span>
+                                        <span className='text-sm font-semibold'>Rs&nbsp;{finalAmount.toLocaleString()}</span>
+                                    </div>
                                 </div>
                             </>
                         );
+
                     })()}
                 </div>
             </div>

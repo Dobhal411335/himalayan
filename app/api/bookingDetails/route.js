@@ -1,13 +1,26 @@
 import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
+import connectDB from "@/lib/connectDB";
 import BookingDetails from '@/models/BookingDetails';
 
 // Ensure mongoose connection (adjust as needed for your setup)
-if (!mongoose.connection.readyState) {
-  mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+export async function GET(req) {
+  await connectDB();
+  try {
+    let type = 'room';
+    if (req?.url) {
+      const { searchParams } = new URL(req.url);
+      if (searchParams.get('type')) type = searchParams.get('type');
+    }
+    const bookings = await BookingDetails.find({ type }).sort({ createdAt: -1 });
+    return NextResponse.json({ bookings, success: true }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
 }
 
 export async function POST(req) {
+    connectDB();
   try {
     const body = await req.json();
     if (body.type === 'room') {
