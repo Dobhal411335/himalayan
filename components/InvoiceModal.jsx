@@ -36,9 +36,7 @@ const InvoiceModal = ({ open, onClose, booking, bookingId, bookingDate }) => {
   const baseAmount = main?.amount || 0;
   const cgst = main?.cgst || 0;
   const sgst = main?.sgst || 0;
-  const oldPrice = main?.oldPrice || 0;
   const extrabedAmount = extrabed?.amount || 0;
-  const extrabedOldPrice = extrabed?.oldPrice || 0;
   const extrabedCgst = extrabed?.cgst || 0;
   const extrabedSgst = extrabed?.sgst || 0;
   const hasExtraBed = extrabedAmount > 0;

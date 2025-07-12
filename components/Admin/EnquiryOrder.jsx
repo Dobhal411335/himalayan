@@ -54,19 +54,28 @@ const EnquiryOrder = () => {
   const [orders, setOrders] = useState([]);
   const [statusFilter, setStatusFilter] = useState("");
   const [search, setSearch] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
   const [page, setPage] = useState(1);
   const [viewOrder, setViewOrder] = useState(null); // For modal
   const rowsPerPage = 8;
   console.log(orders)
   // Filtering logic
-  const filteredOrders = orders.filter(order =>
-    (statusFilter ? order.orderStatus === statusFilter : true) &&
-    (search ? (
-      order.id.toLowerCase().includes(search.toLowerCase()) ||
-      order.customer.toLowerCase().includes(search.toLowerCase()) ||
-      order.products.some(p => p.name.toLowerCase().includes(search.toLowerCase()))
-    ) : true)
-  );
+  const filteredOrders = orders.filter(order => {
+    // Search filter
+    const matchesSearch = search ? (
+      (order.bookingId && order.bookingId.toLowerCase().includes(search.toLowerCase())) ||
+      (order.firstName && order.firstName.toLowerCase().includes(search.toLowerCase()))
+    ) : true;
+    // Date filter
+    const matchesDate = dateFilter ? (() => {
+      if (!order.departure) return false;
+      const orderDate = new Date(order.departure);
+      // Format to yyyy-mm-dd
+      const orderDateStr = orderDate.toISOString().slice(0, 10);
+      return orderDateStr === dateFilter;
+    })() : true;
+    return matchesSearch && matchesDate;
+  });
   const paginatedOrders = filteredOrders.slice((page - 1) * rowsPerPage, page * rowsPerPage);
   const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
   useEffect(() => {
@@ -85,6 +94,12 @@ const EnquiryOrder = () => {
     }
     fetchOrders();
   }, []);
+  // Helper for date formatting
+  const formatDate = (date) => {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toLocaleDateString('en-GB');
+  };
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Main content */}
@@ -103,35 +118,24 @@ const EnquiryOrder = () => {
               <Search className="absolute left-3 top-3 text-gray-400" size={16} />
             </div>
           </div>
+            <div className="flex gap-2 items-center">
+              <label className="font-medium text-gray-600">Date:</label>
+              <input
+                type="date"
+                className="px-3 py-2 border rounded bg-gray-100 focus:outline-none"
+                value={dateFilter}
+                onChange={e => setDateFilter(e.target.value)}
+              />
+            </div>
         </header>
-        {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-2 items-center justify-between px-4 py-3 bg-white border-b">
-          <div className="flex gap-2 items-center">
-            <label className="font-medium text-gray-600">Status:</label>
-            <select
-              className="px-3 py-2 border rounded bg-gray-100 focus:outline-none"
-              value={statusFilter}
-              onChange={e => setStatusFilter(e.target.value)}
-            >
-              <option value="">All</option>
-              {orderStatusOptions.map(status => (
-                <option key={status} value={status}>{status}</option>
-              ))}
-            </select>
-          </div>
-          {/* Date filter placeholder (implement as needed) */}
-          <div className="flex gap-2 items-center">
-            <label className="font-medium text-gray-600">Date:</label>
-            <input type="date" className="px-3 py-2 border rounded bg-gray-100 focus:outline-none" />
-          </div>
-        </div>
+
         {/* Table */}
         <div className="flex-1 overflow-x-auto p-4">
-          <table className="min-w-full bg-white rounded-lg shadow overflow-hidden text-sm">
+          <table className="min-w-full bg-white rounded-lg shadow overflow-hidden text-md">
             <thead className="bg-gray-100">
               <tr>
                 <th className="p-3 text-left">S.No</th>
-                <th className="p-3 text-center">Order No</th>
+                <th className="p-3 text-left">Order No</th>
                 <th className="p-3 text-left">Customer Name</th>
                 <th className="p-3 text-left">Date</th>
                 <th className="p-3 text-center">View</th>
@@ -147,94 +151,14 @@ const EnquiryOrder = () => {
               {paginatedOrders.map((order, idx) => (
                 <tr key={order._id || idx} className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                   <td className="p-3 font-mono text-blue-700">{idx + 1}</td>
-                  <td className="p-3">{order.bookingId}</td>
+                  <td className="p-3 ">{order.bookingId}</td>
                   <td className="p-3">{`${order.firstName || ''} ${order.lastName || ''}`.trim() || order.email || order.phone}</td>
-                  <td className="p-3">{order.createdAt}</td>
-                  <td className="p-3 flex flex-col gap-1 items-start">
-                    {order.products && order.products.slice(0, 2).map((p, i) => (
-                      <span key={i} className="flex items-center gap-1">
-                        {p.image && p.image.url && <img src={p.image.url} alt={p.name} className="w-8 h-8 rounded object-cover border" />}
-                        <span>{p.name}</span>
-                      </span>
-                    ))}
-                    {order.products && order.products.length > 2 && (
-                      <span className="text-xs text-gray-500 ml-2">+{order.products.length - 2} more</span>
-                    )}
-                  </td>
-                  <td className="p-3 text-center">{order.products && order.products.reduce((sum, p) => sum + (Number(p.qty) || 0), 0)}</td>
-                  <td className="p-3 text-right font-semibold">₹{order.cartTotal || order.subTotal || 0}</td>
+                  <td className="p-3">{formatDate(order.departure)}</td>
                   <td className="p-3 text-center">
-                    <span
-                      className={classNames(
-                        "px-2.5 py-1 rounded text-xs font-semibold transition-all duration-150",
-                        order.status === "Delivered"
-                          ? "bg-green-100 text-green-700 border border-green-300"
-                          : order.status === "Cancelled"
-                            ? "bg-red-100 text-red-700 border border-red-300"
-                            : order.status === "Processing"
-                              ? "bg-blue-100 text-blue-700 border border-blue-300"
-                              : order.status === "Shipped"
-                                ? "bg-purple-100 text-purple-700 border border-purple-300"
-                                : "bg-gray-100 text-gray-700 border border-gray-200"
-                      )}
-                      title={order.status}
-                    >
-                      {order.status || "Pending"}
-                    </span>
+                    <button className="p-2 rounded hover:bg-blue-100" title="View" onClick={() => setViewOrder(order)}><Eye className="text-blue-600" size={20} /></button>
                   </td>
                   <td className="p-3 text-center">
-                    <div className="relative inline-block w-32">
-                      <select
-                        className={classNames(
-                          "block w-full px-3 py-2 pr-8 rounded border text-xs font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-200 appearance-none cursor-pointer transition-all duration-150",
-                          order.status === "Delivered"
-                            ? "bg-green-50 border-green-400 text-green-800"
-                            : order.status === "Cancelled"
-                              ? "bg-red-50 border-red-400 text-red-800"
-                              : order.status === "Processing"
-                                ? "bg-blue-50 border-blue-400 text-blue-800"
-                                : order.status === "Shipped"
-                                  ? "bg-purple-50 border-purple-400 text-purple-800"
-                                  : "bg-gray-50 border-gray-300 text-gray-700"
-                        )}
-                        value={order.status}
-                        onChange={async e => {
-                          const newStatus = e.target.value;
-                          setOrders(orders => orders.map(o =>
-                            o.orderId === order.orderId ? { ...o, status: newStatus } : o
-                          ));
-                          try {
-                            const res = await fetch(`/api/orders/${order._id}`, {
-                              method: 'PUT',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ status: newStatus })
-                            });
-                            const data = await res.json();
-                            if (!data.success) throw new Error(data.error || 'Update failed');
-                            toast.success('Order status updated!');
-                          } catch (err) {
-                            setOrders(orders => orders.map(o =>
-                              o.orderId === order.orderId ? { ...o, status: order.status } : o
-                            ));
-                            toast.error('Failed to update order status: ' + err.message);
-                          }
-                        }}
-                      >
-                        {orderStatusOptions.map(status => (
-                          <option key={status} value={status}>{status}</option>
-                        ))}
-                      </select>
-                      <span className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                        ▼
-                      </span>
-                    </div>
-                  </td>
-                  <td className="p-3 text-center">{order.datePurchased ? new Date(order.datePurchased).toLocaleString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}</td>
-                  {/* <td className="p-3 max-w-xs truncate">{order.address}</td> */}
-                  <td className="p-3 text-center flex gap-2 justify-center">
-                    <button className="p-2 rounded hover:bg-blue-100" title="View" onClick={() => setViewOrder(order)}><Eye className="text-blue-600" size={18} /></button>
-                    <button className="p-2 rounded hover:bg-green-100" title="Edit"><Edit className="text-green-600" size={18} /></button>
-                    <button className="p-2 rounded hover:bg-red-100" title="Delete"><Trash2 className="text-red-600" size={18} /></button>
+                    <button className="p-2 rounded hover:bg-red-100" title="Delete"><Trash2 className="text-red-600" size={20} /></button>
                   </td>
                 </tr>
               ))}
@@ -243,7 +167,7 @@ const EnquiryOrder = () => {
         </div>
         {/* Pagination */}
         <div className="flex justify-between items-center px-4 pb-4">
-          <span className="text-sm text-gray-600">
+          <span className="text-md text-gray-600">
             Showing {(page - 1) * rowsPerPage + 1} - {Math.min(page * rowsPerPage, filteredOrders.length)} of {filteredOrders.length} orders
           </span>
           <div className="flex gap-1">
@@ -274,46 +198,64 @@ const EnquiryOrder = () => {
       {/* Modal for viewing order details */}
       {viewOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg max-w-lg w-full p-6 relative animate-fade-in">
+          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 relative overflow-y-auto max-h-[90vh] animate-fade-in">
+            {/* Close Button */}
             <button
               className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl font-bold"
               onClick={() => setViewOrder(null)}
               title="Close"
             >
-              &times;
+              <X className="text-blue-600" size={18} />
             </button>
-            <h2 className="text-xl font-bold mb-4 text-blue-700">Order Details</h2>
-            <div className="mb-3">
-              <span className="font-semibold text-gray-600">Order ID:</span> <span className="font-mono">{viewOrder.orderId}</span>
+
+            {/* Header */}
+            <h2 className="text-2xl font-bold mb-1 text-[#7a5b2b] text-center">Room Booking Details</h2>
+            <p className="text-sm text-center text-gray-600 mb-5">Booking overview and invoice breakdown</p>
+
+            {/* Booking Info */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-md mb-4">
+              <div><span className="font-bold text-black">Booking ID:</span> <span className="font-mono">{viewOrder.bookingId}</span></div>
+              <div><span className="font-bold text-black">Status:</span> <span className={`capitalize font-semibold ${viewOrder.status === 'confirmed' ? 'text-green-600' : 'text-blue-700'}`}>{viewOrder.status}</span></div>
+              <div><span className="font-bold text-black">Name:</span> {viewOrder.firstName} {viewOrder.lastName}</div>
+              <div><span className="font-bold text-black">Email:</span> {viewOrder.email}</div>
+              <div><span className="font-bold text-black">Phone:</span> {viewOrder.callNo}</div>
+              <div><span className="font-bold text-black">Address:</span> <span className="text-gray-700">{viewOrder.address}</span></div>
             </div>
-            <div className="mb-3">
-              <span className="font-semibold text-gray-600">Customer:</span> {viewOrder.firstName} {viewOrder.lastName}
-            </div>
-            <div className="mb-3">
-              <span className="font-semibold text-gray-600">Delivery Address:</span>
-              <div className="text-gray-700 text-sm mt-1">{viewOrder.address}</div>
-            </div>
-            <div className="mb-4">
-              <span className="font-semibold text-gray-600">Products:</span>
-              <div className="divide-y divide-gray-200 mt-2">
-                {viewOrder.products.map((p, i) => (
-                  <div key={i} className="flex items-center gap-3 py-2">
-                    <img src={p.image?.url} alt={p.name} className="w-12 h-12 rounded border object-cover" />
-                    <div className="flex-1">
-                      <div className="font-semibold">{p.name}</div>
-                      {p.size && <div className="text-xs text-gray-500">Size: {p.size}</div>}
-                      {p.weight && <div className="text-xs text-gray-500">Weight: {p.weight}</div>}
-                      {p.color && <div className="text-xs text-gray-500">Color: {p.color}</div>}
-                      <div className="text-xs text-gray-500">Quantity: {p.qty}</div>
-                      <div className="text-xs text-gray-500">Price: ₹{p.price}</div>
-                    </div>
-                  </div>
-                ))}
+
+            {/* Room Info */}
+            <div className="border-t border-b py-4 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 text-md">
+                <div><span className="font-bold text-black">Room:</span> {viewOrder.roomName}</div>
+                <div><span className="font-bold text-black">Arrival:</span> {formatDate(viewOrder.arrival)}</div>
+                <div><span className="font-bold text-black">Departure:</span> {formatDate(viewOrder.departure)}</div>
+                <div><span className="font-bold text-black">Days:</span> {viewOrder.days}</div>
+                <div><span className="font-bold text-black">Persons:</span> {viewOrder.adult} Adult{viewOrder.child ? `, ${viewOrder.child} Child` : ''}{viewOrder.infant ? `, ${viewOrder.infant} Infant` : ''}</div>
               </div>
+            </div>
+
+            {/* Extra Info */}
+            <div className="text-md mb-4 space-y-1">
+              <div><span className="font-bold text-black">Offers:</span> {Array.isArray(viewOrder.offers) && viewOrder.offers.length > 0 ? viewOrder.offers.join(', ') : 'None'}</div>
+              <div><span className="font-bold text-black">Special Requests:</span> {viewOrder.specialReq || 'None'}</div>
+            </div>
+
+            {/* Price Breakdown */}
+            <div className="bg-gray-50 rounded-md p-4 text-md">
+              <div className="text-base font-semibold mb-2 text-black">Price Breakdown</div>
+              <div className="flex justify-between py-1 font-bold text-black"><span>Room Price</span> <span>₹{viewOrder.priceBreakdown?.main?.amount || 0}</span></div>
+              {viewOrder.priceBreakdown?.extraBed?.amount > 0 && (
+                <div className="flex justify-between py-1 font-bold text-black"><span>Extra Bed</span> <span>₹{viewOrder.priceBreakdown.extraBed.amount}</span></div>
+              )}
+              <div className="flex justify-between py-1 border-t mt-2 pt-2 font-bold text-black"><span>Subtotal</span> <span>₹{viewOrder.subtotal || 0}</span></div>
+              <div className="flex justify-between py-1 font-bold text-black"><span>CGST</span> <span>₹{viewOrder.totalCgst || 0}</span></div>
+              <div className="flex justify-between py-1 font-bold text-black"><span>SGST</span> <span>₹{viewOrder.totalSgst || 0}</span></div>
+              <div className="flex justify-between py-1 font-semibold text-black"><span>Total Tax</span> <span>₹{viewOrder.totalTaxAmount || 0}</span></div>
+              <div className="flex justify-between py-2 font-bold text-lg border-t mt-3 pt-2"><span>Total</span> <span>₹{viewOrder.finalAmount || 0}</span></div>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 };
