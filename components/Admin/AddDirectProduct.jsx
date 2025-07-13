@@ -8,7 +8,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import VideoManagement from './VideoManagement';
 import ProductDescription from './ProductDescription';
 import QuantityManagement from './QuantityManagement';
-import ApplyCoupon from './ApplyCoupon';
 import ApplyTax from './ApplyTax';
 import { ArrowLeftIcon, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -38,8 +37,7 @@ const AddDirectProduct = ({ productId }) => {
   }, [productId]);
 
   const sectionConfig = [
-    { key: 'quantity', label: 'Price Management', component: (props) => <QuantityManagement {...props} productData={productData} productId={productId} /> },
-    { key: 'apply', label: 'Apply Coupon', component: (props) => <ApplyCoupon {...props} productData={productData} productId={productId} /> },
+    { key: 'quantity', label: 'Price Management', component: (props) => <QuantityManagement {...props} productData={productData} packageId={productId} /> },
     { key: 'tax', label: 'Apply Tax', component: (props) => <ApplyTax {...props} productData={productData} productId={productId} /> },
     { key: 'gallery', label: 'Package Gallery', component: (props) => <ProductGallery {...props} productData={productData} productId={productId} /> },
     { key: 'video', label: 'Video Management', component: (props) => <VideoManagement {...props} productData={productData} productId={productId} /> },

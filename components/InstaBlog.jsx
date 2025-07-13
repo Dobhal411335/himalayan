@@ -16,7 +16,6 @@ import { Button } from "./ui/button";
 import { Star } from 'lucide-react';
 import ReviewModal from "./ReviewModal";
 import toast from "react-hot-toast"
-import './fonts/fonts.css'
 const InstaBlog = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [blogs, setBlogs] = useState([]);
@@ -28,43 +27,55 @@ const InstaBlog = () => {
     const [news, setNews] = useState([])
     const [quickViewNews, setQuickViewNews] = useState(null); // For news modal
     const [selectedArtisan, setSelectedArtisan] = useState(null); // For news modal
-    const [customReview, setcustomReview] = useState([]);
-    const [allReviews, setAllReviews] = useState([]);
-
-
-    const [isLoadingPromotions, setIsLoadingPromotions] = useState(true);
+    const [artisanReviews, setArtisanReviews] = useState([]);
     const [isLoadingReviews, setIsLoadingReviews] = useState(true);
     const [showReviewModal, setShowReviewModal] = useState(false);
+    const [customReview, setcustomReview] = useState([]);
+    const [allReviews, setAllReviews] = useState([]);
+    const [loadingPromotions, setIsLoadingPromotions] = useState(true);
 
     // State and effect for fetching all reviews
 
-    const artisanReviews = [...customReview, ...allReviews];
+    const allArtisanReviews = [...artisanReviews, ...allReviews];
+    // console.log(allArtisanReviews)
+
 
     // Normalize reviews to a standard format
     function normalizeReview(review) {
-        // Backend reviews (MongoDB)
-        if (review.thumb || review.description) {
-            return {
-                _id: review._id || Math.random().toString(36).substr(2, 9),
-                rating: review.rating,
-                title: review.title || review.name || 'No Title',
-                shortDescription: review.description || review.shortDescription || '',
-                image: review.thumb?.url || '/placeholder.jpeg',
-                createdBy: review.name || review.title || 'Anonymous',
-            };
+        // console.log('Raw review data:', review);
+      
+        let imageUrl = '';
+        if (review.thumb?.url) {
+            imageUrl = review.thumb.url.startsWith('http') ? review.thumb.url : `https:${review.thumb.url}`;
+        } else if (review.image?.url) {
+            imageUrl = review.image.url.startsWith('http') ? review.image.url : `https:${review.image.url}`;
+        } else if (review.thumb) {
+            imageUrl = review.thumb.startsWith('http') ? review.thumb : `https:${review.thumb}`;
+        } else if (review.image) {
+            imageUrl = review.image.startsWith('http') ? review.image : `https:${review.image}`;
+        } else {
+            imageUrl = '/placeholder.jpeg';
         }
-        // Static/dummy reviews or other format
+
+        // console.log('Processed Image URL:', imageUrl);
+
         return {
-            _id: review._id || Math.random().toString(36).substr(2, 9),
-            rating: review.rating,
-            title: review.title || 'No Title',
-            shortDescription: review.shortDescription || '',
-            image: review.image || '/placeholder.jpeg',
-            createdBy: review.createdBy || review.title || 'Anonymous',
+            _id: review._id?.toString(),
+            rating: review.rating || 5,
+            title: review.title || review.name || 'No Title',
+            shortDescription: review.description || review.shortDescription || '',
+            image: imageUrl,
+            thumb: imageUrl, // Add thumb for backward compatibility
+            createdBy: review.name || review.title || 'Anonymous',
+            date: review.date ? new Date(review.date).toLocaleDateString() : ''
         };
     }
 
-    const normalizedReviews = artisanReviews.map(normalizeReview);
+    const normalizedReviews = allArtisanReviews.map(normalizeReview).sort((a, b) => {
+        // Sort by date if available, otherwise by ID
+        if (a.date && b.date) return new Date(b.date) - new Date(a.date);
+        return (b._id || '').localeCompare(a._id || '');
+    });
 
     const fetchBlogs = async () => {
         try {
@@ -138,27 +149,31 @@ const InstaBlog = () => {
                 setAllReviews([]);
             }
         } catch (error) {
-            console.error("Error fetching promotions:", error);
+            // console.error("Error fetching promotions:", error);
             setAllReviews([]);
         } finally {
             setIsLoadingPromotions(false);
         }
     };
-    // console.log(allReviews)
-    // Fetch Reviews
-    const fetchReviews = async () => {
+    // Fetch artisan reviews
+    const fetchArtisanReviews = async () => {
         try {
-            const res = await fetch("/api/saveReviews");
-            const data = await res.json();
-
-            if (data.success && Array.isArray(data.reviews)) {
-                setcustomReview(data.reviews);
-            } else {
-                setcustomReview([]);
+            setIsLoadingReviews(true);
+            const response = await fetch('/api/saveReviews?type=all&active=true');
+            const data = await response.json();
+            console.log('Fetched artisan reviews:', data);
+            if (response.ok) {
+                // Only show approved and active reviews
+                const approvedReviews = data.reviews.filter(review =>
+                    review.approved !== false &&
+                    review.deleted !== true &&
+                    (review.active !== false && review.active !== undefined)
+                );
+                setArtisanReviews(approvedReviews || []);
             }
         } catch (error) {
-            console.error("Error fetching reviews:", error);
-            setcustomReview([]);
+            // console.error('Error fetching artisan reviews:', error);
+            toast.error('Failed to load reviews');
         } finally {
             setIsLoadingReviews(false);
         }
@@ -169,8 +184,42 @@ const InstaBlog = () => {
         fetchNews();
         fetchInstagramPosts();
         fetchPromotions();
-        fetchReviews();
+        fetchArtisanReviews();
+        // fetchReviews();
     }, [])
+
+    // Handle review submission for 'all' type reviews
+    const handleReviewSubmit = async (reviewData) => {
+        try {
+            // The ReviewModal already sends all required fields
+            // We just need to ensure the type is set to 'all' and it's auto-approved
+            const response = await fetch('/api/saveReviews', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...reviewData,
+                    type: 'all',
+                    approved: true,
+                    active: true,
+                    deleted: false
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({}));
+                throw new Error(error.message || 'Failed to submit review');
+            }
+
+            // Refresh reviews after submission
+            fetchReviews();
+            fetchArtisanReviews();
+            setShowReviewModal(false);
+            toast.success('Thank you for your review!');
+        } catch (error) {
+            // console.error('Error submitting review:', error);
+            toast.error(error.message || 'Failed to submit review');
+        }
+    };
 
     // Combine and sort posts by createdAt date
     const allPosts = [...instagramPosts, ...facebookPosts]
@@ -188,7 +237,6 @@ const InstaBlog = () => {
     return (
         <div className='bg-[#fcf7f1] w-full overflow-hidden max-w-screen overflow-x-hidden'>
             {/*Blogs /  News & Announcement Section */}
-            {((!isBlogsLoading && blogs && blogs.length > 0) || (news && news.length > 0)) && (
             <div className="w-full flex flex-col items-center mb-12 py-20 bg-blue-100">
                 <div className="w-full flex flex-col md:flex-row gap-8 min-h-[350px]">
                     <div className="flex flex-col md:flex-row w-full gap-8">
@@ -200,7 +248,7 @@ const InstaBlog = () => {
                                     <span className='border-b-2 border-black'>
                                         <span className='italic'>Blog</span> and Events
                                     </span></div>
-                                <h2 className='pacifico-h2 text-green-800 font-semibold text-xl p-1'>Experience , Engage, Explore, Event by Event.</h2>
+                                <h2 className='font-semibold text-xl p-1 '>Experience , Engage, Explore, Event by Event.</h2>
                                 <p className="text-gray-800 mb-8 text-lg md:text-md font-medium">
                                     "We're preparing exciting new content and updates for our users, including upcoming news and events. We’re working behind the scenes to bring you fresh news, upcoming events, and new features to enhance your experience.
                                     <br /><br />
@@ -291,7 +339,7 @@ const InstaBlog = () => {
                             <div className="flex-1 bg-[#fcf7f1] rounded-lg p-4 flex flex-col min-h-[350px] border-[1px] border-black">
                                 <div className="flex-1 pr-2 mb-4">
                                     <div className="font-bold text-2xl mb-4 px-2">
-                                        <span className='pacifico-h2 text-green-800 border-b-2 border-black'>
+                                        <span className='border-b-2 border-black'>
                                             Upcoming News & Notice
                                         </span></div>
                                     <div className="h-[400px] overflow-y-auto p-0 border-none rounded-xl">
@@ -362,12 +410,11 @@ const InstaBlog = () => {
                     </div>
                 </div>
             </div>
-            )}
 
             {/* Instagram-like Image Carousel using Carousel classes */}
             {!isInstaLoading && !isFbLoading && allPosts.length > 0 && (
                 <div className="w-full flex flex-col items-center py-12">
-                    <h2 className="pacifico-h2 text-green-800 text-center text-2xl md:text-3xl lg:text-4xl uppercase">
+                    <h2 className="text-center font-bold text-2xl md:text-3xl lg:text-4xl uppercase">
                         Don’t just watch the trends — live them!
                     </h2>
                     <p className="text-gray-600 py-4 text-center font-barlow w-full md:w-[90%] mx-auto">
@@ -423,7 +470,7 @@ const InstaBlog = () => {
             )}
 
             {/* Reviews Section */}
-            <div className="w-full mx-auto relative min-h-[650px] flex items-center justify-end relative">
+            <div className="w-full mx-auto relative min-h-[600px] flex items-center justify-end relative">
                 {/* Background Image */}
                 <div className="hidden md:flex absolute inset-0 w-full h-full z-0">
                     <img
@@ -439,11 +486,11 @@ const InstaBlog = () => {
                     <div className="button px-10">
                         <Button className="bg-white text-black hover:bg-black hover:text-white transition-colors duration-300" onClick={() => setShowReviewModal(true)}>Write Reviews</Button>
                     </div>
-                    {(normalizedReviews && normalizedReviews.length > 0 ? normalizedReviews : [].map(normalizeReview)).map((review, idx) => (
                     <Carousel className="w-full md:w-[600px]"
                         plugins={[Autoplay({ delay: 4000 })]}>
 
                         <CarouselContent className="w-full">
+                            {(normalizedReviews && normalizedReviews.length > 0 ? normalizedReviews : [].map(normalizeReview)).map((review, idx) => (
                                 <CarouselItem
                                     key={review._id}
                                     className="min-w-0 snap-center w-full"
@@ -451,10 +498,10 @@ const InstaBlog = () => {
                                     <div className="bg-white rounded-3xl px-8 py-5 flex flex-col justify-between h-full min-h-[320px] relative overflow-visible">
                                         {/* Review text */}
                                         <div className="text-md md:text-2xl text-gray-800 font-bold leading-relaxed text-left">
-                                            {review.title || 'No review text.'}
+                                            {review?.title || 'No review text.'}
                                         </div>
                                         <div className="text-md md:text-md text-gray-800 font-medium leading-relaxed text-left">
-                                            {review.shortDescription || 'No review text.'}
+                                            {review?.shortDescription || 'No review text.'}
                                         </div>
                                         {/* Bottom row: avatar, name, subtitle, nav buttons */}
 
@@ -462,17 +509,21 @@ const InstaBlog = () => {
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center">
                                                 <img
-                                                    src={review.image?.url || "/placeholder.jpeg"}
-                                                    alt={review.createdBy || 'Anonymous'}
+                                                    src={review?.image || "/placeholder.jpeg"}
+                                                    alt={review?.createdBy || 'Anonymous'}
                                                     className="w-14 h-14 rounded-full border-4 border-white shadow object-cover"
+                                                    onError={(e) => {
+                                                        // console.log('Image failed to load:', e.target.src);
+                                                        e.target.src = '/placeholder.jpeg';
+                                                    }}
                                                 />
                                                 <div className="ml-4 text-left flex flex-col items-center gap-2">
-                                                    <div className="font-bold text-xl text-black">{review.createdBy || review.title || 'Anonymous'}</div>
+                                                    <div className="font-bold text-xl text-black">{review?.createdBy || review?.title || 'Anonymous'}</div>
 
                                                     <div className="flex items-center gap-1">
-                                                        {review.rating && (
+                                                        {review?.rating && (
                                                             <>
-                                                                {[...Array(review.rating)].map((_, i) => (
+                                                                {[...Array(review?.rating)].map((_, i) => (
                                                                     <Star key={i} size={15} className="text-yellow-400 fill-yellow-400" />
                                                                 ))}
                                                             </>
@@ -483,13 +534,13 @@ const InstaBlog = () => {
                                         </div>
                                     </div>
                                 </CarouselItem>
+                            ))}
                         </CarouselContent>
                         <div className="flex items-center gap-3">
                             <CarouselPrevious className="absolute top-[85%] left-[65%] bg-[#f7eedd] !rounded-full !w-12 !h-12 !flex !items-center !justify-center transition" />
                             <CarouselNext className="absolute top-[85%] left-[80%] bg-[#f7eedd] !rounded-full !w-12 !h-12 !flex !items-center !justify-center transition" />
                         </div>
                     </Carousel>
-                        ))}
                 </div>
 
                 {/* Review Card (Mobile) */}
@@ -517,10 +568,10 @@ const InstaBlog = () => {
                                         {/* Review text */}
 
                                         <div className="text-md md:text-2xl text-gray-800 font-bold leading-relaxed mt-4 text-left">
-                                            {review.title || 'No review text.'}
+                                            {review?.title || 'No review text.'}
                                         </div>
                                         <div className="text-md text-gray-800 font-medium leading-relaxed my-2 text-left">
-                                            {review.shortDescription || 'No review text.'}
+                                            {review?.shortDescription || 'No review text.'}
                                         </div>
                                         {/* Bottom row: avatar, name, subtitle, nav buttons */}
                                         <div className="flex items-center justify-between w-full mt-auto">
@@ -528,18 +579,22 @@ const InstaBlog = () => {
                                             <div className="flex items-center justify-between gap-2">
                                                 <div className="flex items-center gap-2">
                                                     <img
-                                                        src={review.image || "/placeholder.jpeg"}
-                                                        alt={review.createdBy || 'Anonymous'}
+                                                        src={review?.image || "/placeholder.jpeg"}
+                                                        alt={review?.createdBy || 'Anonymous'}
                                                         className="w-14 h-14 rounded-full border-4 border-white shadow object-cover"
+                                                        onError={(e) => {
+                                                            // console.log('Image failed to load:', e.target.src);
+                                                            e.target.src = '/placeholder.jpeg';
+                                                        }}
                                                     />
                                                     <div className="ml-4 text-left">
-                                                        <div className="font-bold text-xl text-black">{review.createdBy || review.title || 'Anonymous'}</div>
+                                                        <div className="font-bold text-xl text-black">{review?.createdBy || review?.title || 'Anonymous'}</div>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-1">
-                                                    {review.rating && (
+                                                    {review?.rating && (
                                                         <>
-                                                            {[...Array(review.rating)].map((_, i) => (
+                                                            {[...Array(review?.rating)].map((_, i) => (
                                                                 <Star key={i} size={22} className="text-yellow-400 fill-yellow-400" />
                                                             ))}
                                                         </>
@@ -555,14 +610,12 @@ const InstaBlog = () => {
                         <CarouselPrevious />
                         <CarouselNext />
                         <div className="button">
-                            <Button className="absolute top-0 right-0 bg-white text-black hover:bg-black hover:text-white transition-colors duration-300" onClick={() => {
-                                if (allReviews.length > 0) {
-                                    setSelectedArtisan(allReviews[0].artisan); // Send artisan from first promotion
-                                    setShowReviewModal(true);
-                                } else {
-                                    toast.error('No promotion artisan found');
-                                }
-                            }}>Write Reviews</Button>
+                            <Button
+                                className="absolute top-0 right-0 bg-white text-black hover:bg-black hover:text-white transition-colors duration-300"
+                                onClick={() => setShowReviewModal(true)}
+                            >
+                                Write a Review
+                            </Button>
                         </div>
                     </Carousel>
                 </div>
@@ -572,12 +625,24 @@ const InstaBlog = () => {
                 <ViewNews news={quickViewNews} onClose={() => setQuickViewNews(null)} />
             )}
 
-            <ReviewModal
-                open={showReviewModal}
-                artisan={selectedArtisan}
-                onClose={() => setShowReviewModal(false)}
-                onSubmit={(data) => { setShowReviewModal(false); toast.success('Review submitted!'); }}
-            />
+            {showReviewModal && (
+                <ReviewModal
+                    key={`review-modal-${Date.now()}`}
+                    open={showReviewModal}
+                    artisan={selectedArtisan}
+                    type="all"
+                    onClose={() => {
+                        setShowReviewModal(false);
+                        // Small delay to allow the modal to close before potentially reopening
+                        setTimeout(() => setSelectedArtisan(null), 300);
+                    }}
+                    onSubmit={(data) => {
+                        handleReviewSubmit(data);
+                        setShowReviewModal(false);
+                        setSelectedArtisan(null);
+                    }}
+                />
+            )}
 
         </div>
     )

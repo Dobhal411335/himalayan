@@ -2,24 +2,28 @@
 import React, { useState, useEffect } from "react";
 import ReviewDetails from "./ReviewDetails";
 import toast from "react-hot-toast";
+import { Switch } from "../ui/switch";
 
-const beige = "#f8f6f1";
-const border = "1px solid #222";
 
-const actionOptions = [
+const statusOptions = [
     { label: "Active", value: "active" },
     { label: "Inactive", value: "inactive" },
-    { label: "Delete", value: "delete" },
+    { label: "All", value: "all" },
+];
+const typeOptions = [
+    { label: "All Types", value: "all" },
+    { label: "Product", value: "product" },
+    { label: "Artisan", value: "artisan" }
 ];
 
 const columns = [
     "Date",
     "Title",
-    "Review",
     "Name",
     "Type",
     "Rating",
     "Thumb",
+    "Approved",
     "Action",
     "View",
 ];
@@ -34,12 +38,13 @@ function EyeIcon() {
 const ManageReviews = () => {
     const [allReviews, setAllReviews] = useState([]);
     const [filteredReviews, setFilteredReviews] = useState([]);
-    const [statusFilter, setStatusFilter] = useState("pending");
+    const [statusFilter, setStatusFilter] = useState("all");
+    const [typeFilter, setTypeFilter] = useState("all");
     const [selectedReview, setSelectedReview] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [reviewsPerPage] = useState(10);
     const [loading, setLoading] = useState(false);
-    console.log(allReviews)
+    // console.log(allReviews)
 
     useEffect(() => {
         fetchReviews();
@@ -47,29 +52,66 @@ const ManageReviews = () => {
 
     useEffect(() => {
         filterReviews();
-    }, [allReviews, statusFilter]);
+    }, [allReviews, statusFilter, typeFilter]);
 
     const fetchReviews = async () => {
         setLoading(true);
         try {
-            const res = await fetch("/api/saveReviews");
-            const data = await res.json();
-            setAllReviews(data.reviews || []);
-        } catch (err) {
-            toast.error("Failed to fetch reviews");
+            const response = await fetch('/api/saveReviews');
+            const data = await response.json();
+            if (response.ok && data.success) {
+                // Ensure all data is properly serialized
+                const processedReviews = data.reviews.map(review => ({
+                    ...review,
+                    // Ensure all object IDs are strings
+                    _id: review._id?.toString(),
+                    product: review.product?._id ? {
+                        _id: review.product._id.toString(),
+                        title: review.product.title
+                    } : null,
+                    artisan: review.artisan?._id ? {
+                        _id: review.artisan._id.toString(),
+                        name: review.artisan.name
+                    } : null,
+                    // Ensure thumb is properly formatted
+                    thumb: review.thumb?.url ? {
+                        url: review.thumb.url,
+                        key: review.thumb.key || ''
+                    } : null,
+                    // Ensure dates are properly formatted
+                    createdAt: review.createdAt ? new Date(review.createdAt).toISOString() : new Date().toISOString(),
+                    updatedAt: review.updatedAt ? new Date(review.updatedAt).toISOString() : new Date().toISOString()
+                }));
+
+                setAllReviews(processedReviews);
+                setFilteredReviews(processedReviews);
+            } else {
+                console.error('Failed to fetch reviews:', data.message);
+            }
+        } catch (error) {
+            console.error('Error fetching reviews:', error);
         } finally {
             setLoading(false);
         }
     };
 
     const filterReviews = () => {
-        setFilteredReviews(
-            statusFilter === "all"
-                ? allReviews
-                : statusFilter === "approved"
-                    ? allReviews.filter(r => r.approved)
-                    : allReviews.filter(r => !r.approved)
-        );
+        let filtered = [...allReviews];
+
+        // Filter by status
+        if (statusFilter === 'active') {
+            filtered = filtered.filter(review => review.active && !review.deleted);
+        } else if (statusFilter === 'inactive') {
+            filtered = filtered.filter(review => !review.active && !review.deleted);
+        } else {
+            filtered = filtered.filter(review => !review.deleted);
+        }
+
+        // Filter by type
+        if (typeFilter !== 'all') {
+            filtered = filtered.filter(review => review.type === typeFilter);
+        }
+        setFilteredReviews(filtered);
         setCurrentPage(1);
     };
 
@@ -77,58 +119,132 @@ const ManageReviews = () => {
         setStatusFilter(e.target.value);
     };
 
+    const handleTypeChange = (e) => {
+        setTypeFilter(e.target.value);
+    };
+
     const handleAction = async (id, action) => {
-        let method = "PUT";
-        let body = { _id: id };
-        if (action === "active") body.active = true;
-        if (action === "inactive") body.active = false;
-        if (action === "delete") method = "DELETE";
         try {
-            const res = await fetch(`/api/saveReviews`, {
-                method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(body),
+            let updates = { _id: id };
+
+            // Determine the updates based on the action
+            switch (action) {
+                case 'active':
+                    updates.active = true;
+                    updates.deleted = false;
+                    break;
+                case 'inactive':
+                    updates.active = false;
+                    updates.deleted = false;
+                    break;
+                default:
+                    throw new Error('Invalid action');
+            }
+
+            // Send the update
+            const res = await fetch('/api/saveReviews', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updates)
             });
+
             const data = await res.json();
+
             if (res.ok) {
-                toast.success(data.message);
+                toast.success(data.message || 'Action completed successfully');
                 fetchReviews();
             } else {
-                toast.error(data.message);
+                throw new Error(data.message || 'Failed to perform action');
             }
-        } catch {
-            toast.error("Action failed!");
+        } catch (error) {
+            console.error('Error performing action:', error);
+            toast.error(error.message || 'An error occurred');
         }
     };
 
+    const handleToggleApproved = async (review) => {
+        try {
+            const isApproving = !review.approved;
+            const updates = {
+                _id: review._id,
+                approved: isApproving,
+                // If approving, ensure the review is also active and not deleted
+                ...(isApproving && {
+                    active: true,
+                    deleted: false
+                })
+            };
+
+            // Only create promotion when approving an artisan review
+            if (isApproving && review.type === 'artisan' && review.artisan?._id) {
+                updates.createPromotion = true;
+            }
+
+            const res = await fetch(`/api/saveReviews`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updates)
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                toast.success(data.message || `Review ${isApproving ? 'approved' : 'disapproved'} successfully`);
+                if (isApproving && review.type === 'artisan') {
+                    toast.success('Promotion created for this review');
+                }
+                fetchReviews();
+            } else {
+                throw new Error(data.message || `Failed to ${isApproving ? 'approve' : 'disapprove'} review`);
+            }
+        } catch (error) {
+            console.error('Approval error:', error);
+            toast.error(error.message || "Failed to update review status");
+        }
+    };
     // Pagination logic
     const indexOfLast = currentPage * reviewsPerPage;
     const indexOfFirst = indexOfLast - reviewsPerPage;
     const currentReviews = filteredReviews.slice(indexOfFirst, indexOfLast);
     const totalPages = Math.ceil(filteredReviews.length / reviewsPerPage);
-    console.log(currentReviews)
+    // console.log(currentReviews)
     return (
         <div className="w-full max-w-[1100px] mx-auto rounded-[14px] shadow-md px-4 py-6 md:py-8">
             {/* Filter Row */}
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-6">
+            {/* Existing status filter */}
+            <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                        {statusOptions.map(option => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* New type filter */}
                 <div className="flex-1">
-                    <h2 className="text-2xl font-bold mb-1">Manage Reviews</h2>
-                    <div className="my-4 flex items-center">
-                        <label htmlFor="status-select" className="font-medium mr-2">Show:</label>
-                        <select
-                            id="status-select"
-                            value={statusFilter}
-                            onChange={handleStatusChange}
-                            className="px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        >
-                            <option value="pending">Pending Reviews</option>
-                            <option value="approved">Approved Reviews</option>
-                            <option value="all">All Reviews</option>
-                        </select>
-                    </div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                    <select
+                        value={typeFilter}
+                        onChange={(e) => setTypeFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                        {typeOptions.map(option => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
                 </div>
             </div>
-
+      
             {/* Table */}
             <div className="overflow-x-auto bg-white rounded-xl">
                 <table className="min-w-full border-separate border-spacing-0">
@@ -151,8 +267,6 @@ const ManageReviews = () => {
                                     <td className="align-middle min-w-[150px] px-5">{review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric' }) : "-"}</td>
                                     {/* Title */}
                                     <td className="align-middle truncate max-w-[180px] px-5">{review.title || '-'}</td>
-                                    {/* Review */}
-                                    <td className="align-middle truncate max-w-[180px] px-5">{review.description || '-'}</td>
                                     {/* Name */}
                                     <td className="align-middle min-w-[120px] px-5">{review.name || '-'}</td>
                                     {/* Type */}
@@ -169,25 +283,28 @@ const ManageReviews = () => {
                                             />
                                         ) : '-'}
                                     </td>
-                                    {/* Action Dropdown */}
+                                    {/* Approved */}
                                     <td className="align-middle px-5">
-                                        <div className="relative">
-                                            <select
-                                                onChange={e => handleAction(review._id, e.target.value)}
-                                                defaultValue=""
-                                                className="px-2 py-1 rounded border focus:ring-2 focus:ring-blue-400"
-                                            >
-                                                <option value="" disabled>Action</option>
-                                                {actionOptions.map(opt => (
-                                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                                ))}
-                                            </select>
-                                        </div>
+                                        <Switch
+                                            checked={!!review.approved}
+                                            onCheckedChange={() => handleToggleApproved(review)}
+                                            className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-300"
+                                        />
+                                    </td>
+                                    {/* Active Status */}
+                                    <td className="align-middle px-5">
+                                        <Switch
+                                            checked={!review.deleted && review.active}
+                                            onCheckedChange={() => handleAction(review._id, review.active ? 'inactive' : 'active')}
+                                            className={`data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-300 ${review.deleted ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                            disabled={review.deleted}
+                                            title={review.deleted ? 'Cannot activate deleted review' : ''}
+                                        />
                                     </td>
                                     {/* View */}
                                     <td className="align-middle px-5">
                                         <button className="icon-btn hover:bg-gray-200 rounded p-1" onClick={() => setSelectedReview(review)}>
-                                            <EyeIcon size={20}/>
+                                            <EyeIcon size={20} />
                                         </button>
                                     </td>
                                 </tr>
@@ -197,7 +314,7 @@ const ManageReviews = () => {
                                 <td colSpan={columns.length} className="text-center py-6">No reviews found.</td>
                             </tr>
                         )}
-                    </tbody> 
+                    </tbody>
                 </table>
             </div>
 
@@ -229,6 +346,7 @@ const ManageReviews = () => {
                 <ReviewDetails
                     review={selectedReview}
                     onClose={() => setSelectedReview(null)}
+                    onUpdate={fetchReviews}
                     onAction={handleAction}
                 />
             )}
@@ -237,6 +355,7 @@ const ManageReviews = () => {
 
         </div>
     );
+
 };
 
 export default ManageReviews;

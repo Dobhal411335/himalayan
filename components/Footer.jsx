@@ -81,15 +81,15 @@ const Footer = () => {
 
                 <div className="flex flex-col gap-1">
                     <h1 className="font-semibold text-xl flex items-center gap-2"> More Inquiry</h1>
-                    <Link href={'tel:+917351009107'} className="my-2 block rounded-full py-1 font-barlow text-white flex items-center">
-                        <Phone size={20} className="text-blue-600" />
+                    <Link href={'tel:+917351009107'} className="my-2 gap-2 block rounded-full py-1 font-barlow text-white flex items-center">
+                        <Phone size={20} className="text-blue-600 " />
                         +91 9897515305,7060340176
                     </Link>
-                    <Link href={'mailto:himalayanwellnessretreats@gmail.com'} className="my-2 block rounded-full font-barlow text-white flex items-center">
+                    <Link href={'mailto:himalayanwellnessretreats@gmail.com'} className="my-2 gap-2 block rounded-full font-barlow text-white flex items-center">
                         <Send className="text-blue-600" size={20} />
                         himalayanwellnessretreats@gmail.com
                     </Link>
-                    <p className="my-2 font-barlow text-white mb-5 flex items-center">
+                    <p className="my-2 gap-2 font-barlow text-white mb-5 flex items-center">
                         <MapPin className="text-blue-600" size={20} />
                         Balak Nath Temple Street, Upper Tapovan,
                         <br />
@@ -115,6 +115,7 @@ const Footer = () => {
                                 The remaining balance is payable upon arrival/check-in.
 
                                 We accept payments via bank transfer, UPI, or cash.
+                                <br />
 
                                 2. Cancellation Policy
                                 

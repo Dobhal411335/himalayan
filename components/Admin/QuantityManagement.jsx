@@ -7,12 +7,7 @@ import { Label } from "../ui/label";
 import toast from "react-hot-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTrigger, DialogTitle } from '@/components/ui/dialog';
 import { Trash2, Plus } from "lucide-react";
-const QuantityManagement = ({ productData, productId }) => {
-  // Remove a row by index, but always keep at least one row
-  const handleRemoveRow = (idx) => {
-    setRows(rows => rows.length > 1 ? rows.filter((_, i) => i !== idx) : rows);
-  };
-
+const QuantityManagement = ({ productData, packageId }) => {
   // State for three sections: 1, 2, and 8 persons
   const [priceRows, setPriceRows] = useState({
     one: [{ type: '', inr: '', usd: '' }],
@@ -39,76 +34,19 @@ const QuantityManagement = ({ productData, productId }) => {
   };
 
   // Save handler
-  const handleSave = (e) => {
-    e.preventDefault();
-    setSaving(true);
-    // Collect all rows with person count
-    const all = [
-      ...priceRows.one.map(r => ({ person: '01', ...r })),
-      ...priceRows.two.map(r => ({ person: '02', ...r })),
-      ...priceRows.eight.map(r => ({ person: '08', ...r })),
-    ].filter(r => r.type && (r.inr || r.usd));
-    setPriceLog(all);
-    setSaving(false);
-  };
-
-  // Remove row from a section
-  // const handleRemoveRow = (section, idx) => {
-  //   setPriceRows(rows => ({
-  //     ...rows,
-  //     [section]: rows[section].length > 1 ? rows[section].filter((_, i) => i !== idx) : rows[section],
-  //   }));
-  // };
-
-
-  // const [saving, setSaving] = useState(false);
-  const [allQuantities, setAllQuantities] = useState([]);
-  const [viewDialog, setViewDialog] = useState({ open: false, data: null });
-  const [editMode, setEditMode] = useState(false);
-  const [deleteDialog, setDeleteDialog] = useState({ open: false, id: null });
-
-  // Fetch quantity records for the current product only
-  const fetchQuantities = async () => {
-    if (!productId) return;
-    try {
-      const res = await fetch(`/api/productQuantity?product=${productId}`);
-      const data = await res.json();
-      // If API returns a single object, wrap in array for consistency
-      if (res.ok && data && (Array.isArray(data) ? data.length : data._id)) {
-        setAllQuantities(Array.isArray(data) ? data : [data]);
-      } else {
-        setAllQuantities([]);
-      }
-    } catch {
-      setAllQuantities([]);
-    }
-  };
-
-  useEffect(() => { fetchQuantities(); }, []);
-
-  const handleSubmit = async (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
     try {
-      // Convert table rows to variants
-      const variants = rows.map(row => {
-        let sizeValue = row.size;
-        if (Array.isArray(sizes)) {
-          const found = sizes.find(s => (typeof s === 'object' ? (s._id === row.size || s.label === row.size) : s === row.size));
-          if (found) sizeValue = found.label || found.name || found._id || found;
-        }
-        return {
-          size: sizeValue,
-          color: row.color,
-          price: Number(row.price),
-          qty: Number(row.qty),
-          weight: Number(row.weight),
-          optional: false // Default optional as false (customize as needed)
-        };
-      });
+      // Collect all rows with person count for prices array
+      const prices = [
+        ...priceRows.one.map(r => ({ person: '01', type: r.type, inr: Number(r.inr), usd: Number(r.usd) })),
+        ...priceRows.two.map(r => ({ person: '02', type: r.type, inr: Number(r.inr), usd: Number(r.usd) })),
+        ...priceRows.eight.map(r => ({ person: '08', type: r.type, inr: Number(r.inr), usd: Number(r.usd) })),
+      ].filter(r => r.type && (r.inr || r.usd));
       const payload = {
-        product: productId,
-        variants
+        packages: packageId,
+        prices
       };
       const res = await fetch('/api/productQuantity', {
         method: 'POST',
@@ -120,7 +58,7 @@ const QuantityManagement = ({ productData, productId }) => {
         throw new Error(error.error || 'Failed to save quantity');
       }
       toast.success(editMode ? 'Quantity data updated successfully' : 'Quantity data saved successfully');
-      setRows([{ size: '', price: '', color: '', }]); // clear form
+      setPriceRows({ one: [{ type: '', inr: '', usd: '' }], two: [{ type: '', inr: '', usd: '' }], eight: [{ type: '', inr: '', usd: '' }] }); // clear form
       setEditMode(false);
       fetchQuantities();
     } catch (err) {
@@ -130,30 +68,58 @@ const QuantityManagement = ({ productData, productId }) => {
     }
   };
 
+
+  // Remove row from a section
+  // const handleRemoveRow = (section, idx) => {
+  //   setPriceRows(rows => ({
+  //     ...rows,
+  //     [section]: rows[section].length > 1 ? rows[section].filter((_, i) => i !== idx) : rows[section],
+  //   }));
+  // };
+
+
+  // const [saving, setSaving] = useState(false);
+  // No need for allQuantities state; always show form and auto-fill
+  const [viewDialog, setViewDialog] = useState({ open: false, data: null });
+  const [editMode, setEditMode] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState({ open: false, id: null });
+
+  // Fetch quantity records for the current product only
+  const fetchQuantities = async () => {
+    if (!packageId) return;
+    try {
+      const res = await fetch(`/api/productQuantity?packages=${packageId}`);
+      const data = await res.json();
+      if (res.ok && data && data.prices && Array.isArray(data.prices) && data.prices.length) {
+        handleEdit(data); // Pre-fill form with existing data
+      } else {
+        setPriceRows({ one: [{ type: '', inr: '', usd: '' }], two: [{ type: '', inr: '', usd: '' }], eight: [{ type: '', inr: '', usd: '' }] });
+      }
+    } catch {
+      setPriceRows({ one: [{ type: '', inr: '', usd: '' }], two: [{ type: '', inr: '', usd: '' }], eight: [{ type: '', inr: '', usd: '' }] });
+    }
+  };
+
+
+  useEffect(() => { fetchQuantities(); }, []);
+
+
+
   // Edit
   const handleEdit = (record) => {
-    setRows(record.variants.map(v => {
-      let sizeValue = v.size;
-      if (Array.isArray(sizes)) {
-        // Try to find the object whose label or name matches v.size, and use its _id
-        const found = sizes.find(s => (typeof s === 'object' ? (s.label === v.size || s.name === v.size) : s === v.size));
-        if (found && found._id) sizeValue = found._id;
-      }
-      return {
-        size: sizeValue || '',
-        price: v.price || '',
-        qty: v.qty || '',
-        color: v.color || '',
-        weight: v.weight || '',
-      };
-    }));
+    // record.prices is the array [{ person, type, inr, usd }]
+    setPriceRows({
+      one: (record.prices || []).filter(p => p.person === '01'),
+      two: (record.prices || []).filter(p => p.person === '02'),
+      eight: (record.prices || []).filter(p => p.person === '08')
+    });
     setEditMode(true);
   };
 
 
   // Cancel edit
   const handleCancelEdit = () => {
-    setRows([{ size: '', price: '', qty: '', color: '', weight: '' }]);
+    setPriceRows({ one: [{ type: '', inr: '', usd: '' }], two: [{ type: '', inr: '', usd: '' }], eight: [{ type: '', inr: '', usd: '' }] });
     setEditMode(false);
   };
 
@@ -161,8 +127,8 @@ const QuantityManagement = ({ productData, productId }) => {
   const handleDelete = async () => {
     if (!deleteDialog.id) return;
     try {
-      // Include productId in the DELETE request so backend can clear Product.quantity
-      const res = await fetch(`/api/productQuantity?id=${deleteDialog.id}&productId=${productId}`, { method: 'DELETE' });
+      // Include packageId in the DELETE request so backend can clear Product.quantity
+      const res = await fetch(`/api/productQuantity?id=${deleteDialog.id}&packageId=${packageId}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Failed to delete');
       toast.success('Deleted successfully');
       setDeleteDialog({ open: false, id: null });
@@ -171,225 +137,110 @@ const QuantityManagement = ({ productData, productId }) => {
       toast.error('Failed to delete');
     }
   };
-
-
-
-  // --- FORM ---
   const form = (
-    <form className="flex flex-col items-center" style={{ maxWidth: 1200 }} onSubmit={handleSubmit}>
-      <h3 className="font-semibold my-2 text-center text-xl">Product Total Quantity Management</h3>
-      <div className="w-full bg-white rounded shadow p-4">
-        <div className="mb-6 flex flex-col items-center justify-center">
-          <Label className="font-bold mb-2 text-md">Product Name</Label>
-          {/* <Input */}
-            {/* // className="mb-4 w-80 font-black text-center border-gray-300" */}
-            {/* // value={productName} */}
-            {/* // disabled */}
-            {/* // {productName ? {} : { border: '2px solid red', color: 'red' }} */}
-            {/* // placeholder={productName ? "Product Name" : "Product Name not found"} */}
-          {/* /> */}
-          {/* {!productName && (
-            <div style={{ color: 'red', marginTop: '4px', fontWeight: 'bold' }}>
-              Product name not found! Please check if the product was created successfully.
-            </div>
-          )} */}
-        </div>
-        <h5 className="font-semibold mb-2 text-center text-xl">Product Quantity Table</h5>
-        <div className="overflow-x-auto">
-          <table className="min-w-full border text-sm">
-            <thead>
-              <tr>
-                <th className="border px-2 py-1 text-center">Size</th>
-                <th className="border px-2 py-1 text-center">Color</th>
-                <th className="border px-2 py-1 text-center">Price</th>
-                <th className="border px-2 py-1 text-center">Quantity</th>
-                <th className="border px-2 py-1 text-center">Weight (gram)</th>
-                <th className="border px-2 py-1 text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* {rows.map((row, idx) => (
-                <tr key={idx}>
-                  <td className="border px-2 py-1"><div className="flex justify-center">
-                    <Select value={row.size ?? ''} onValueChange={val => handleRowChange(idx, 'size', val)}>
-                      <SelectTrigger className="bg-gray-50 rounded border w-32">
-                        <SelectValue placeholder="Select Size" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {sizes.map((size, i) => {
-                            let value = typeof size === 'string' ? size : (size._id || size.label || String(i));
-                            let label = typeof size === 'string' ? size : (size.label || size._id || String(value));
-                            return (
-                              <SelectItem key={value} value={String(value)}>{label}</SelectItem>
-                            );
-                          })}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div></td>
-
-                  <td className="border px-2 py-1"><div className="flex justify-center">
-                    <Select value={row.color ?? ''} onValueChange={val => handleRowChange(idx, 'color', val)}>
-                      <SelectTrigger className="bg-gray-50 rounded border w-32">
-                        <SelectValue placeholder="Select Color" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {allColors.map((c, i) => {
-                            let value = typeof c === 'string' ? c : (c.hex || c.name || String(i));
-                            let label = typeof c === 'string' ? c : (c.name || c.hex || String(value));
-                            return (
-                              <SelectItem key={value} value={String(value)}>{label}</SelectItem>
-                            );
-                          })}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div></td>
-                  <td className="border px-2 py-1"><div className="flex justify-center">
-                    <Input
-                      type="number"
-                      min={0}
-                      className="w-32 bg-gray-100 rounded"
-                      placeholder="Set Price"
-                      value={row.price ?? ''}
-                      onChange={e => handleRowChange(idx, 'price', e.target.value)}
-                    />
-                  </div></td>
-                  <td className="border px-2 py-1"><div className="flex justify-center">
-                    <Input
-                      type="number"
-                      min={0}
-                      className="w-24 bg-gray-50 rounded"
-                      placeholder="Qty"
-                      value={row.qty ?? ''}
-                      onChange={e => handleRowChange(idx, 'qty', e.target.value)}
-                    />
-                  </div></td>
-                  <td className="border px-2 py-1"><div className="flex justify-center">
-                    <Input
-                      type="number"
-                      min={0}
-                      className="w-24 bg-gray-50 rounded"
-                      placeholder="Weight"
-                      value={row.weight ?? ''}
-                      onChange={e => handleRowChange(idx, 'weight', e.target.value)}
-                    />
-                  </div></td>
-                  <td className="border px-2 py-1 text-center"><div className="flex justify-center gap-2">
-                    {idx === rows.length - 1 && (
-                      <Button type="button" className="bg-green-500 font-bold px-3 py-1 flex items-center justify-center gap-1" onClick={handleAddRow}>
-                        <Plus size={18} />
-                      </Button>
-                    )}
-                    {rows.length > 1 && (
-                      <Button type="button" className="bg-red-500 font-bold px-3 py-1 flex items-center justify-center" onClick={() => handleRemoveRow(idx)}>
-                        <Trash2 size={18} />
-                      </Button>
-                    )}
-                  </div></td>
-                </tr>
-              ))} */}
-            </tbody>
-          </table>
-        </div>
-        <div className="flex justify-center gap-4 mt-4">
-          <Button type="submit" className="bg-red-500 font-bold px-5" disabled={saving}>{editMode ? 'Update' : 'Data Save'}</Button>
-          {editMode && (
-            <Button type="button" className="bg-gray-400 font-bold px-5" onClick={handleCancelEdit}>Cancel</Button>
-          )}
-        </div>
-      </div>
-    </form>
-  );
-
-  // --- TABLE ---
-  const table = (
-    <div className="w-full mt-10">
-      <h4 className="font-bold mb-2 text-lg">All Product Quantities</h4>
-      <div className="overflow-x-auto">
-        <table className="min-w-full border text-sm">
-          <thead>
+    <form className="flex flex-col items-center w-full" style={{ maxWidth: 800 }} onSubmit={handleSave}>
+      {/* Section: 01 Person */}
+      <div className="w-full mb-6">
+        <div className="font-bold text-green-900 text-lg mb-1">Base Price: 01 Person</div>
+        <table className="w-full border border-gray-200 bg-[#f9f6ef] rounded-t-xl">
+          <thead className="bg-[#fbe5c3]">
             <tr>
-              <th className="border px-2 py-1 text-center">S.No</th>
-              <th className="border px-2 py-1 text-center">Product Name</th>
-              <th className="border px-2 py-1 text-center">Actions</th>
+              <th className="p-2 text-left text-xs font-semibold">Accommodation Type</th>
+              <th className="p-2 text-left text-xs font-semibold">In INR Price</th>
+              <th className="p-2 text-left text-xs font-semibold">US Doller Price</th>
+              <th className="p-2"></th>
             </tr>
           </thead>
           <tbody>
-            {allQuantities.map((q, i) => (
-              <tr key={q._id}>
-                <td className="border px-2 py-1 text-center">{i + 1}</td>
-                {/* <td className="border px-2 py-1 text-center">{productName || '-'}</td> */}
-                <td className="border px-2 py-1 text-center flex flex-wrap gap-2 justify-center">
-                  {/* View Dialog Trigger */}
-                  <Dialog open={viewDialog.open && viewDialog.data?._id === q._id} onOpenChange={open => setViewDialog(open ? { open: true, data: q } : { open: false, data: null })}>
-                    <DialogTrigger asChild>
-                      <Button size="sm" className="bg-blue-500 text-white">View</Button>
-                    </DialogTrigger>
-                    <DialogContent style={{ maxWidth: 650 }}>
-                      <DialogTitle>Product Quantity Details</DialogTitle>
-                      <div className="bg-gray-50 rounded p-4 mb-2">
-                        {/* <div><b>Product:</b> {productName || '-'}</div> */}
-                        <div className="mt-2">
-                          <b className=''>Variants:</b>
-                          <div className="flex flex-col gap-2 items-start justify-center mt-2">
-                            {q.variants.map((v, idx) => {
-                              // Try to find the size label from sizes array
-                              let sizeLabel = v.size;
-                              if (Array.isArray(sizes)) {
-                                const found = sizes.find(s => (typeof s === 'object' ? (s._id === v.size || s.label === v.size) : s === v.size));
-                                if (found) sizeLabel = found.label || found.name || found._id || found;
-                              }
-                              return (
-                                <div key={idx} className="flex flex-wrap gap-2 ">
-                                  <span className="bg-gray-200 rounded px-2 py-1 font-medium">Size: {sizeLabel}</span>
-                                  <span className="bg-blue-100 rounded px-2 py-1 font-medium">Price: ₹{v.price}</span>
-                                  <span className="bg-green-100 rounded px-2 py-1 font-medium">Qty: {v.qty}</span>
-                                  <span className="bg-yellow-100 rounded px-2 py-1 font-medium">Color: {v.color}</span>
-                                  <span className="bg-yellow-100 rounded px-2 py-1 font-medium">Weight: {v.weight}</span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                  {/* Edit Button */}
-                  <Button size="sm" className="bg-yellow-500 text-white" onClick={() => handleEdit(q)}>
-                    Edit
-                  </Button>
-                  {/* Delete Dialog Trigger */}
-                  <Dialog open={deleteDialog.open && deleteDialog.id === q._id} onOpenChange={open => setDeleteDialog(open ? { open: true, id: q._id } : { open: false, id: null })}>
-                    <DialogTrigger asChild>
-                      <Button size="sm" className="bg-red-500 text-white">Delete</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Delete Quantity</DialogTitle>
-                      </DialogHeader>
-                      <p>Are you sure you want to delete this quantity record?</p>
-                      <div className="flex gap-4 mt-4 justify-end">
-                        <Button variant="secondary" onClick={() => setDeleteDialog({ open: false, id: null })}>Cancel</Button>
-                        <Button variant="destructive" onClick={handleDelete}>Delete</Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+            {priceRows.one.map((row, idx) => (
+              <tr key={idx} className="border-b border-blue-200 bg-blue-50">
+                <td className="p-1"><Input value={row.type} onChange={e => handleChange('one', idx, 'type', e.target.value)} className="rounded bg-white text-xs" placeholder="Type" /></td>
+                <td className="p-1"><Input type="number" inputMode="numeric" pattern="[0-9]*" value={row.inr} onChange={e => handleChange('one', idx, 'inr', e.target.value)} className="rounded bg-white text-xs" placeholder="INR" /></td>
+                <td className="p-1"><Input type="number" inputMode="numeric" pattern="[0-9]*" value={row.usd} onChange={e => handleChange('one', idx, 'usd', e.target.value)} className="rounded bg-white text-xs" placeholder="USD" /></td>
+                <td className="p-1">
+                  {idx === priceRows.one.length - 1 && (
+                    <button type="button" className="bg-blue-700 text-white rounded px-2 py-1 text-lg font-bold mr-2" onClick={() => handleAddRow('one')}><Plus size={16} /></button>
+                  )}
+                  {priceRows.one.length > 1 && (
+                    <button type="button" className="text-red-600" onClick={() => setPriceRows(rows => ({ ...rows, one: rows.one.filter((_, i) => i !== idx) }))}><Trash2 size={16} /></button>
+                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </div>
+      {/* Section: 02 Person */}
+      <div className="w-full mb-6">
+        <div className="font-bold text-green-900 text-lg mb-1">Base Price: 02 Person</div>
+        <table className="w-full border border-gray-200 bg-[#f9f6ef] rounded-t-xl">
+          <thead className="bg-[#fbe5c3]">
+            <tr>
+              <th className="p-2 text-left text-xs font-semibold">Accommodation Type</th>
+              <th className="p-2 text-left text-xs font-semibold">In INR Price</th>
+              <th className="p-2 text-left text-xs font-semibold">US Doller Price</th>
+              <th className="p-2"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {priceRows.two.map((row, idx) => (
+              <tr key={idx} className="border-b border-blue-200 bg-blue-50">
+                <td className="p-1"><Input value={row.type} onChange={e => handleChange('two', idx, 'type', e.target.value)} className="rounded bg-white text-xs" placeholder="Type" /></td>
+                <td className="p-1"><Input type="number" inputMode="numeric" pattern="[0-9]*" value={row.inr} onChange={e => handleChange('two', idx, 'inr', e.target.value)} className="rounded bg-white text-xs" placeholder="INR" /></td>
+                <td className="p-1"><Input type="number" inputMode="numeric" pattern="[0-9]*" value={row.usd} onChange={e => handleChange('two', idx, 'usd', e.target.value)} className="rounded bg-white text-xs" placeholder="USD" /></td>
+                <td className="p-1">
+                  {idx === priceRows.two.length - 1 && (
+                    <button type="button" className="bg-blue-700 text-white rounded px-2 py-1 text-lg font-bold mr-2" onClick={() => handleAddRow('two')}><Plus size={16} /></button>
+                  )}
+                  {priceRows.two.length > 1 && (
+                    <button type="button" className="text-red-600" onClick={() => setPriceRows(rows => ({ ...rows, two: rows.two.filter((_, i) => i !== idx) }))}><Trash2 size={16} /></button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+       
+      </div>
+      {/* Section: 08 Person */}
+      <div className="w-full mb-6">
+        <div className="font-bold text-green-900 text-lg mb-1">Base Price: 08 Person <span className="text-xs">( minimum up to 8 person )</span></div>
+        <table className="w-full border border-gray-200 bg-[#f9f6ef] rounded-t-xl">
+          <thead className="bg-[#fbe5c3]">
+            <tr>
+              <th className="p-2 text-left text-xs font-semibold">Accommodation Type</th>
+              <th className="p-2 text-left text-xs font-semibold">In INR Price</th>
+              <th className="p-2 text-left text-xs font-semibold">US Doller Price</th>
+              <th className="p-2"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {priceRows.eight.map((row, idx) => (
+              <tr key={idx} className="border-b border-blue-200 bg-blue-50">
+                <td className="p-1"><Input value={row.type} onChange={e => handleChange('eight', idx, 'type', e.target.value)} className="rounded bg-white text-xs" placeholder="Type" /></td>
+                <td className="p-1"><Input type="number" inputMode="numeric" pattern="[0-9]*" value={row.inr} onChange={e => handleChange('eight', idx, 'inr', e.target.value)} className="rounded bg-white text-xs" placeholder="INR" /></td>
+                <td className="p-1"><Input type="number" inputMode="numeric" pattern="[0-9]*" value={row.usd} onChange={e => handleChange('eight', idx, 'usd', e.target.value)} className="rounded bg-white text-xs" placeholder="USD" /></td>
+                <td className="p-1">
+                  {idx === priceRows.eight.length - 1 && (
+                    <button type="button" className="bg-blue-700 text-white rounded px-2 py-1 text-lg font-bold mr-2" onClick={() => handleAddRow('eight')}><Plus size={16} /></button>
+                  )}
+                  {priceRows.eight.length > 1 && (
+                    <button type="button" className="text-red-600" onClick={() => setPriceRows(rows => ({ ...rows, eight: rows.eight.filter((_, i) => i !== idx) }))}><Trash2 size={16} /></button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+       
+      </div>
+      <button type="submit" className="bg-black text-white font-bold py-2 px-10 rounded mb-8">Data Save</button>
+    </form>
   );
 
   return (
     <div className="flex flex-col items-center w-full">
       {form}
-      {table}
     </div>
   );
 };

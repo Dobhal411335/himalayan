@@ -1,17 +1,15 @@
 import mongoose from 'mongoose';
 
 const QuantitySchema = new mongoose.Schema({
-  product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
-  variants: [
+  packages: { type: mongoose.Schema.Types.ObjectId, ref: 'Packages', required: true },
+  prices: [
     {
-      size: String,
-      color: String,
-      qty: Number,
-      price: Number,
-      weight: Number,
-      optional: Boolean
+      person: String, // "01", "02", "08"
+      type: String,   // accommodation type
+      inr: Number,
+      usd: Number
     }
-  ],
+  ]
 }, { timestamps: true });
 
 export default mongoose.models.Quantity || mongoose.model('Quantity', QuantitySchema);

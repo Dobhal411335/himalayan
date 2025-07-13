@@ -66,8 +66,7 @@ const Banner = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-2">
                         {promotinalBanner.map((item, idx) => (
                             <div key={idx} className="flex flex-col h-[300px] md:h-[400px] p-0 overflow-hidden relative group">
-                                <Link href={item?.buttonLink || '#'} target="_blank" rel="noopener noreferrer" className="px-10 text-md py-2 bg-black text-white hover:bg-gray-800 transition w-fit"><img src={item.image?.url} alt={item.title} className="absolute inset-0 w-full h-full object-cover object-center opacity-80 transition-transform duration-300 group-hover:scale-105" />
-                                </Link>
+                                <Link href={item?.buttonLink || '#'} target="_blank" rel="noopener noreferrer" ><img src={item.image?.url} alt={item.title} className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105" /></Link>
 
                             </div>
                         ))}
@@ -80,14 +79,13 @@ const Banner = () => {
                 <div className="w-full my-20 px-2">
                     <h2 className="pacifico-h2 text-green-800 text-2xl md:text-3xl text-center mb-5 uppercase">Balance is the New Luxury – Embrace It Today
                     </h2>
-                    <p className="font-barlow text-gray-600 mb-5 w-[50%] mx-auto text-center">Leave the chaos behind and embrace mindful simplicity. Nestled in the calm of Tapovan, our retreats offer expert-led sessions, soulful food, and Himalayan stillness for the ultimate reset.</p>
+                    <p className="font-barlow text-gray-600 mb-5 w-[50%] mx-auto text-center">Leave the chaos behind and embrace mindful simplicity. Nestled in the calm of Tapovan, our retreats offer expert-led sessions, soulful food, and Himalayan stillness for the ultimate reset.</p>
                     <Carousel className="w-full">
                         <CarouselContent>
                             {featuredOffer.map((item, idx) => (
                                 <CarouselItem key={idx} className="md:basis-1/3 lg:basis-1/4">
-                                    <div className="flex flex-col h-[300px] p-0 overflow-hidden relative bg-white group">
-                                        <Link href={item?.buttonLink || '#'} target="_blank" rel="noopener noreferrer" className="px-10 text-md py-2 bg-black text-white hover:bg-gray-800 transition w-fit"><img src={item.image?.url} alt={item.title} className="absolute inset-0 w-full h-full object-cover object-center opacity-80 transition-transform duration-300 group-hover:scale-105" />
-                                        </Link>
+                                    <div className="flex flex-col h-[300px] p-0 overflow-hidden relative ">
+                                        <Link href={item?.buttonLink || '#'} target="_blank" rel="noopener noreferrer"><img src={item.image?.url} alt={item.title} className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105" /></Link>
 
                                     </div>
                                 </CarouselItem>

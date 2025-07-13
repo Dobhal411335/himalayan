@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const ProductTaxSchema = new mongoose.Schema({
-  product: {
+  packages: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
+    ref: 'Packages',
     required: true,
     unique: true
   },

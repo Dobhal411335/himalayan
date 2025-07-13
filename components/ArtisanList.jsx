@@ -15,13 +15,13 @@ import CategoryAds from "@/components/CategoryAds";
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 const BannerSection = () => (
-    <div className="relative h-64 md:h-80 flex items-center justify-center">
-        <img
-            src="/accommodation.jpg"
-            alt="Accommodation Banner"
-            className="absolute inset-0 w-full h-full object-cover px-2"
-        />
-    </div>
+    <div className="relative h-64 md:h-96 flex items-center justify-center">
+    <img
+      src="/accommodation.jpg"
+      alt="Accommodation Image"
+      className="absolute inset-0 w-full h-full object-cover"
+    />
+  </div>
 );
 const amenityIcons = {
     'Restaurant': <Utensils size={24} />,
@@ -207,7 +207,7 @@ const ArtisanList = () => {
                                     return (
                                         <div key={item._id || idx} className="relative flex flex-col md:flex-row bg-[#f8f5ef] rounded-2xl my-2 md:items-center gap-6 shadow-lg px-5 mx-auto border border-gray-200">
                                             {/* Image Carousel */}
-                                            <div className="relative w-[420px] h-[300px] flex-shrink-0 flex items-center justify-center bg-white rounded-xl overflow-hidden border border-gray-100">
+                                            <div className="relative w-[420px] h-[280px] flex-shrink-0 flex items-center justify-center bg-white rounded-xl overflow-hidden border border-gray-100">
 
                                                 <Carousel className="w-full h-full" opts={{ loop: true }}>
                                                     <CarouselContent>
@@ -219,7 +219,7 @@ const ArtisanList = () => {
                                                                     alt={item.title || 'Room'}
                                                                     width={420}
                                                                     height={420}
-                                                                    className="object-cover w-[420px] h-[420px] rounded-xl border border-gray-200"
+                                                                    className="object-contain object-top w-[420px] h-[420px] rounded-xl border border-gray-200"
                                                                     priority={i === 0}
                                                                 />
                                                             </CarouselItem>

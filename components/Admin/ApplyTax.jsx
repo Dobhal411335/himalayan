@@ -127,7 +127,7 @@ const ApplyTax = ({ productData, productId }) => {
       const exists = await checkProductTaxExists();
       // console.log('[ApplyTax] checkProductTaxExists:', exists);
       if (exists) method = 'PATCH';
-      const payload = { product: productId, cgst: Number(cgst), sgst: Number(sgst) };
+      const payload = { packages: productId, cgst: Number(cgst), sgst: Number(sgst) };
       // console.log('[ApplyTax] Sending payload:', payload, 'method:', method);
       const res = await fetch('/api/productTax', {
         method,

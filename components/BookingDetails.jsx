@@ -8,6 +8,9 @@ const stateList = [
 ];
 
 import toast from 'react-hot-toast';
+// For SSR rendering of invoice
+// Will be dynamically imported when needed
+
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 const BookingDetails = ({ room, onClose, type }) => {
@@ -135,7 +138,7 @@ const BookingDetails = ({ room, onClose, type }) => {
                         />
                         {errors.departure && <div className="text-red-600 text-xs mt-1">{errors.departure}</div>}
                     </div>
-                    
+
                     <div className="font-bold text-md text-[#8a6a2f] mb-3">Total Days For Stay</div>
                     <div className="flex items-center bg-gray-200 rounded-full px-2 py-2 w-full mb-8">
                         <button className="text-2xl px-4" onClick={() => handleChange('days', Math.max(1, (form.days || 1) - 1))}>-</button>
@@ -369,8 +372,7 @@ const BookingDetails = ({ room, onClose, type }) => {
                                         const now = new Date();
                                         const pad = n => n.toString().padStart(2, '0');
                                         const dateStr = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
-                                        const rand = Math.random().toString(36).substring(2, 8).toUpperCase();
-                                        return `HWR-${dateStr}-${rand}`;
+                                        return `HWR-${dateStr}`;
                                     }
                                     const bookingIdVal = generateBookingId();
                                     // Extract detailed price breakdown as in sidebar
@@ -442,9 +444,44 @@ const BookingDetails = ({ room, onClose, type }) => {
                                         toast.success('Booking successful!');
                                         setBookingId(bookingIdVal);
                                         setShowConfirmation(true); // Show confirmation UI
-                                        setInvoiceData(
-                                            payload
-                                        );
+                                        setInvoiceData(payload);
+
+                                        // --- Send Beautiful Invoice Email ---
+                                        if (form.email) {
+                                            try {
+                                                const [{ default: ReactDOMServer }, { default: BeautifulInvoice }] = await Promise.all([
+                                                    import('react-dom/server'),
+                                                    import('./BeautifulInvoice'),
+                                                ]);
+                                                // Render invoice as HTML string
+                                                const invoiceHtml = ReactDOMServer.renderToStaticMarkup(
+                                                    <BeautifulInvoice
+                                                        booking={payload}
+                                                        bookingId={bookingIdVal}
+                                                        bookingDate={new Date()}
+                                                    />
+                                                );
+                                                // Send to /api/brevo
+                                                const resEmail = await fetch('/api/brevo', {
+                                                    method: 'POST',
+                                                    headers: { 'Content-Type': 'application/json' },
+                                                    body: JSON.stringify({
+                                                        to: form.email,
+                                                        subject: `Your Booking Invoice - ${room?.title || 'Himalayan Wellness Retreat'}`,
+                                                        htmlContent: invoiceHtml,
+                                                    })
+                                                });
+                                                const emailRes = await resEmail.json();
+                                                if (emailRes.success) {
+                                                    toast.success('Invoice sent to your email!');
+                                                } else {
+                                                    toast.error('Failed to send invoice email.');
+                                                }
+                                            } catch (err) {
+                                                toast.error('Error sending invoice: ' + err.message);
+                                            }
+                                        }
+
                                     } else {
                                         toast.error(data.error || 'Booking failed');
                                     }
@@ -468,7 +505,6 @@ const BookingDetails = ({ room, onClose, type }) => {
         return () => { document.body.style.overflow = ''; };
     }, [showConfirmation, step]);
     if (showInvoice) {
-        // console.log('showInvoice', showInvoice, 'invoiceData', invoiceData);
         return (
             <InvoiceModal
                 open={showInvoice}
