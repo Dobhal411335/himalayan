@@ -237,7 +237,7 @@ const InstaBlog = () => {
     return (
         <div className='bg-[#fcf7f1] w-full overflow-hidden max-w-screen overflow-x-hidden'>
             {/*Blogs /  News & Announcement Section */}
-            <div className="w-full flex flex-col items-center mb-12 py-20 bg-blue-100">
+            <div className="w-full flex flex-col items-center py-20 bg-blue-100">
                 <div className="w-full flex flex-col md:flex-row gap-8 min-h-[350px]">
                     <div className="flex flex-col md:flex-row w-full gap-8">
                         {/* Blogs Section */}
@@ -413,7 +413,7 @@ const InstaBlog = () => {
 
             {/* Instagram-like Image Carousel using Carousel classes */}
             {!isInstaLoading && !isFbLoading && allPosts.length > 0 && (
-                <div className="w-full flex flex-col items-center py-12">
+                <div className="w-full flex flex-col items-center">
                     <h2 className="text-center font-bold text-2xl md:text-3xl lg:text-4xl uppercase">
                         Don’t just watch the trends — live them!
                     </h2>
@@ -470,7 +470,7 @@ const InstaBlog = () => {
             )}
 
             {/* Reviews Section */}
-            <div className="w-full mx-auto relative min-h-[600px] flex items-center justify-end relative">
+            <div className="w-full mx-auto relative min-h-[650px] flex items-center justify-end relative">
                 {/* Background Image */}
                 <div className="hidden md:flex absolute inset-0 w-full h-full z-0">
                     <img
@@ -483,7 +483,7 @@ const InstaBlog = () => {
 
                 {/* Review Card Overlay */}
                 <div className="hidden md:flex absolute right-1 gap-2 top-[30%] z-10 flex flex-col justify-start w-full md:w-1/2 items-end pr-1">
-                    <div className="button px-10">
+                    <div className="mr-60">
                         <Button className="bg-white text-black hover:bg-black hover:text-white transition-colors duration-300" onClick={() => setShowReviewModal(true)}>Write Reviews</Button>
                     </div>
                     <Carousel className="w-full md:w-[600px]"
@@ -517,7 +517,7 @@ const InstaBlog = () => {
                                                         e.target.src = '/placeholder.jpeg';
                                                     }}
                                                 />
-                                                <div className="ml-4 text-left flex flex-col items-center gap-2">
+                                                <div className="ml-4 text-left flex flex-col items-start gap-2">
                                                     <div className="font-bold text-xl text-black">{review?.createdBy || review?.title || 'Anonymous'}</div>
 
                                                     <div className="flex items-center gap-1">
@@ -537,8 +537,8 @@ const InstaBlog = () => {
                             ))}
                         </CarouselContent>
                         <div className="flex items-center gap-3">
-                            <CarouselPrevious className="absolute top-[85%] left-[65%] bg-[#f7eedd] !rounded-full !w-12 !h-12 !flex !items-center !justify-center transition" />
-                            <CarouselNext className="absolute top-[85%] left-[80%] bg-[#f7eedd] !rounded-full !w-12 !h-12 !flex !items-center !justify-center transition" />
+                            <CarouselPrevious className="absolute top-[1%] left-[70%] bg-[#f7eedd] !rounded-full !w-12 !h-12 !flex !items-center !justify-center transition" />
+                            <CarouselNext className="absolute top-[1%] left-[85%] bg-[#f7eedd] !rounded-full !w-12 !h-12 !flex !items-center !justify-center transition" />
                         </div>
                     </Carousel>
                 </div>

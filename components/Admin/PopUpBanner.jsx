@@ -21,6 +21,8 @@ const PopUpBanner = () => {
     const [banners, setBanners] = useState([]);
     const [editBanner, setEditBanner] = useState(null);
     const [formData, setFormData] = useState({
+        heading: "",
+        paragraph: "",
         buttonLink: "",
         image: { url: "", key: "" },
         order: 1,
@@ -47,7 +49,7 @@ const PopUpBanner = () => {
     }, []);
 
     const handleInputChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        setFormData({ ...formData, heading: e.target.name === "heading" ? e.target.value : formData.heading, paragraph: e.target.name === "paragraph" ? e.target.value : formData.paragraph, [e.target.name]: e.target.value });
     };
 
     // Cloudinary-style image upload (like AddGallery.jsx)
@@ -65,7 +67,7 @@ const PopUpBanner = () => {
             });
             const data = await res.json();
             if (res.ok && data.url) {
-                setFormData(prev => ({ ...prev, image: { url: data.url, key: data.key || '' } }));
+                setFormData(prev => ({ ...prev, heading: prev.heading, paragraph: prev.paragraph, image: { url: data.url, key: data.key || '' } }));
                 toast.success('Image uploaded!');
             } else {
                 toast.error('Cloudinary upload failed: ' + (data.error || 'Unknown error'));
@@ -106,6 +108,8 @@ const PopUpBanner = () => {
 
                 // Reset form
                 setFormData({
+                    heading: "",
+                    paragraph: "",
                     buttonLink: "",
                     order: updatedBanners.length + 1,
                     image: { url: "", key: "" },
@@ -123,9 +127,11 @@ const PopUpBanner = () => {
         setEditBanner(banner._id);
         console.log(banner)
         setFormData({
-            buttonLink: banner.buttonLink,
+            heading: banner.heading || "",
+            paragraph: banner.paragraph || "",
+            buttonLink: banner.buttonLink || "",
             order: banner.order,
-            image: banner.image,
+            image: banner.image || { url: "", key: "" },
         });
     };
 
@@ -170,7 +176,7 @@ const PopUpBanner = () => {
 
     // Remove image from formData only
     const handleDeleteImage = () => {
-        setFormData(prev => ({ ...prev, image: { url: '', key: '' } }));
+        setFormData(prev => ({ ...prev, heading: prev.heading, paragraph: prev.paragraph, image: { url: '', key: '' } }));
     };
 
 
@@ -222,6 +228,13 @@ const PopUpBanner = () => {
                     )}
                 </div>
                 <div>
+                    <Label>Heading</Label>
+                    <Input name="heading" placeholder="Enter Heading Line" type="text" value={formData.heading} onChange={handleInputChange} />
+                </div>  <div>
+                    <Label>Paragraph</Label>
+                    <Input name="paragraph" placeholder="Enter Paragraph" type="text" value={formData.paragraph} onChange={handleInputChange} />
+                </div>
+                <div>
                     <Label>Button Link</Label>
                     <Input name="buttonLink" placeholder="Enter button link" type="url" value={formData.buttonLink} onChange={handleInputChange} />
                 </div>
@@ -241,6 +254,8 @@ const PopUpBanner = () => {
                             onClick={() => {
                                 setEditBanner(null);
                                 setFormData({
+                                    heading: "",
+                                    paragraph: "",
                                     buttonLink: "",
                                     order: banners.length > 0 ? Math.max(...banners.map(b => b.order)) + 1 : 1,
                                     image: { url: "", key: "" },

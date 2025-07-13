@@ -264,7 +264,7 @@ const ManageReviews = () => {
                             currentReviews.map((review) => (
                                 <tr key={review._id} className="hover:bg-gray-100 transition">
                                     {/* Date */}
-                                    <td className="align-middle min-w-[150px] px-5">{review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric' }) : "-"}</td>
+                                    <td className="align-middle min-w-[200px] px-5">{review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: 'numeric' }) : "-"}</td>
                                     {/* Title */}
                                     <td className="align-middle truncate max-w-[180px] px-5">{review.title || '-'}</td>
                                     {/* Name */}
@@ -320,24 +320,30 @@ const ManageReviews = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-                <div className="reviewlog-pagination-row">
-                    <div className="pagination">
-                        <button className="icon-btn" aria-label="Prev" disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
+                <div className="flex items-center justify-start gap-2 mt-6">
+                    <button
+                        className="border px-4 py-1.5 rounded-full text-[15px] disabled:opacity-50"
+                        disabled={currentPage === 1}
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    >
+                        PREV
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => (
+                        <button
+                            key={i}
+                            className={`border px-4 py-1.5 rounded-full text-[15px] ${currentPage === i + 1 ? "bg-black text-white" : "bg-white text-black"}`}
+                            onClick={() => setCurrentPage(i + 1)}
+                        >
+                            {i + 1}
                         </button>
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(num => (
-                            <button
-                                key={num}
-                                className={`page-btn${num === currentPage ? " active" : ""}`}
-                                onClick={() => setCurrentPage(num)}
-                            >
-                                {num}
-                            </button>
-                        ))}
-                        <button className="icon-btn" aria-label="Next" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#222" strokeWidth="2"><path d="M9 6l6 6-6 6" /></svg>
-                        </button>
-                    </div>
+                    ))}
+                    <button
+                        className="border px-4 py-1.5 rounded-full text-[15px] disabled:opacity-50"
+                        disabled={currentPage === totalPages}
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    >
+                        NEXT
+                    </button>
                 </div>
             )}
 

@@ -7,13 +7,49 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
-
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import './fonts/fonts.css';
+import FeaturedRoomsSection from "./FeaturedRoomsSection";
+import { useSession } from "next-auth/react";
+import toast from "react-hot-toast";
+import ReviewModal from "./ReviewModal";
+import ReviewListModal from "./ReviewListModal";
+import BookingDetails from "./BookingDetails";
 const Banner = () => {
+    const router = useRouter();
+    const pathname = usePathname();
+    // Modal state for review & booking
+    const [selectedRoom, setSelectedRoom] = useState(null);
+    const [showReviewModal, setShowReviewModal] = useState(false);
+    const [showBookModal, setShowBookModal] = useState(false);
+
+    // Handlers for modals
+    const handleShowReviews = (room) => {
+        setSelectedRoom(room);
+        setShowReviewModal(true);
+    };
+    const { data: session } = useSession();
+    const handleBookNow = (room) => {
+        if (!session || !session.user) {
+            router.replace(`/sign-in?callbackUrl=${encodeURIComponent(pathname)}`);
+            return;
+        }
+        setSelectedRoom(room);
+        setShowBookModal(true);
+    };
+    const handleCloseReviewModal = () => {
+        setShowReviewModal(false);
+        setSelectedRoom(null);
+    };
+    const handleCloseBookModal = () => {
+        setShowBookModal(false);
+        setSelectedRoom(null);
+    };
     const [promotinalBanner, setPromotinalBanner] = useState([])
     const [featuredOffer, setFeaturedOffer] = useState([])
     const [isLoading, setIsLoading] = useState(true);
+    const [rooms, setRooms] = useState([]);
     // console.log(promotinalBanner)
     const fetchPromotinalBanner = async () => {
         try {
@@ -49,12 +85,33 @@ const Banner = () => {
             setIsLoading(false);
         }
     };
+
+    const fetchRoom = async () => {
+        try {
+            const res = await fetch("/api/room");
+            const data = await res.json();
+            if (Array.isArray(data)) {
+                setRooms(data);
+            } else if (Array.isArray(data.rooms)) {
+                setRooms(data.rooms);
+            } else {
+                setRooms([]);
+            }
+        } catch (error) {
+            setRooms([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
         fetchPromotinalBanner();
         fetchFeaturedOffer();
+        fetchRoom();
     }, [])
     return (
         <div className="bg-[#fcf7f1] w-full overflow-hidden max-w-screen overflow-x-hidden">
+
             {/* Promotional Banner Section */}
             {promotinalBanner.length > 0 && (
                 <div className="w-full py-20 bg-blue-100">
@@ -84,8 +141,8 @@ const Banner = () => {
                         <CarouselContent>
                             {featuredOffer.map((item, idx) => (
                                 <CarouselItem key={idx} className="md:basis-1/3 lg:basis-1/4">
-                                    <div className="flex flex-col h-[300px] p-0 overflow-hidden relative ">
-                                        <Link href={item?.buttonLink || '#'} target="_blank" rel="noopener noreferrer"><img src={item.image?.url} alt={item.title} className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105" /></Link>
+                                    <div className="flex flex-col h-[350px] p-0 overflow-hidden relative group">
+                                        <Link href={item?.buttonLink || '#'} target="_blank" rel="noopener noreferrer"><img src={item.image?.url} alt={item.title} className="absolute inset-0 w-full h-full object-contain object-center transition-transform duration-300 group-hover:scale-105" /></Link>
 
                                     </div>
                                 </CarouselItem>
@@ -96,6 +153,29 @@ const Banner = () => {
                     </Carousel>
                 </div>
             )}
+            {rooms.length > 0 && (
+                <FeaturedRoomsSection
+                    rooms={rooms}
+                    onBook={handleBookNow}
+                    onShowReviews={handleShowReviews}
+                />
+            )}
+            {/* Render ReviewModal and BookingDetails for selected room */}
+            {showReviewModal && selectedRoom && (
+                <ReviewListModal
+                    open={showReviewModal}
+                    onClose={handleCloseReviewModal}
+                    reviews={selectedRoom.reviews || []}
+                />
+            )}
+            {showBookModal && selectedRoom && (
+                <BookingDetails
+                    room={selectedRoom}
+                    onClose={handleCloseBookModal}
+                    type="room"
+                />
+            )}
+
         </div>
     )
 }

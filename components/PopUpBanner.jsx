@@ -64,12 +64,11 @@ const PopUpBanner = () => {
         <div className="md:w-1/2 w-full px-8 py-5 flex flex-col justify-center items-center">
           <div className="mb-4">
             <div className="text-base font-semibold text-center text-gray-500 mb-2">Crafted with Heart</div>
-            <div className="text-2xl font-bold mb-4 text-center text-black leading-tight">
-              Unwrap the Beauty of Handmade<br />
-              <span className="font-normal text-center">– Now on Special Offer!</span>
+            <div className="text-xl font-bold mb-4 text-center text-black leading-tight">
+            {banner.heading}
             </div>
             <div className="text-gray-700 text-base mb-8 max-w-md">
-              Discover the beauty of tradition and craftsmanship with our exclusive offer on handcrafted products! Each piece tells a story—made with care, passion, and skill by local artisans.
+             {banner.paragraph}
             </div>
             <a
               href={banner.buttonLink || '#'}

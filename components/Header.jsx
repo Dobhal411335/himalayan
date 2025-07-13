@@ -23,10 +23,7 @@ const Header = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAuthDropdownOpen, setIsAuthDropdownOpen] = useState(false);
   const [menuItems, setMenuItems] = useState([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [initialCartTab, setInitialCartTab] = useState('cart');
   const { data: session, status } = useSession();
-  const { cart = [], wishlist = [] } = useCart();
   const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [openFixedMenu, setOpenFixedMenu] = useState(null);
@@ -116,7 +113,7 @@ const Header = () => {
                         <p className="px-4 pb-2 text-sm text-gray-700">{session.user.email}</p>
                         <div className="h-px bg-gray-200" />
                         <Link
-                          href="/dashboard?section=orders"
+                          href="/dashboard"
                           className="flex items-center rounded-lg w-full text-left px-4 py-2 hover:bg-blue-100"
                           onClick={() => setIsProfileOpen(false)}
                         >
@@ -213,7 +210,7 @@ const Header = () => {
                     <p className="px-4 pb-2 text-sm text-gray-700">{session.user.email}</p>
                     <div className="h-px bg-gray-200" />
                     <Link
-                      href="/dashboard?section=orders"
+                      href="/dashboard"
                       className="flex items-center rounded-lg w-full text-left px-4 py-2 hover:bg-blue-100"
                       onClick={() => setIsProfileOpen(false)}
                     >

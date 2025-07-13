@@ -139,7 +139,7 @@ const ArtisanList = () => {
             gridRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
         }
     }, [page]);
-    console.log(rooms)
+    // console.log(rooms)
 
 
 

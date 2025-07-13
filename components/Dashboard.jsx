@@ -43,6 +43,21 @@ function SectionContent({ section, orderId, onViewOrder, onBackHome, showOrderDe
   if (section === "dashboard" && orderId && showOrderDetail) {
     return <OrderDetail orderId={orderId} />;
   }
+  if (section === "dashboard") {
+    return (
+      <div className="p-8 flex items-center justify-center flex-col">
+        <h1 className="text-3xl font-bold mb-3">Welcome and Thank You for Choosing Us!</h1>
+        <div className="p-6 mb-6 max-w-2xl">
+          <p className="text-lg mb-2">Dear <span className="font-semibold text-blue-900">{session?.user?.name || "User"}</span>,</p>
+          <p className="mb-4">We’re delighted to welcome you on board!</p>
+          <p className="mb-4">Thank you for choosing our platform. We’re thrilled to have you with us and are committed to making your experience smooth, secure, and user-friendly. Your dashboard is now ready and designed to give you quick, easy access to everything you need — all in one place.</p>
+          <p className="mb-4">Whether you’re here to explore, manage your services, or simply stay connected, we’ve built this space with your convenience in mind. If you ever need assistance, our team is always here to help.</p>
+          <p className="mb-4">We look forward to serving you and being a part of your journey.</p>
+          <p className="mt-6 font-semibold">Warm regards,<br/>Himalayan Wellness Retreat Team</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold capitalize">{section}</h1>
