@@ -22,28 +22,31 @@ const Boxes = () => {
     </div>
     {/* Feature Icons Row */}
     <div className="w-full bg-gray-200 mb-2">
-      <div className="flex flex-wrap md:flex-nowrap items-center justify-between max-w-7xl mx-auto py-4 px-2 gap-4">
-        <div className="flex items-center gap-2 flex-1 min-w-[120px]">
-          <span className="text-xl"><Gift size={25} /></span>
-          <span className="font-bold text-xs md:text-lg uppercase">Revitalizing Sessions</span>
-        </div>
-        <div className="hidden md:block w-[1px] h-6 bg-black"></div>
-        <div className="flex items-center gap-2 flex-1 min-w-[120px]">
-          <span className="text-xl"><ShoppingCart size={25} /></span>
-          <span className="font-bold text-xs md:text-lg uppercase">Easy, Quick & Friendly</span>
-        </div>
-        <div className="hidden md:block w-[1px] h-6 bg-black"></div>
-        <div className="flex items-center gap-2 flex-1 min-w-[120px]">
-          <span className="text-xl"><BadgePercent size={25} /></span>
-          <span className="font-bold text-xs md:text-lg uppercase">We’re Quick. Effortless </span>
-        </div>
-        <div className="hidden md:block w-[1px] h-6 bg-black"></div>
-        <div className="flex items-center gap-2 flex-1 min-w-[120px]">
-          <span className="text-xl"><ShieldCheck size={25} /></span>
-          <span className="font-bold text-xs md:text-lg uppercase">Trusted & Secure Checkout</span>
-        </div>
-      </div>
+  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 max-w-7xl mx-auto py-4 px-2 gap-4">
+    
+    <div className="flex items-center gap-2">
+      <Gift size={25} />
+      <span className="font-bold text-xs md:text-lg uppercase">Revitalizing Sessions</span>
     </div>
+
+    <div className="flex items-center gap-2">
+      <ShoppingCart size={25} />
+      <span className="font-bold text-xs md:text-lg uppercase">Easy, Quick & Friendly</span>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <BadgePercent size={25} />
+      <span className="font-bold text-xs md:text-lg uppercase">We’re Quick. Effortless</span>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <ShieldCheck size={25} />
+      <span className="font-bold text-xs md:text-lg uppercase">Trusted & Secure Checkout</span>
+    </div>
+    
+  </div>
+</div>
+
   </div>
 
 

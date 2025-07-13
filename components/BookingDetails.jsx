@@ -1,5 +1,5 @@
 "use client"
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { X } from 'lucide-react';
 import InvoiceModal from './InvoiceModal';
@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 const BookingDetails = ({ room, onClose, type }) => {
-    
+
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [showInvoice, setShowInvoice] = useState(false);
     const [bookingId, setBookingId] = useState('');
@@ -135,6 +135,7 @@ const BookingDetails = ({ room, onClose, type }) => {
                         />
                         {errors.departure && <div className="text-red-600 text-xs mt-1">{errors.departure}</div>}
                     </div>
+                    
                     <div className="font-bold text-md text-[#8a6a2f] mb-3">Total Days For Stay</div>
                     <div className="flex items-center bg-gray-200 rounded-full px-2 py-2 w-full mb-8">
                         <button className="text-2xl px-4" onClick={() => handleChange('days', Math.max(1, (form.days || 1) - 1))}>-</button>
@@ -396,7 +397,7 @@ const BookingDetails = ({ room, onClose, type }) => {
 
                                     // Compose booking payload with detailed breakdown
                                     // Generate invoice number (date + random)
-                                    const invoiceNumber = `INV${new Date().getFullYear()}${(new Date().getMonth()+1).toString().padStart(2,'0')}${new Date().getDate().toString().padStart(2,'0')}-${Math.random().toString(36).substring(2,8).toUpperCase()}`;
+                                    const invoiceNumber = `INV${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
                                     const payload = {
                                         ...form, // include all user fields (firstName, lastName, callNo, email, address, etc)
@@ -470,12 +471,12 @@ const BookingDetails = ({ room, onClose, type }) => {
         // console.log('showInvoice', showInvoice, 'invoiceData', invoiceData);
         return (
             <InvoiceModal
-            open={showInvoice}
-            onClose={() => setShowInvoice(false)}
-            booking={invoiceData}
-            bookingId={bookingId}
-            bookingDate={new Date()}
-          />
+                open={showInvoice}
+                onClose={() => setShowInvoice(false)}
+                booking={invoiceData}
+                bookingId={bookingId}
+                bookingDate={new Date()}
+            />
         );
     }
     if (showConfirmation) {
@@ -496,7 +497,7 @@ const BookingDetails = ({ room, onClose, type }) => {
 
                     {/* Confirmation Title */}
                     <div className="text-2xl italic font-bold mb-4 text-[#7a5b2b]">
-                        Booking Order Confirmation
+                        Booking Order Under Review
                     </div>
 
                     {/* Confirmation Message */}
@@ -512,7 +513,7 @@ const BookingDetails = ({ room, onClose, type }) => {
 
                     {/* Invoice Button */}
                     <button className="w-full bg-black text-white rounded-md py-3 font-semibold text-lg mb-3 hover:bg-gray-900" onClick={() => setShowInvoice(true)}>
-                        Get receipt (Invoice)
+                        Invoice Booking Voucheri
                     </button>
 
                     {/* Dashboard Link */}
@@ -542,7 +543,7 @@ const BookingDetails = ({ room, onClose, type }) => {
                 {/* Right: Room Summary */}
                 <div className="bg-white rounded-xl border border-gray-200 shadow-md p-6 min-w-[300px] max-w-[400px] flex flex-col">
                     <div className="font-bold text-xl mb-2">{roomName}</div>
-                    <div className="w-full h-36 relative mb-3 rounded-lg overflow-hidden">
+                    <div className="w-full h-48 relative mb-3 rounded-lg overflow-hidden">
                         <Image src={roomImg} alt={roomName} fill className="object-cover" />
                     </div>
                     {(() => {

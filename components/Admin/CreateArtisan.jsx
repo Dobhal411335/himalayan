@@ -633,8 +633,8 @@ const CreateArtisan = () => {
             <div className="font-semibold mb-1">Team Person Detail</div>
             <div className="flex gap-2 mb-2">
               <Input
-                placeholder="SHG Name"
-                {...register("shgName", { required: "SHG Name is required" })}
+                placeholder="Any Group Name"
+                {...register("shgName", { required: "Any Ground Name is required" })}
               />
               {renderError("shgName")}
               <Input
@@ -1122,7 +1122,7 @@ const CreateArtisan = () => {
                     label={`${selectedUser.fatherHusbandType} Name`}
                     value={`${selectedUser.fatherHusbandTitle} ${selectedUser.fatherHusbandName} ${selectedUser.fatherHusbandLastName}`}
                   />
-                  <DetailBox label="SHG Name" value={selectedUser.shgName} />
+                  <DetailBox label="Any Group Name" value={selectedUser.shgName} />
                   <DetailBox
                     label="Artisan Number"
                     value={selectedUser.artisanNumber}

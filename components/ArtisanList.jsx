@@ -17,9 +17,9 @@ import { useRouter, usePathname } from 'next/navigation';
 const BannerSection = () => (
     <div className="relative h-64 md:h-80 flex items-center justify-center">
         <img
-            src="/artisanBanner.jpg"
-            alt="Artisan Banner"
-            className="absolute inset-0 w-full h-full object-cover object-top px-2"
+            src="/accommodation.jpg"
+            alt="Accommodation Banner"
+            className="absolute inset-0 w-full h-full object-cover px-2"
         />
     </div>
 );
@@ -123,6 +123,7 @@ const ReviewModal = ({ open, onClose, reviews }) => {
 };
 
 import BookingDetails from './BookingDetails';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 const ArtisanList = () => {
     const { data: session, status } = useSession();
@@ -138,22 +139,9 @@ const ArtisanList = () => {
             gridRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
         }
     }, [page]);
-
-    const [categoryAdList, setCategoryAdList] = useState([]);
     console.log(rooms)
 
-    useEffect(() => {
-        // Fetch category ads on mount
-        fetch("/api/categoryAdvertisment")
-            .then(res => res.json())
-            .then(data => {
-                // If your API returns an array directly:
-                setCategoryAdList(Array.isArray(data) ? data : []);
-                // If your API returns { ads: [...] }:
-                // setCategoryAdList(Array.isArray(data.ads) ? data.ads : []);
-            })
-            .catch(() => setCategoryAdList([]));
-    }, []);
+
 
     // Fetch Artisan (copied from RandomTourPackageSection)
     useEffect(() => {
@@ -205,24 +193,8 @@ const ArtisanList = () => {
                 <div className="flex flex-col md:flex-row w-full">
                     {/* Row 2: Feature Table (full width) */}
                     {rooms.length > 0 && (
-                        <div className="w-full flex flex-row gap-2 md:w-[95%] mx-auto">
-                            <div className="left w-[30%] p-4">
-                                {/* Left: Heading and description */}
-                                <div className="flex flex-col items-center">
-                                    {/* Tagline Card */}
-                                    <div className="bg-white border rounded-xl shadow p-5 mb-5 w-72 max-w-xs">
-                                        <h2 className="text-lg font-bold mb-2">First Tag Line H2 Type</h2>
-                                        <div className="text-sm text-gray-700 text-justify">
-                                            At our Wellness Retreats in Tapovan, Rishikesh, we offer a complete and immersive wellness experience that nurtures the body, mind, and soul. Whether you’re a beginner or an advanced practitioner, our programs are designed to guide you on a journey of inner healing and mindful living—amidst the spiritual energy of the Himalayas.
-                                        </div>
-                                    </div>
-                                    {/* Category Advertisement Banner(s) */}
-                                    <div className="flex flex-col w-72 max-w-xs flex-shrink-0 justify-start items-center">
-                                        <CategoryAds categoryAdList={categoryAdList} />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="right w-[70%] p-2">
+                        <div className="w-full flex flex-row gap-2 md:w-[90%] mx-auto">
+                            <div className="right w-[100%] p-2">
                                 {(page === 1
                                     ? rooms.slice(0)
                                     : paginatedArtisans
@@ -233,9 +205,9 @@ const ArtisanList = () => {
                                     ];
                                     if (imageUrls.length === 0) imageUrls.push('/placeholder.jpeg');
                                     return (
-                                        <div key={item._id || idx} className="relative flex flex-col md:flex-row bg-[#f8f5ef] rounded-2xl my-2 md:items-center gap-6">
+                                        <div key={item._id || idx} className="relative flex flex-col md:flex-row bg-[#f8f5ef] rounded-2xl my-2 md:items-center gap-6 shadow-lg px-5 mx-auto border border-gray-200">
                                             {/* Image Carousel */}
-                                            <div className="relative w-64 h-48 flex-shrink-0 flex items-center justify-center">
+                                            <div className="relative w-[420px] h-[300px] flex-shrink-0 flex items-center justify-center bg-white rounded-xl overflow-hidden border border-gray-100">
 
                                                 <Carousel className="w-full h-full" opts={{ loop: true }}>
                                                     <CarouselContent>
@@ -245,10 +217,9 @@ const ArtisanList = () => {
                                                                 <Image
                                                                     src={img}
                                                                     alt={item.title || 'Room'}
-                                                                    width={300}
-                                                                    height={300}
-                                                                    className="object-contain rounded-xl"
-                                                                    style={{ height: "200px", maxHeight: "200px" }}
+                                                                    width={420}
+                                                                    height={420}
+                                                                    className="object-cover w-[420px] h-[420px] rounded-xl border border-gray-200"
                                                                     priority={i === 0}
                                                                 />
                                                             </CarouselItem>
@@ -283,13 +254,22 @@ const ArtisanList = () => {
                                                 <div className="text-gray-800 text-sm mb-1" dangerouslySetInnerHTML={{ __html: item.paragraph }} />
                                                 <div className="font-semibold text-gray-800 text-sm mt-1">Room Amenities</div>
                                                 <div className="flex gap-2 mb-1 text-lg">
-                                                    <div className="flex gap-2 mb-1 text-lg flex-wrap">
-                                                        {(item.amenities || []).map((am, i) => (
-                                                            <span key={am._id || i} title={am.label} className="bg-gray-100 px-1 rounded flex items-center justify-center">
-                                                                {amenityIcons[am.label] || am.label}
-                                                            </span>
-                                                        ))}
-                                                    </div>
+                                                    <TooltipProvider>
+                                                        <div className="flex gap-2 mb-1 text-lg flex-wrap">
+                                                            {(item.amenities || []).map((am, i) => (
+                                                                <Tooltip key={am._id || i}>
+                                                                    <TooltipTrigger asChild>
+                                                                        <span className="bg-gray-100 px-1 rounded flex items-center justify-center cursor-pointer">
+                                                                            {amenityIcons[am.label] || am.label}
+                                                                        </span>
+                                                                    </TooltipTrigger>
+                                                                    <TooltipContent side="top">
+                                                                        {am.label}
+                                                                    </TooltipContent>
+                                                                </Tooltip>
+                                                            ))}
+                                                        </div>
+                                                    </TooltipProvider>
                                                 </div>
                                                 {(() => {
                                                     const priceList = (item.prices && item.prices[0] && item.prices[0].prices) || [];
@@ -319,8 +299,8 @@ const ArtisanList = () => {
                                                     return (
                                                         <div className="flex items-center gap-4">
                                                             <span className="text-2xl font-bold text-black">Rs. {mainPrice ? mainPrice.amount : 'N/A'}</span>
-                                                            <span className="text-lg text-gray-800 line-through">{mainPrice && mainPrice.oldPrice ? mainPrice.oldPrice : 'N/A'}</span>
-                                                            <span className="text-md text-gray-700">Per Night</span>
+                                                            <span className="text-lg font-semibold text-gray-800 line-through">{mainPrice && mainPrice.oldPrice ? mainPrice.oldPrice : 'N/A'}</span>
+                                                            <span className="text-md text-gray-700">/ Per Night</span>
                                                             <button
                                                                 className="ml-auto bg-green-700 hover:bg-green-800 text-white font-semibold px-16 py-2 rounded-md"
                                                                 onClick={() => {
@@ -380,14 +360,16 @@ const ArtisanList = () => {
                 {/* {data.longPara && ( */}
                 <div className="my-4 mx-10 rounded-xl overflow-hidden border-2 border-black p-5">
                     <div
-                        className="custom-desc-list my-4"
-                    // dangerouslySetInnerHTML={{ __html: data.longPara }}
+                        className="my-4"
                     >
-                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa beatae perspiciatis provident quisquam rerum qui voluptatum inventore cumque nesciunt blanditiis ducimus ipsa possimus impedit, suscipit, voluptas pariatur fugiat numquam dicta atque perferendis porro. Tempore sapiente minus tempora, quis minima modi alias consectetur, consequatur cumque facilis nemo nostrum voluptatem quae officia veniam. Dignissimos soluta dolore repudiandae fuga consequatur et consectetur, distinctio, dolores optio quas iste fugiat itaque! Beatae possimus molestias blanditiis culpa enim consequatur, ad vel numquam optio voluptates, eveniet architecto laboriosam adipisci repellat voluptatum pariatur obcaecati nesciunt! Debitis laborum quaerat, repellendus, natus distinctio a, non quam ea atque sit nostrum?
+                        <h2 className="text-xl font-bold text-gray-900 pb-2">Our Accommodation – Comfort, Serenity & the Best Stay Experience</h2>
+                        At our retreat, your stay is more than just a place to rest—it's a part of your healing and rejuvenation journey. Nestled amidst the serene beauty of city, our accommodations are thoughtfully designed to provide a perfect balance of natural simplicity and modern comfort. Choose from elegant view rooms, peaceful rooms, or mountain-facing deluxe accommodation each infused with earthy aesthetics, soft lighting, and calming ambiance.
+
+                        Enjoy spacious interiors, premium bedding, fresh linen, and attached bathrooms with modern amenities. Step out onto private balconies to sip herbal tea while soaking in the Himalayan breeze or unwind in quiet reading corners with the sound of the Ganga in the distance or mountain's. We ensure round-the-clock cleanliness, warm hospitality, and a peaceful environment so you can truly disconnect from the chaos and reconnect with yourself.
+
+                        Whether you're here for spiritual renewal, yoga, or pure relaxation, our accommodation offers a sanctuary where every detail is crafted to support your peace, comfort, and well-being.
                     </div>
                 </div>
-                {/* Booking Modal */}
-                {/* )} */}
             </div>
             {bookingModalOpen && (
                 <BookingDetails
