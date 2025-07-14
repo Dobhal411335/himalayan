@@ -67,18 +67,6 @@ const QuantityManagement = ({ productData, packageId }) => {
       setSaving(false);
     }
   };
-
-
-  // Remove row from a section
-  // const handleRemoveRow = (section, idx) => {
-  //   setPriceRows(rows => ({
-  //     ...rows,
-  //     [section]: rows[section].length > 1 ? rows[section].filter((_, i) => i !== idx) : rows[section],
-  //   }));
-  // };
-
-
-  // const [saving, setSaving] = useState(false);
   // No need for allQuantities state; always show form and auto-fill
   const [viewDialog, setViewDialog] = useState({ open: false, data: null });
   const [editMode, setEditMode] = useState(false);
@@ -115,7 +103,6 @@ const QuantityManagement = ({ productData, packageId }) => {
     });
     setEditMode(true);
   };
-
 
   // Cancel edit
   const handleCancelEdit = () => {
@@ -159,7 +146,7 @@ const QuantityManagement = ({ productData, packageId }) => {
                 <td className="p-1"><Input type="number" inputMode="numeric" pattern="[0-9]*" value={row.usd} onChange={e => handleChange('one', idx, 'usd', e.target.value)} className="rounded bg-white text-xs" placeholder="USD" /></td>
                 <td className="p-1">
                   {idx === priceRows.one.length - 1 && (
-                    <button type="button" className="bg-blue-700 text-white rounded px-2 py-1 text-lg font-bold mr-2" onClick={() => handleAddRow('one')}><Plus size={16} /></button>
+                    <button type="button" className="bg-blue-700 text-white rounded px-2 text-lg font-bold mr-2" onClick={() => handleAddRow('one')}><Plus size={16} /></button>
                   )}
                   {priceRows.one.length > 1 && (
                     <button type="button" className="text-red-600" onClick={() => setPriceRows(rows => ({ ...rows, one: rows.one.filter((_, i) => i !== idx) }))}><Trash2 size={16} /></button>

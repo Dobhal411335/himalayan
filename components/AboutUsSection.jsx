@@ -90,17 +90,12 @@ const AboutUsSection = () => {
                 </p>
                 <hr className="h-[2px] w-[50%] mx-auto bg-black" />
 
-                <p className="text-gray-600 md:py-8 py-4 text-center font-barlow md:w-[50%] w-full mx-auto">
-                    Experience the Soul of Himalayan Wellness in Rishikesh
-                    Himalayan Wellness Retreats invites you to a transformative journey nestled in the spiritual heartland of Tapovan, Rishikesh — where the charm of the sacred city meets the serene rhythm of the Ganges. Known as the Yoga Capital of the World, Rishikesh offers the perfect backdrop for inner healing, mindful living, and soulful exploration.
-
-                    Our thoughtfully curated retreats are designed to rejuvenate your body, mind, and spirit amidst the majestic Himalayan landscape. Each day begins with revitalizing yoga and meditation sessions led by experienced instructors, followed by nourishing yogic meals prepared from fresh, organic ingredients.
-
-                    Immerse yourself in the local lifestyle as you explore ancient temples, vibrant artisan markets, and the awe-inspiring Ganga Aarti — all just steps away from our peaceful retreat in Tapovan. Guests enjoy serene accommodations with stunning views, nature walks, and spiritual excursions that connect you deeply with the essence of the region.
-
-                    Whether you seek inner peace, spiritual growth, or simply a conscious escape, Himalayan Wellness Retreats in Rishikesh offers a sacred space to reconnect—with yourself, with nature, and with the divine flow of life.
-
-                    Explore the Spirit of Rishikesh — Where Every Breath is a Step Toward Wholeness.
+                <p className="text-gray-600 md:py-8 py-4 text-center font-barlow md:w-[55%] w-full mx-auto">
+                    Experience the Soul of Himalayan Wellness
+                    Escape to the spiritual heart of Tapovan, Rishikesh — where sacred serenity meets the flowing grace of the Ganges. At Himalayan Wellness Retreats, each day is a blend of mindful yoga, nourishing satvic meals, and soul-stirring experiences like Ganga Aarti, temple visits, and Himalayan walks. Stay in serene accommodations with stunning views, guided by the rhythms of nature and inner peace.
+                    <br />
+                    <br />
+                    Reconnect. Realign. Rejuvenate — in the Yoga Capital of the World.
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-auto">
                     {loading ? (

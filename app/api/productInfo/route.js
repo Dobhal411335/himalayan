@@ -1,30 +1,32 @@
 import connectDB from "@/lib/connectDB";
-import Room from '@/models/Room';
+import Info from '@/models/Info';
+import Packages from '@/models/Packages';
 
+// POST: Add a section to a product's info
 export async function POST(req) {
   await connectDB();
   try {
-    const { roomId, heading, paragraph, mainPhoto, relatedPhotos } = await req.json();
-    if (!roomId || !heading || !mainPhoto) {
-      return Response.json({ error: 'Missing roomId, heading, or mainPhoto' }, { status: 400 });
+    const { packageId, title, description } = await req.json();
+    if (!packageId || !title || !description) {
+      return Response.json({ error: 'Missing packageId, title, or description' }, { status: 400 });
     }
-
-    const updatedRoom = await Room.findByIdAndUpdate(
-      roomId,
-      {
-        heading,
-        paragraph,
-        mainPhoto,
-        relatedPhotos,
-      },
-      { new: true }
-    );
-
-    if (!updatedRoom) {
-      return Response.json({ error: 'Room not found' }, { status: 404 });
+    let infoDoc = await Info.findOne({ packageId });
+    if (!infoDoc) {
+      infoDoc = await Info.create({ packageId, info: [{ title, description }] });
+      // Link Info to Product
+      await Packages.findByIdAndUpdate(packageId, { info: infoDoc._id });
+    } else {
+      // Defensive: never overwrite the array, always append
+      if (!Array.isArray(infoDoc.info)) {
+        infoDoc.info = [];
+      }
+      // Debug: log before and after
+      // console.log('Before push:', infoDoc.info);
+      infoDoc.info = [...infoDoc.info, { title, description }];
+      // console.log('After push:', infoDoc.info);
+      await infoDoc.save();
     }
-
-    return Response.json({ success: true, room: updatedRoom });
+    return Response.json({ success: true, info: infoDoc });
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
   }
@@ -35,12 +37,12 @@ export async function GET(req) {
   await connectDB();
   try {
     const { searchParams } = new URL(req.url);
-    const roomId = searchParams.get('roomId');
-    if (!roomId) {
-      return Response.json({ error: 'Missing roomId' }, { status: 400 });
+    const packageId = searchParams.get('packageId');
+    if (!packageId) {
+      return Response.json({ error: 'Missing packageId' }, { status: 400 });
     }
-    const room = await Room.findOne({ _id: roomId });
-    return Response.json({ room });
+    const infoDoc = await Info.findOne({ packageId });
+    return Response.json({ info: infoDoc });
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
   }
@@ -50,18 +52,19 @@ export async function GET(req) {
 export async function PATCH(req) {
   await connectDB();
   try {
-    const { roomId, sectionIndex, title, description } = await req.json();
-    if (!roomId || sectionIndex === undefined || !title || !description) {
-      return Response.json({ error: 'Missing roomId, sectionIndex, title, or description' }, { status: 400 });
+    const { packageId, sectionIndex, title, description } = await req.json();
+    if (!packageId || sectionIndex === undefined || !title || !description) {
+      return Response.json({ error: 'Missing packageId, sectionIndex, title, or description' }, { status: 400 });
     }
-    const room = await Room.findOne({ _id: roomId });
-    if (!room) {
-      return Response.json({ error: 'Room not found' }, { status: 404 });
+    const infoDoc = await Info.findOne({ packageId });
+    if (!infoDoc || !infoDoc.info[sectionIndex]) {
+      return Response.json({ error: 'Section not found' }, { status: 404 });
     }
-    room.heading = title;
-    room.paragraph = description;
-    await room.save();
-    return Response.json({ success: true, heading: title, paragraph: description, room: room });
+    infoDoc.info[sectionIndex].title = title;
+    infoDoc.info[sectionIndex].description = description;
+    await infoDoc.markModified('info');
+    await infoDoc.save();
+    return Response.json({ success: true, info: infoDoc });
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
   }
@@ -71,19 +74,27 @@ export async function PATCH(req) {
 export async function DELETE(req) {
   await connectDB();
   try {
-    const { roomId, sectionIndex } = await req.json();
+    const { packageId, sectionIndex } = await req.json();
     const index = Number(sectionIndex);
-    if (!roomId || isNaN(index)) {
-      return Response.json({ error: 'Missing roomId or sectionIndex' }, { status: 400 });
+    if (!packageId || isNaN(index)) {
+      return Response.json({ error: 'Missing packageId or sectionIndex' }, { status: 400 });
     }
-    const room = await Room.findOne({ _id: roomId });
-    room.heading = "";
-    room.paragraph = "";
-    await room.save();
+    const infoDoc = await Info.findOne({ packageId });
+    if (!infoDoc || !Array.isArray(infoDoc.info) || index < 0 || index >= infoDoc.info.length) {
+      return Response.json({ error: 'Section not found' }, { status: 404 });
+    }
+    infoDoc.info.splice(index, 1);
+    await infoDoc.markModified('info');
+    await infoDoc.save();
 
- 
+    // If no sections left, delete Info doc and unset from Product
+    if (infoDoc.info.length === 0) {
+      await Info.deleteOne({ _id: infoDoc._id });
+      await Packages.findByIdAndUpdate(packageId, { $unset: { info: "" } });
+      return Response.json({ success: true, info: null });
+    }
     // console.log('After delete/save:', infoDoc.info);
-    return Response.json({ success: true, heading: "", paragraph: "", room: room });
+    return Response.json({ success: true, info: infoDoc });
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
   }

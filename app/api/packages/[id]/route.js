@@ -12,7 +12,7 @@ import CategoryTag from '@/models/CategoryTag';
 import ProductReview from '@/models/ProductReview';
 import ProductTax from '@/models/ProductTax';
 import ProductCoupons from '@/models/ProductCoupons';
-import Quantity from '@/models/Quantity';
+import PackagePrice from '@/models/PackagePrice';
 import Color from '@/models/Color';
 import ProductTagLine from '@/models/ProductTagLine';
 import ArtisanStory from '@/models/ArtisanStory';
@@ -44,7 +44,7 @@ export async function GET(req, { params }) {
     .populate('categoryTag')
     .populate('productTagLine')
     .populate('reviews')
-    .populate('quantity')
+    .populate('packagePrice')
     .populate('coupons')
     .populate('taxes')
     .populate({
@@ -77,22 +77,8 @@ export async function DELETE(req, { params }) {
     const product = await Packages.findById(id).populate('artisan');
     if (!product || !product.active) {
       return new Response(JSON.stringify({ error: 'Product not found' }), { status: 404 });
-    }
-    // Remove the product reference from the artisan's products array
-    if (product.artisan) {
-      await Artisan.findByIdAndUpdate(
-        product.artisan,
-        { $pull: { products: product._id } }
-      );
-    }
-    // Delete all color and size docs for this product
-    await Color.deleteMany({ product: id });
-    await Size.deleteMany({ product: id });
-
-    // Cascade delete subcomponents and images
-    // (All models and utilities are already imported at the top)
-
-    // Delete gallery and its images
+    }  
+      // Delete gallery and its images
     if (product.gallery) {
       const galleryDoc = await Gallery.findById(product.gallery);
       if (galleryDoc) {
@@ -137,12 +123,8 @@ export async function DELETE(req, { params }) {
       }
     }
     // Delete quantity
-    if (product.quantity) {
-      await Quantity.findByIdAndDelete(product.quantity);
-    }
-    // Delete coupons
-    if (product.coupons) {
-      await ProductCoupons.findByIdAndDelete(product.coupons);
+    if (product.packagePrice) {
+      await PackagePrice.findByIdAndDelete(product.packagePrice);
     }
     // Delete taxes
     if (product.taxes) {

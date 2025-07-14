@@ -16,12 +16,12 @@ import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 const BannerSection = () => (
     <div className="relative h-64 md:h-96 flex items-center justify-center">
-    <img
-      src="/accommodation.jpg"
-      alt="Accommodation Image"
-      className="absolute inset-0 w-full h-full object-cover"
-    />
-  </div>
+        <img
+            src="/accommodation.jpg"
+            alt="Accommodation Image"
+            className="absolute inset-0 w-full h-full object-cover"
+        />
+    </div>
 );
 const amenityIcons = {
     'Restaurant': <Utensils size={24} />,

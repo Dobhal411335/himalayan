@@ -1,19 +1,19 @@
 import connectDB from "@/lib/connectDB";
-import Product from '@/models/Product';
+import Packages from '@/models/Packages';
 import Gallery from '@/models/Gallery';
 
 export async function POST(req) {
   await connectDB();
   try {
-    const { productId, mainImage, subImages } = await req.json();
+    const { packageId, mainImage, subImages } = await req.json();
     // console.log('API DEBUG received subImages:', subImages);
-    if (!productId || !mainImage) {
-      return new Response(JSON.stringify({ error: 'Missing or invalid productId/mainImage' }), { status: 400 });
+    if (!packageId || !mainImage) {
+      return new Response(JSON.stringify({ error: 'Missing or invalid packageId/mainImage' }), { status: 400 });
     }
     // Create the gallery
-    const gallery = await Gallery.create({ product: productId, mainImage, subImages });
+    const gallery = await Gallery.create({ packageId, mainImage, subImages });
     // Push gallery reference to product
-    await Product.findByIdAndUpdate(productId, { gallery: gallery._id }, { new: true });
+    await Packages.findByIdAndUpdate(packageId, { gallery: gallery._id }, { new: true });
     return new Response(JSON.stringify(gallery), { status: 201 });
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), { status: 500 });
@@ -23,7 +23,7 @@ export async function POST(req) {
 export async function GET() {
   await connectDB();
   try {
-    const galleries = await Gallery.find().populate('product');
+    const galleries = await Gallery.find().populate('packageId');
     return new Response(JSON.stringify(galleries), { status: 200 });
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), { status: 500 });
@@ -70,7 +70,7 @@ export async function DELETE(req) {
       return new Response(JSON.stringify({ error: 'Gallery not found' }), { status: 404 });
     }
     // Remove gallery reference from Product
-    await Product.findByIdAndUpdate(gallery.product, { $unset: { gallery: '' } });
+    await Packages.findByIdAndUpdate(gallery.packageId, { $unset: { gallery: '' } });
 
     // Delete images from Cloudinary
     let errors = [];

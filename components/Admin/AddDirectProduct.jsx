@@ -7,11 +7,11 @@ import ProductReview from './ProductReview';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import VideoManagement from './VideoManagement';
 import ProductDescription from './ProductDescription';
-import QuantityManagement from './QuantityManagement';
 import ApplyTax from './ApplyTax';
 import { ArrowLeftIcon, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import PackagePdf from "./PackagePdf"
+import PackagePrice from './PackagePrice';
 const AddDirectProduct = ({ productId }) => {
   // console.log(productId)
   const router = useRouter();
@@ -37,15 +37,15 @@ const AddDirectProduct = ({ productId }) => {
   }, [productId]);
 
   const sectionConfig = [
-    { key: 'quantity', label: 'Price Management', component: (props) => <QuantityManagement {...props} productData={productData} packageId={productId} /> },
+    { key: 'price', label: 'Price Management', component: (props) => <PackagePrice {...props} productData={productData} packageId={productId} /> },
     { key: 'tax', label: 'Apply Tax', component: (props) => <ApplyTax {...props} productData={productData} productId={productId} /> },
     { key: 'gallery', label: 'Package Gallery', component: (props) => <ProductGallery {...props} productData={productData} productId={productId} /> },
-    { key: 'video', label: 'Video Management', component: (props) => <VideoManagement {...props} productData={productData} productId={productId} /> },
-    { key: 'description', label: 'Package Description', component: (props) => <ProductDescription {...props} productData={productData} productId={productId} /> },
-    { key: 'info', label: 'Package Information', component: (props) => <ProductInfo {...props} productData={productData} productId={productId} /> },
-    { key: 'review', label: 'Create Review', component: (props) => <ProductReview {...props} productData={productData} productId={productId} /> },
-    { key: 'tag', label: 'Category Tag', component: (props) => <CategoryTag {...props} productData={productData} productId={productId} /> },
-    { key: 'pdf', label: 'Upload Package PDF', component: (props) => <PackagePdf {...props} productData={productData} productId={productId} /> },
+    { key: 'video', label: 'Video Management', component: (props) => <VideoManagement {...props} productData={productData} packageId={productId} /> },
+    { key: 'description', label: 'Package Description', component: (props) => <ProductDescription {...props} productData={productData} packageId={productId} /> },
+    { key: 'info', label: 'Package Information', component: (props) => <ProductInfo {...props} productData={productData} packageId={productId} /> },
+    { key: 'review', label: 'Create Review', component: (props) => <ProductReview {...props} productData={productData} packageId={productId} /> },
+    { key: 'tag', label: 'Category Tag', component: (props) => <CategoryTag {...props} productData={productData} packageId={productId} /> },
+    { key: 'pdf', label: 'Upload Package PDF', component: (props) => <PackagePdf {...props} productData={productData} packageId={productId} /> },
 
   ];
   const [activeSection, setActiveSection] = useState(sectionConfig[0].key);

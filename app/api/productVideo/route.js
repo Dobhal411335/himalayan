@@ -1,15 +1,15 @@
 import connectDB from "@/lib/connectDB";
 import Video from '@/models/Video';
-import Product from '@/models/Product';
+import Packages from '@/models/Packages';
 // POST: Add a video to a product
 export async function POST(req) {
   await connectDB();
   try {
-    const { productId, videoUrl, videoDescription } = await req.json();
-    if (!productId || !videoUrl) {
-      return Response.json({ error: 'Missing productId or videoUrl' }, { status: 400 });
+    const { packageId, videoUrl, videoDescription } = await req.json();
+    if (!packageId || !videoUrl) {
+      return Response.json({ error: 'Missing packageId or videoUrl' }, { status: 400 });
     }
-    let videoDoc = await Video.findOne({ product: productId });
+    let videoDoc = await Video.findOne({ packageId });
     if (videoDoc) {
       // Add to existing
       if (videoDoc.videos.length >= 10) {
@@ -18,10 +18,10 @@ export async function POST(req) {
       videoDoc.videos.push({ url: videoUrl, description: videoDescription || '' });
       await videoDoc.save();
     } else {
-      videoDoc = await Video.create({ product: productId, videos: [{ url: videoUrl, description: videoDescription || '' }] });
+      videoDoc = await Video.create({  packageId, videos: [{ url: videoUrl, description: videoDescription || '' }] });
     }
     // Always link videoDoc to Product
-    await Product.findByIdAndUpdate(productId, { video: videoDoc._id });
+    await Packages.findByIdAndUpdate(packageId, { video: videoDoc._id });
     return Response.json({ success: true, video: videoDoc });
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
@@ -33,11 +33,11 @@ export async function GET(req) {
   await connectDB();
   try {
     const { searchParams } = new URL(req.url);
-    const productId = searchParams.get('productId');
-    if (!productId) {
-      return Response.json({ error: 'Missing productId' }, { status: 400 });
+    const packageId = searchParams.get('packageId');
+    if (!packageId) {
+      return Response.json({ error: 'Missing packageId' }, { status: 400 });
     }
-    const videoDoc = await Video.findOne({ product: productId });
+    const videoDoc = await Video.findOne({ packageId });
     return Response.json({ video: videoDoc });
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
@@ -48,12 +48,12 @@ export async function GET(req) {
 export async function PATCH(req) {
   await connectDB();
   try {
-    const { productId, videos } = await req.json();
-    if (!productId || !Array.isArray(videos)) {
-      return Response.json({ error: 'Missing productId or videos' }, { status: 400 });
+    const { packageId, videos } = await req.json();
+    if (!packageId || !Array.isArray(videos)) {
+      return Response.json({ error: 'Missing packageId or videos' }, { status: 400 });
     }
     const videoDoc = await Video.findOneAndUpdate(
-      { product: productId },
+      { packageId },
       { videos },
       { new: true }
     );
@@ -63,15 +63,15 @@ export async function PATCH(req) {
   }
 }
 
-// DELETE: Remove a video by productId and videoUrl
+// DELETE: Remove a video by packageId and videoUrl
 export async function DELETE(req) {
   await connectDB();
   try {
-    const { productId, videoUrl, videoDescription } = await req.json();
-    if (!productId || !videoUrl) {
-      return Response.json({ error: 'Missing productId or videoUrl' }, { status: 400 });
+    const { packageId, videoUrl, videoDescription } = await req.json();
+    if (!packageId || !videoUrl) {
+      return Response.json({ error: 'Missing packageId or videoUrl' }, { status: 400 });
     }
-    const videoDoc = await Video.findOne({ product: productId });
+    const videoDoc = await Video.findOne({ packageId });
     if (!videoDoc) {
       return Response.json({ error: 'Video document not found' }, { status: 404 });
     }
@@ -79,7 +79,7 @@ export async function DELETE(req) {
     await videoDoc.save();
     // If no videos left, remove video ref from Product and delete Video doc
     if (videoDoc.videos.length === 0) {
-      await Product.findByIdAndUpdate(productId, { $unset: { video: "" } });
+      await Packages.findByIdAndUpdate(packageId, { $unset: { video: "" } });
       await Video.deleteOne({ _id: videoDoc._id });
       return Response.json({ success: true, video: null });
     }

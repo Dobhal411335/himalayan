@@ -21,10 +21,25 @@ const ApplyTax = ({ productData, productId }) => {
         setLoading(false);
         return;
       }
-      const res = await fetch(`/api/productTax?product=${productId}`);
+      const res = await fetch(`/api/productTax?packages=${productId}`);
       const data = await res.json();
-      if (res.ok && data?.data && (data.data.cgst !== undefined || data.data.sgst !== undefined)) {
-        setTaxTable([data.data]);
+      // Try to extract cgst/sgst regardless of structure
+      let cgstVal = 0, sgstVal = 0, taxId = null;
+      if (res.ok && data && data.data) {
+        if (Array.isArray(data.data) && data.data.length > 0) {
+          cgstVal = data.data[0].cgst || 0;
+          sgstVal = data.data[0].sgst || 0;
+          taxId = data.data[0]._id || null;
+          setTaxTable([data.data[0]]);
+        } else if (typeof data.data === 'object') {
+          cgstVal = data.data.cgst || 0;
+          sgstVal = data.data.sgst || 0;
+          taxId = data.data._id || null;
+          setTaxTable([data.data]);
+        }
+        setCgst(cgstVal);
+        setSgst(sgstVal);
+        setEditingTaxId(taxId);
       } else {
         setTaxTable([]);
         setError(data?.error || 'No tax data for this product');
@@ -36,49 +51,17 @@ const ApplyTax = ({ productData, productId }) => {
       setLoading(false);
     }
   };
-console.log(taxTable)
+// console.log(taxTable)
   // Fetch table on mount and when productId changes
   useEffect(() => {
     fetchTaxTable();
   }, [productId]);
 
-  // Helper to check if a ProductTax exists for this product
-  const checkProductTaxExists = async () => {
-    try {
-      const res = await fetch(`/api/productTax?product=${productId}`);
-      const data = await res.json();
-      return !!(data?.data && (data.data.cgst !== undefined || data.data.sgst !== undefined));
-    } catch {
-      return false;
-    }
-  };
-
   // Editing state
   const [editingTaxId, setEditingTaxId] = useState(null);
-
-  // Edit handler: fill form with selected row's data
-  const handleEditTax = (row) => {
-    setCgst(row.cgst);
-    setSgst(row.sgst);
-    setEditingTaxId(row._id);
-  };
-
-  // Cancel edit handler
-  const handleCancelEdit = () => {
-    setCgst(0);
-    setSgst(0);
-    setEditingTaxId(null);
-  };
-
   // Dialog state for delete
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteTaxRow, setDeleteTaxRow] = useState(null);
-
-  // Delete handler: open dialog
-  const handleDeleteTax = (row) => {
-    setDeleteTaxRow(row);
-    setShowDeleteDialog(true);
-  };
 
   // Confirm delete
   const confirmDeleteTax = async () => {
@@ -123,10 +106,8 @@ console.log(taxTable)
       return;
     }
     try {
-      let method = 'POST';
-      const exists = await checkProductTaxExists();
-      // console.log('[ApplyTax] checkProductTaxExists:', exists);
-      if (exists) method = 'PATCH';
+      // Always PATCH (update) tax for this package
+      const method = 'PATCH';
       const payload = { packages: productId, cgst: Number(cgst), sgst: Number(sgst) };
       // console.log('[ApplyTax] Sending payload:', payload, 'method:', method);
       const res = await fetch('/api/productTax', {
@@ -157,7 +138,7 @@ console.log(taxTable)
       <div className="container mx-auto p-6 max-w-xl">
         <h3 className="text-xl font-bold mb-4 text-center">Apply Tax</h3>
         <div className='mb-2'>
-          <label className="block text-sm font-medium mb-1">Product Name</label>
+          <label className="block text-sm font-medium mb-1">Package Name</label>
           <input
             className="w-full border rounded px-3 py-2 bg-gray-50 text-gray-700"
             value={productTitle || 'N/A'}
@@ -201,72 +182,6 @@ console.log(taxTable)
           >
             {editingTaxId ? 'Update Tax' : 'Save Tax'}
           </button>
-          {editingTaxId && (
-            <button
-              type="button"
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded shadow"
-              onClick={handleCancelEdit}
-              disabled={false}
-            >
-              Cancel Edit
-            </button>
-          )}
-        </div>
-        {/* Tax Table Section */}
-        <div className="mt-10">
-          <h3 className="text-lg font-semibold mb-2">Product Tax</h3>
-
-          <div className="overflow-x-auto">
-            <table className="min-w-full border text-sm">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="border px-3 py-2">Product Name</th>
-                  <th className="border px-3 py-2">CGST (%)</th>
-                  <th className="border px-3 py-2">SGST (%)</th>
-                  <th className="border px-3 py-2">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan="4" className="text-center py-4 text-gray-500">
-                      Loading...
-                    </td>
-                  </tr>
-                ) : taxTable.length === 0 ? (
-                  <tr>
-                    <td colSpan="4" className="text-center py-2">
-                      No tax data for this product
-                    </td>
-                  </tr>
-                ) : (
-                  taxTable.map((row) => (
-                    <tr key={row._id}>
-                      <td className="border px-3 py-2 text-center">{row.product?.title || row.product}</td>
-                      <td className="border px-3 py-2 text-center">{row.cgst}</td>
-                      <td className="border px-3 py-2 text-center">{row.sgst}</td>
-                      <td className="border px-3 py-2 text-center">
-                        <button
-                          type="button"
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
-                          onClick={() => handleEditTax(row)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          className="bg-red-500 hover:bg-red-600 ml-2 text-white px-2 py-1 rounded"
-                          onClick={() => handleDeleteTax(row)}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
         </div>
         {/* Delete Confirmation Dialog */}
         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

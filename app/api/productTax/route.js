@@ -5,10 +5,10 @@ import connectDB from '@/lib/connectDB';
 export async function GET(req) {
   await connectDB();
   const { searchParams } = new URL(req.url);
-  const product = searchParams.get('product');
+  const packages = searchParams.get('packages');
   try {
-    if (product) {
-      const data = await ProductTax.findOne({ product }).populate('packages', 'title');
+    if (packages) {
+      const data = await ProductTax.findOne({ packages }).populate('packages', 'title');
       return Response.json({ data });
     } else {
       const data = await ProductTax.find({}).populate('packages', 'title');

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const GallerySchema = new mongoose.Schema({
-  product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+ packageId: { type: mongoose.Schema.Types.ObjectId, ref: 'Packages', required: true, unique: true },
   mainImage: {
     url: { type: String, required: true },
     key: { type: String, required: true }

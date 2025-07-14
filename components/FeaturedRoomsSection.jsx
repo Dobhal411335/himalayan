@@ -60,14 +60,14 @@ export default function FeaturedRoomsSection({ rooms = [], onBook, onShowReviews
                         if (imageUrls.length === 0) imageUrls.push('/placeholder.jpeg');
                         return (
                             <CarouselItem key={item._id || idx} className="md:basis-1/3 lg:basis-1/4">
-                                <div className="flex flex-col bg-[#f8f5ef] h-[500px] my-5 w-[450px] relative group overflow-hidden">
+                                <div className="flex flex-col bg-[#f8f5ef] h-[550px] my-5 w-[450px] relative group overflow-hidden">
                                     {/* Room Image (Banner style) */}
-                                    <div className="block w-full h-[220px] relative">
+                                    <div className="block w-full h-[250px] relative ">
                                         <Image
                                             src={imageUrls[0]}
                                             alt={item.title || 'Room'}
                                             fill
-                                            className="object-cover object-bottom w-full h-full transition-transform duration-300 group-hover:scale-105"
+                                            className="object-cover object-bottom p-2 w-full h-full"
                                             priority
                                         />
                                     </div>

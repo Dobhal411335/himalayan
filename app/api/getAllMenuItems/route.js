@@ -14,6 +14,7 @@ import ProductReview from '@/models/ProductReview';
 import Quantity from '@/models/Quantity';
 import ProductCoupons from '@/models/ProductCoupons';
 import ProductTax from '@/models/ProductTax';
+import PackagePrice from '@/models/PackagePrice';
 export async function GET(req) {
     await connectDB();
     const menu = await MenuBar.find({})
@@ -28,7 +29,7 @@ export async function GET(req) {
                 { path: 'info' },
                 { path: 'categoryTag' },
                 { path: 'reviews' },
-                { path: 'quantity' },
+                { path: 'packagePrice' },
                 { path: 'coupons' },
                 { path: 'taxes' }
             ]

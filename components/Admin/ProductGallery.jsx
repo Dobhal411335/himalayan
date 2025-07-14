@@ -12,18 +12,6 @@ const ProductGallery = ({ productData, productId }) => {
   const [subImagesUploading, setSubImagesUploading] = useState(false);
   const subImagesInputRef = useRef(null);
 
-  // --- Gallery Actions State ---
-  const [viewGallery, setViewGallery] = useState(null);
-
-  const [deleteGallery, setDeleteGallery] = useState(null);
-
-  // --- Handlers for Gallery Actions ---
-  const handleViewGallery = (gallery) => setViewGallery(gallery);
-  const handleEditGallery = (gallery) => {
-    setEditGallery(gallery);
-    setEditMainImage(gallery.mainImage);
-    setEditSubImages(gallery.subImages || []);
-  };
   // Remove uploaded main image before save
   const handleRemoveMainImageUpload = async () => {
     if (selectedMainImage && selectedMainImage.key) {
@@ -71,82 +59,7 @@ const ProductGallery = ({ productData, productId }) => {
     }
     setSelectedSubImages(prev => prev.filter((_, i) => i !== idx));
   };
-
-
-  // Delete modal state
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleteTargetId, setDeleteTargetId] = useState(null);
-  const [deletingGalleryId, setDeletingGalleryId] = useState(null);
-
-  // Open delete modal
-  const openDeleteModal = (id) => {
-    setDeleteTargetId(id);
-    setShowDeleteModal(true);
-  };
-
-  // Cancel delete
-  const cancelDelete = () => {
-    setShowDeleteModal(false);
-    setDeleteTargetId(null);
-  };
-
-  // Confirm delete
-  const confirmDelete = async () => {
-    if (!deleteTargetId) return;
-    setDeletingGalleryId(deleteTargetId);
-    // Find the gallery to delete in state (to get image keys)
-    const galleryToDelete = galleries.find(g => g._id === deleteTargetId);
-    let mainImageKey = null;
-    let subImageKeys = [];
-    if (galleryToDelete) {
-      // Use new schema: mainImage and subImages are objects with url and key
-      if (galleryToDelete.mainImage && galleryToDelete.mainImage.key) {
-        mainImageKey = galleryToDelete.mainImage.key;
-      }
-      if (Array.isArray(galleryToDelete.subImages)) {
-        subImageKeys = galleryToDelete.subImages.map(img => img && img.key ? img.key : null).filter(Boolean);
-      }
-    }
-    try {
-      const res = await fetch('/api/productGallery', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ galleryId: deleteTargetId })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setGalleries(galleries => galleries.filter(g => g._id !== deleteTargetId));
-        toast.success('Gallery deleted successfully');
-        // Now delete images from Cloudinary
-        if (mainImageKey) {
-          fetch('/api/cloudinary', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ publicId: mainImageKey })
-          });
-        }
-        if (subImageKeys.length > 0) {
-          subImageKeys.forEach(key => {
-            fetch('/api/cloudinary', {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ publicId: key })
-            });
-          });
-        }
-      } else {
-        toast.error(data.error || 'Failed to delete gallery');
-      }
-    } catch (err) {
-      toast.error('Failed to delete gallery');
-    } finally {
-      setShowDeleteModal(false);
-      setDeleteTargetId(null);
-      setDeletingGalleryId(null);
-    }
-  };
-
-  const handleDeleteGallery = (gallery) => openDeleteModal(gallery._id);
+  const [editGallery,setEditGallery] = useState(null);
 
   // Add missing handleFileUpload functions
   const handleFileUpload = () => {
@@ -157,34 +70,38 @@ const ProductGallery = ({ productData, productId }) => {
 
   const productTitle = productData?.title || "";
 
-  // Gallery Table State
-  const [galleries, setGalleries] = useState([]);
-  const [loadingGalleries, setLoadingGalleries] = useState(false);
+  // Single gallery state for this package
+  const [galleryId, setGalleryId] = useState(null);
+  const [loadingGallery, setLoadingGallery] = useState(false);
 
-  const [editGallery, setEditGallery] = useState(null);
-  const [editMainImage, setEditMainImage] = useState(null); // should be {url, key} or null
-  const [editSubImages, setEditSubImages] = useState([]); // should be array of {url, key}
-
-  // When entering edit mode, set edit images as objects
-  // Only declare handleEditGallery once
-
-
-
-  // Fetch galleries for this product
+  // On mount or when productId changes, fetch gallery for this package
   useEffect(() => {
     if (!productId) return;
-    setLoadingGalleries(true);
-    fetch(`/api/productGallery?productId=${productId}`)
+    setLoadingGallery(true);
+    fetch(`/api/productGallery?packageId=${productId}`)
       .then(async res => {
-        if (!res.ok) return setGalleries([]);
+        if (!res.ok) {
+          setGalleryId(null);
+          setSelectedMainImage(null);
+          setSelectedSubImages([]);
+          return;
+        }
         const data = await res.json();
+        let gallery = null;
         if (Array.isArray(data)) {
-          setGalleries(data.filter(g => g.product && g.product._id === productId));
+          gallery = data.find(g => g.packageId && g.packageId._id === productId);
+        }
+        if (gallery) {
+          setGalleryId(gallery._id);
+          setSelectedMainImage(gallery.mainImage || null);
+          setSelectedSubImages(gallery.subImages || []);
         } else {
-          setGalleries([]);
+          setGalleryId(null);
+          setSelectedMainImage(null);
+          setSelectedSubImages([]);
         }
       })
-      .finally(() => setLoadingGalleries(false));
+      .finally(() => setLoadingGallery(false));
   }, [productId]);
 
   const handleMainImageUpload = async (event) => {
@@ -261,15 +178,13 @@ const ProductGallery = ({ productData, productId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!productId) {
-      toast.error('No product selected');
+      toast.error('No Package selected');
       return;
     }
-    // Prepare mainImage and subImages for Gallery model
     if (!selectedMainImage || !selectedMainImage.url || !selectedMainImage.key) {
       toast.error('Please upload a main image');
       return;
     }
-    // Use full {url, key} objects for both
     const mainImage = {
       url: selectedMainImage.url,
       key: selectedMainImage.key
@@ -277,52 +192,65 @@ const ProductGallery = ({ productData, productId }) => {
     const subImages = selectedSubImages
       .filter(img => img.url && img.key)
       .map(img => ({ url: img.url, key: img.key }));
-
-
     try {
-      // Check if gallery exists for this product
-      const resGallery = await fetch(`/api/productGallery?productId=${productId}`);
-      let galleryData = null;
-      if (resGallery.ok) {
-        const galleriesRes = await resGallery.json();
-        galleryData = Array.isArray(galleriesRes)
-          ? galleriesRes.find(g => g.product && g.product._id === productId)
-          : null;
+      let apiRes;
+      if (galleryId) {
+        // Update existing gallery
+        apiRes = await fetch('/api/productGallery', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ galleryId, mainImage, subImages })
+        });
+      } else {
+        // Create new gallery
+        apiRes = await fetch('/api/productGallery', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ packageId: productId, mainImage, subImages })
+        });
       }
-      // If gallery exists, prevent creating a duplicate
-      if (galleryData && galleryData._id) {
-        toast.error('A gallery for this product already exists. Please edit or delete the existing gallery.');
-        return;
-      }
-      // Otherwise, create a new gallery
-      const payload = { productId, mainImage, subImages };
-      const apiRes = await fetch('/api/productGallery', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
       if (!apiRes.ok) throw new Error('Failed to save gallery');
       toast.success('Product gallery saved successfully');
-      // Clear form state
-      setSelectedMainImage(null);
-      setSelectedSubImages([]);
-      if (imageInputRef.current) imageInputRef.current.value = '';
-      if (subImagesInputRef.current) subImagesInputRef.current.value = '';
-      // Refresh galleries table
-      refreshGalleries();
+      // Refetch gallery to update form
+      setLoadingGallery(true);
+      fetch(`/api/productGallery?packageId=${productId}`)
+        .then(async res => {
+          if (!res.ok) {
+            setGalleryId(null);
+            setSelectedMainImage(null);
+            setSelectedSubImages([]);
+            return;
+          }
+          const data = await res.json();
+          let gallery = null;
+          if (Array.isArray(data)) {
+            gallery = data.find(g => g.packageId && g.packageId._id === productId);
+          }
+          if (gallery) {
+            setGalleryId(gallery._id);
+            setSelectedMainImage(gallery.mainImage || null);
+            setSelectedSubImages(gallery.subImages || []);
+          } else {
+            setGalleryId(null);
+            setSelectedMainImage(null);
+            setSelectedSubImages([]);
+          }
+        })
+        .finally(() => setLoadingGallery(false));
     } catch (err) {
       toast.error('Failed to save gallery');
     }
   };
 
+
   // Utility to refresh galleries table
   const refreshGalleries = () => {
-    fetch(`/api/productGallery?productId=${productId}`)
+    fetch(`/api/productGallery?packageId=${productId}`)
       .then(async res => {
         if (!res.ok) return setGalleries([]);
         const data = await res.json();
         if (Array.isArray(data)) {
-          setGalleries(data.filter(g => g.product && g.product._id === productId));
+          setGalleries(data.filter(g => g.packageId && g.packageId._id === productId));
         } else {
           setGalleries([]);
         }
@@ -337,12 +265,12 @@ const ProductGallery = ({ productData, productId }) => {
       toast.error('No gallery selected for editing');
       return;
     }
-    if (!editMainImage) {
+    if (!editGallery.mainImage) {
       toast.error('Please provide a main image URL');
       return;
     }
-    const mainImage = editMainImage;
-    const subImages = editSubImages;
+    const mainImage = editGallery.mainImage;
+    const subImages = editGallery.subImages;
     try {
       const apiRes = await fetch('/api/productGallery', {
         method: 'PATCH',
@@ -362,27 +290,27 @@ const ProductGallery = ({ productData, productId }) => {
   return (
     <div className="flex justify-center items-center py-5 w-full">
       <div className="w-full max-w-2xl">
-        <h4 className="font-bold mb-4 text-center">Product Image Gallery</h4>
+        <h4 className="font-bold mb-4 text-center">Package Image Gallery</h4>
         <form onSubmit={editGallery ? handleEditSubmit : handleSubmit}>
           <div className="mb-4">
-            <label className="font-semibold">Product Name</label>
+            <label className="font-semibold">Package Name</label>
             <Input
               type="text"
               className="form-control"
-              placeholder="Product Name"
+              placeholder="Package Name"
               value={productTitle}
               disabled
               readOnly
             />
           </div>
           <div className="mb-4">
-            <label className="font-semibold">Product Main Photo</label>
+            <label className="font-semibold">Package Main Photo</label>
             <div className="border rounded p-4 bg-gray-50">
               <div className="text-center">
-                {(editGallery ? editMainImage?.url : selectedMainImage?.url) ? (
+                {(editGallery ? editGallery.mainImage?.url : selectedMainImage?.url) ? (
                   <div className="relative mb-3 inline-block">
                     <img
-                      src={editGallery ? editMainImage?.url : selectedMainImage.url}
+                      src={editGallery ? editGallery.mainImage?.url : selectedMainImage.url}
                       alt="Preview"
                       className="rounded object-contain mx-auto"
                       style={{ maxHeight: '150px', display: 'block' }}
@@ -434,7 +362,7 @@ const ProductGallery = ({ productData, productId }) => {
           </div>
           {/* Sub Images */}
           <div className="mb-4">
-            <label className="font-semibold">Product Sub Images</label>
+            <label className="font-semibold">Package Sub Images</label>
             <div className="border rounded p-4 bg-gray-50">
               <div className="flex flex-wrap gap-2 mb-3">
                 {(editGallery ? editSubImages : selectedSubImages).length > 0 ? (
@@ -502,95 +430,6 @@ const ProductGallery = ({ productData, productId }) => {
             </div>
           </div>
         </form>
-        {/* Gallery Table */}
-        <div className="mt-8">
-          <h5 className="font-semibold mb-2">Existing Galleries</h5>
-          {loadingGalleries ? (
-            <div>Loading galleries...</div>
-          ) : (
-            <table className="w-full border text-sm">
-              <thead>
-                <tr>
-                  <th className="border px-2 py-1 text-center">Proudct Name</th>
-                  <th className="border px-2 py-1 text-center">Main Image</th>
-                  <th className="border px-2 py-1 text-center" >Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {galleries.length === 0 ? (
-                  <tr><td colSpan={4} className="text-center py-2">No galleries found.</td></tr>
-                ) : (
-                  galleries.map(gallery => (
-                    <tr key={gallery._id}>
-                      <td className="border px-2 py-1 text-center">{gallery.product && gallery.product.title ? gallery.product.title : 'N/A'}</td>
-                      <td className="border px-2 py-1 text-center">
-                        <div className="flex justify-center items-center">
-                          <img src={gallery.mainImage && gallery.mainImage.url ? gallery.mainImage.url : ''} alt="main" width={100} />
-                        </div>
-                      </td>
-                      <td className="border px-2 py-1 text-center">
-                        <Button type="button" onClick={() => handleViewGallery(gallery)} className="bg-green-500 text-white px-2 py-1 mr-2">View</Button>
-                        <Button type="button" onClick={() => handleEditGallery(gallery)} className="bg-blue-500 text-white px-2 py-1 mr-2">Edit</Button>
-                        {deletingGalleryId === gallery._id ? (
-                          <Button type="button" disabled className="bg-red-500 text-white px-2 py-1 flex items-center justify-center">
-                            <svg className="animate-spin h-4 w-4 mr-1 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
-                            Deleting...
-                          </Button>
-                        ) : (
-                          <Button type="button" onClick={() => handleDeleteGallery(gallery)} className="bg-red-500 text-white px-2 py-1">Delete</Button>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          )}
-        </div>
-
-        <Dialog open={!!viewGallery} onOpenChange={() => setViewGallery(null)}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Gallery Details</DialogTitle>
-            </DialogHeader>
-            {viewGallery && (
-              <div>
-                <div className="mb-4">
-                  <div className="font-semibold text-gray-800 mb-1">Main Image</div>
-                  <img src={viewGallery.mainImage?.url} alt="main" className="mx-auto rounded border" width={200} />
-                </div>
-                <div className="mb-4">
-                  <div className="font-semibold text-gray-800 mb-1">Sub Images</div>
-                  <div className="flex flex-wrap gap-2 justify-center">
-                    {viewGallery.subImages && viewGallery.subImages.length > 0 ? (
-                      viewGallery.subImages.map((img, i) => (
-                        <img key={i} src={img.url} alt={`sub-${i}`} width={60} className="rounded border" />
-                      ))
-                    ) : (
-                      <span className="text-gray-400">No sub images</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
-
-        {/* Delete Gallery Dialog */}
-        <Dialog open={showDeleteModal} onOpenChange={cancelDelete}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Delete Gallery</DialogTitle>
-            </DialogHeader>
-            <div>Are you sure you want to delete this gallery?</div>
-            <DialogFooter>
-              <Button variant="secondary" onClick={cancelDelete}>Cancel</Button>
-              <Button variant="destructive" onClick={confirmDelete}>Delete</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-
       </div >
     </div>
   );

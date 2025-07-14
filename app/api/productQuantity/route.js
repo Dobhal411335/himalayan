@@ -1,104 +1,72 @@
-import connectDB from "@/lib/connectDB";
+import { NextResponse } from 'next/server';
+import connectDB from '@/lib/connectDB';
 import Quantity from '@/models/Quantity';
 import Packages from '@/models/Packages';
-import mongoose from 'mongoose';
-// GET: List all packages quantity records or by packagesId
-export async function GET(req) {
-  try {
-    await connectDB();
-    const { searchParams } = new URL(req.url);
-    // Accept both 'packages' and 'packagesId' for compatibility
-    const packagesId = searchParams.get('packages') || searchParams.get('packagesId');
-    let result;
-    if (packagesId) {
-      result = await Quantity.findOne({ packages: packagesId });
-      return Response.json(result || {});
-    } else {
-      const quantities = await Quantity.find({});
-      return Response.json(quantities);
-    }
-  } catch (err) {
-    return Response.json({ error: err.message || 'Internal server error' }, { status: 500 });
-  }
-}
+import PackagePrice from '@/models/PackagePrice';
 
-// POST: Upsert (create or update) packages quantity by packagesId
+// POST: Create or update quantity for a package
 export async function POST(req) {
+  await connectDB();
   try {
-    await connectDB();
     const body = await req.json();
-    console.log('POST /api/productQuantity payload:', body);
-    if (typeof body.prices === 'string') {
+    const { packages, prices } = body;
+    console.log('Received packages:', packages);
+    console.log('Received prices:', prices, 'Type:', typeof prices, 'IsArray:', Array.isArray(prices));
+    if (typeof prices === 'string') {
       try {
-        body.prices = JSON.parse(body.prices);
-      } catch (e) {
-        return Response.json({ error: 'Invalid prices format' }, { status: 400 });
+        const parsed = JSON.parse(prices);
+        console.log("Parsed stringified prices:", parsed);
+      } catch (err) {
+        console.error("Failed to parse prices:", prices);
       }
     }
-    if (!body.packages || !Array.isArray(body.prices)) {
-      return Response.json({ error: 'Missing packages or prices' }, { status: 400 });
+    
+    if (!packages) {
+      return NextResponse.json({ error: 'Missing packages' }, { status: 400 });
     }
-    if (!mongoose.Types.ObjectId.isValid(body.packages)) {
-      return Response.json({ error: 'Invalid packages ObjectId' }, { status: 400 });
+    if (!Array.isArray(prices)) {
+      return NextResponse.json({ error: 'Prices should be an array', receivedType: typeof prices, prices }, { status: 400 });
     }
 
-    // Validate prices
-    for (const p of body.prices) {
-      if (!p.person || !p.type || (typeof p.inr !== 'number' && typeof p.usd !== 'number')) {
-        return Response.json({ error: 'Each price must have person, type, inr or usd' }, { status: 400 });
-      }
+    // Check if PackagePrice already exists for this package
+    let packagePrice = await PackagePrice.findOne({ package: packages });
+    if (packagePrice) {
+      packagePrice.prices = prices;
+      await packagePrice.save();
+    } else {
+      packagePrice = await PackagePrice.create({ package: packages, prices });
     }
-    // Upsert by packages
-    const updated = await Quantity.findOneAndUpdate(
-      { packages: body.packages },
-      {
-        $set: { prices: body.prices },
-        $setOnInsert: { packages: body.packages }
-      },
-      { new: true, upsert: true }
-    );
-    // Also update Packages document: only set the quantity field to the Quantity _id
-    await Packages.findByIdAndUpdate(body.packages, { quantity: updated._id });
-    return Response.json(updated, { status: 201 });
+    // Optionally, link to Quantity model (if you want to keep Quantity for other reasons)
+    // let quantity = await Quantity.findOne({ packages });
+    // if (quantity) {
+    //   quantity.packagePrice = packagePrice._id;
+    //   await quantity.save();
+    // }
+    // Or just link to Packages if needed
+    // await Packages.findByIdAndUpdate(packages, { packagePrice: packagePrice._id });
+
+    return NextResponse.json(packagePrice, { status: 200 });
   } catch (err) {
-    return Response.json({ error: err.message || 'Internal server error' }, { status: 500 });
+    console.error('Error saving package price:', err);
+    return NextResponse.json({ error: err.message || 'Failed to save package price', stack: err.stack, full: err }, { status: 500 });
   }
 }
 
-// PUT: Update a packages quality record by id
-export async function PUT(req) {
+// GET: Fetch package price by package id (query param: packages)
+export async function GET(req) {
+  await connectDB();
   try {
-    await connectDB();
-    const { _id, ...rest } = await req.json();
-    const updated = await Quantity.findByIdAndUpdate(_id, rest, { new: true });
-    if (!updated) return Response.json({ error: 'Not found' }, { status: 404 });
-    // Also update Packages document: only set the quantity field to the Quantity _id
-    if (rest.packages) {
-      const quantity = await Quantity.findOneAndUpdate(
-        { packages: rest.packages },
-        { quantity: updated._id },
-        { new: true }
-      );
-      return Response.json({ quantity });
-    }
-    return Response.json(updated);
-  } catch (err) {
-    return Response.json({ error: err.message || 'Internal server error' }, { status: 500 });
-  }
-}
-
-// DELETE: Remove a packages quality record by id (expects ?id=...)
-export async function DELETE(req) {
-  try {
-    await connectDB();
     const { searchParams } = new URL(req.url);
-    const id = searchParams.get('id');
-    const packagesId = searchParams.get('packagesId');
-    if (!id) return Response.json({ error: 'Missing id' }, { status: 400 });
-    await Quantity.findByIdAndDelete(id);
-    await Packages.findByIdAndUpdate(packagesId, { quantity: null });
-    return Response.json({ success: true });
+    const packages = searchParams.get('packages');
+    if (!packages) {
+      return NextResponse.json({ error: 'Missing packages param' }, { status: 400 });
+    }
+    const packagePrice = await PackagePrice.findOne({ package: packages });
+    if (!packagePrice) {
+      return NextResponse.json({ error: 'No package price found for this package' }, { status: 404 });
+    }
+    return NextResponse.json(packagePrice, { status: 200 });
   } catch (err) {
-    return Response.json({ error: err.message || 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: err.message || 'Failed to fetch quantity' }, { status: 500 });
   }
 }

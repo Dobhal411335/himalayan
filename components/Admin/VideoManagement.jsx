@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../ui/dialog";
 import { Textarea } from '../ui/textarea';
-const VideoManagement = ({ productData, productId }) => {
+const VideoManagement = ({ productData, packageId }) => {
   const [videoUrl, setVideoUrl] = useState("");
   const productTitle = productData?.title || "";
 
@@ -28,8 +28,8 @@ const VideoManagement = ({ productData, productId }) => {
     // Helper for edit mode
     const isSameVideo = (v, url) => typeof v === 'object' ? v.url === url : v === url;
     e.preventDefault();
-    console.log(productId);
-    if (!videoUrl || !productId) {
+    // console.log(packageId);
+    if (!videoUrl || !packageId) {
       toast.error('Please provide a video URL and valid product.');
       return;
     }
@@ -44,7 +44,7 @@ const VideoManagement = ({ productData, productId }) => {
         res = await fetch('/api/productVideo', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId, videos: updatedVideos })
+          body: JSON.stringify({ packageId, videos: updatedVideos })
         });
         data = await res.json();
         if (!res.ok || data.error) {
@@ -62,7 +62,7 @@ const VideoManagement = ({ productData, productId }) => {
         res = await fetch('/api/productVideo', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId, videoUrl, videoDescription })
+          body: JSON.stringify({ packageId, videoUrl, videoDescription })
         });
         data = await res.json();
         if (!res.ok || data.error) {
@@ -85,15 +85,10 @@ const VideoManagement = ({ productData, productId }) => {
 
   // Fetch product list and videos on mount
   useEffect(() => {
-    async function fetchProducts() {
-      const res = await fetch('/api/product');
-      const data = await res.json();
-      setProducts(Array.isArray(data) ? data : []);
-    }
     async function fetchVideos() {
-      // If productId is available, fetch videos for this product
-      if (productId) {
-        const res = await fetch(`/api/productVideo?productId=${productId}`);
+      // If packageId is available, fetch videos for this product
+      if (packageId) {
+        const res = await fetch(`/api/productVideo?packageId=${packageId}`);
         const data = await res.json();
         if (data && data.video && Array.isArray(data.video.videos)) {
           setVideos(data.video.videos.map(v => typeof v === 'string' ? { url: v, description: '' } : v));
@@ -102,9 +97,8 @@ const VideoManagement = ({ productData, productId }) => {
         }
       }
     }
-    fetchProducts();
     fetchVideos();
-  }, [productId]);
+  }, [packageId]);
 
   // Helper to get product name by id
   const getProductName = (pid) => {
@@ -115,7 +109,7 @@ const VideoManagement = ({ productData, productId }) => {
 
   // View handler
   const handleView = (videoObj) => {
-    setSelectedVideo({ ...videoObj, productName: getProductName(productId) });
+    setSelectedVideo({ ...videoObj, productName: getProductName(packageId) });
     setShowViewModal(true);
   };
 
@@ -145,7 +139,7 @@ const VideoManagement = ({ productData, productId }) => {
       const res = await fetch('/api/productVideo', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId, videoUrl: deleteTarget })
+        body: JSON.stringify({ packageId, videoUrl: deleteTarget })
       });
       const data = await res.json();
       if (!res.ok || data.error) {
@@ -173,7 +167,7 @@ const VideoManagement = ({ productData, productId }) => {
               <div className="card my-2">
                 <div className="card-body px-4 py-2">
                   <div className="mb-4">
-                    <label className="font-semibold">Product Name</label>
+                    <label className="font-semibold">Package Name</label>
                     <Input
                       type="text"
                       className="form-control"
@@ -183,13 +177,13 @@ const VideoManagement = ({ productData, productId }) => {
                     />
                   </div>
                   <div className="mb-4">
-                    <label className="form-label">Product Video URL</label>
+                    <label className="form-label">Package Video URL</label>
                     <div className="input-group">
                       <Input type="text" className="form-control" placeholder="Youtube URL" value={videoUrl} onChange={e => setVideoUrl(e.target.value)} />
                     </div>
                   </div>
                   <div className="mb-4">
-                    <label className="form-label">Product Video Description</label>
+                    <label className="form-label">Package Video Description</label>
                     <div className="input-group">
                       <Textarea
                         rows={5}
@@ -247,7 +241,7 @@ const VideoManagement = ({ productData, productId }) => {
                         videos.map((video, idx) => (
                           <TableRow key={video.url}>
                             <TableCell className="text-center">{idx + 1}</TableCell>
-                            <TableCell className="text-center">{getProductName(productId)}</TableCell>
+                            <TableCell className="text-center">{getProductName(packageId)}</TableCell>
                             <TableCell className="text-center">
                               <TooltipProvider>
                                 <Tooltip>

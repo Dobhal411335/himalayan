@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const InfoSchema = new mongoose.Schema({
-  product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+  packageId: { type: mongoose.Schema.Types.ObjectId, ref: 'Packages', required: true },
   info: [
     {
       title: { type: String, required: true },

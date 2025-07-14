@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const VideoSchema = new mongoose.Schema({
-  product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },  
+  packageId: { type: mongoose.Schema.Types.ObjectId, ref: 'Packages', required: true, unique: true },
   videos: [{ url: String, description: String }],
 }, { timestamps: true });
 

@@ -22,8 +22,8 @@ const PackageSchema = new mongoose.Schema({
   },
   taxes: { type: mongoose.Schema.Types.ObjectId, ref: 'ProductTax' },
   reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ProductReview' }],
-  quantity: { type: mongoose.Schema.Types.ObjectId, ref: 'Quantity' },
   coupons: { type: mongoose.Schema.Types.ObjectId, ref: 'ProductCoupons' },
+  packagePrice: { type: mongoose.Schema.Types.ObjectId, ref: 'PackagePrice' }, // Link to PackagePrice
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

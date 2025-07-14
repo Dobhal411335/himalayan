@@ -49,7 +49,7 @@ const BookingDetails = ({ room, onClose, type }) => {
     const [invoiceData, setInvoiceData] = useState(null);
     const roomName = room?.title || 'Room Name';
     const roomImg = room?.mainPhoto?.url || '/placeholder.jpeg';
-
+    const [openEditSection, setOpenEditSection] = React.useState(null);
     // Offer list
     const offerList = [
         'Rafting',
@@ -322,6 +322,8 @@ const BookingDetails = ({ room, onClose, type }) => {
             </>
         );
     } else if (step === 4) {
+        // --- Accordion-style review/edit panel ---
+
         stepContent = (
             <>
                 <div className="mb-6">
@@ -329,30 +331,111 @@ const BookingDetails = ({ room, onClose, type }) => {
                     <div className="text-xs text-gray-700 mb-2">All rooms are based on double occupancy (minimum 2 persons). Extra beds are subject to availability. Please ensure all guest details, travel dates, and preferences are accurate. Changes after confirmation may be subject to availability and additional charges.</div>
                     <hr className="mb-4 border-gray-300" />
                 </div>
-                <div className="divide-y divide-gray-300 mb-6">
-                    <div className="flex justify-between items-center py-2">
-                        <span className="font-bold text-[#8a6a2f]">Date of arrival</span>
-                        <span className="text-xs underline cursor-pointer" onClick={() => setStep(1)}>Edit</span>
+                <div className="divide-y divide-gray-300 mb-6 max-h-[60vh] overflow-y-auto">
+                    {/* Date of arrival */}
+                    <div className="py-2">
+                        <div className="flex justify-between items-center">
+                            <span className="font-bold text-[#8a6a2f]">Date of Arrival</span>
+                            <span className="text-xs underline cursor-pointer" onClick={() => setOpenEditSection(openEditSection === 'arrival' ? null : 'arrival')}>Edit</span>
+                        </div>
+                        {openEditSection === 'arrival' ? (
+                            <input type="date" value={form.arrival || ''} onChange={e => setForm({ ...form, arrival: e.target.value })} className="border px-2 py-1 rounded w-full mt-2" />
+                        ) : (
+                            <div className="text-sm text-gray-700 mt-1">{form.arrival || 'Not set'}</div>
+                        )}
                     </div>
-                    <div className="flex justify-between items-center py-2">
-                        <span className="font-bold text-[#8a6a2f]">Basic Info</span>
-                        <span className="text-xs underline cursor-pointer" onClick={() => setStep(2)}>Edit</span>
+                    {/* Departure Date */}
+                    <div className="py-2">
+                        <div className="flex justify-between items-center">
+                            <span className="font-bold text-[#8a6a2f]">Departure Date</span>
+                            <span className="text-xs underline cursor-pointer" onClick={() => setOpenEditSection(openEditSection === 'departure' ? null : 'departure')}>Edit</span>
+                        </div>
+                        {openEditSection === 'departure' ? (
+                            <input type="date" value={form.departure || ''} onChange={e => setForm({ ...form, departure: e.target.value })} className="border px-2 py-1 rounded w-full mt-2" />
+                        ) : (
+                            <div className="text-sm text-gray-700 mt-1">{form.departure || 'Not set'}</div>
+                        )}
                     </div>
-                    <div className="flex justify-between items-center py-2">
-                        <span className="font-bold text-[#8a6a2f]">your Address For Billing</span>
-                        <span className="text-xs underline cursor-pointer" onClick={() => setStep(2)}>Edit</span>
+                    {/* Number of Days */}
+                    <div className="py-2">
+                        <div className="flex justify-between items-center">
+                            <span className="font-bold text-[#8a6a2f]">Number of Days</span>
+                            <span className="text-xs underline cursor-pointer" onClick={() => setOpenEditSection(openEditSection === 'days' ? null : 'days')}>Edit</span>
+                        </div>
+                        {openEditSection === 'days' ? (
+                            <input type="number" min="1" value={form.days || ''} onChange={e => setForm({ ...form, days: e.target.value })} className="border px-2 py-1 rounded w-full mt-2" />
+                        ) : (
+                            <div className="text-sm text-gray-700 mt-1">{form.days || 'Not set'}</div>
+                        )}
                     </div>
-                    <div className="flex justify-between items-center py-2">
-                        <span className="font-bold text-[#8a6a2f]">Total Number Of Person</span>
-                        <span className="text-xs underline cursor-pointer" onClick={() => setStep(2)}>Edit</span>
+                    {/* Basic Info */}
+                    <div className="py-2">
+                        <div className="flex justify-between items-center">
+                            <span className="font-bold text-[#8a6a2f]">Basic Info</span>
+                            <span className="text-xs underline cursor-pointer" onClick={() => setOpenEditSection(openEditSection === 'basic' ? null : 'basic')}>Edit</span>
+                        </div>
+                        {openEditSection === 'basic' ? (
+                            <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <input type="text" className="border px-2 py-1 rounded" placeholder="First Name" value={form.firstName || ''} onChange={e => setForm({ ...form, firstName: e.target.value })} />
+                                <input type="text" className="border px-2 py-1 rounded" placeholder="Last Name" value={form.lastName || ''} onChange={e => setForm({ ...form, lastName: e.target.value })} />
+                                <input type="email" className="border px-2 py-1 rounded" placeholder="Email" value={form.email || ''} onChange={e => setForm({ ...form, email: e.target.value })} />
+                                <input type="tel" className="border px-2 py-1 rounded" placeholder="Phone" value={form.callNo || ''} onChange={e => setForm({ ...form, callNo: e.target.value })} />
+                            </div>
+                        ) : (
+                            <div className="text-sm text-gray-700 mt-1">
+                                {form.firstName} {form.lastName} <br />
+                                {form.email} <br />
+                                {form.callNo}
+                            </div>
+                        )}
                     </div>
-                    <div className="flex justify-between items-center py-2">
-                        <span className="font-bold text-[#8a6a2f]">any specific requirements</span>
-                        <span className="text-xs underline cursor-pointer" onClick={() => setStep(3)}>Edit</span>
+                    {/* Billing Address */}
+                    <div className="py-2">
+                        <div className="flex justify-between items-center">
+                            <span className="font-bold text-[#8a6a2f]">Your Address For Billing</span>
+                            <span className="text-xs underline cursor-pointer" onClick={() => setOpenEditSection(openEditSection === 'address' ? null : 'address')}>Edit</span>
+                        </div>
+                        {openEditSection === 'address' ? (
+                            <input type="text" className="border px-2 py-1 rounded w-full mt-2" placeholder="Billing Address" value={form.address || ''} onChange={e => setForm({ ...form, address: e.target.value })} />
+                        ) : (
+                            <div className="text-sm text-gray-700 mt-1">{form.address || 'Not set'}</div>
+                        )}
                     </div>
-                    <div className="flex justify-between items-center py-2">
-                        <span className="font-bold text-[#8a6a2f]">Additional Offer</span>
-                        <span className="text-xs underline cursor-pointer" onClick={() => setStep(3)}>Edit</span>
+                    {/* Total Number Of Person */}
+                    <div className="py-2">
+                        <div className="flex justify-between items-center">
+                            <span className="font-bold text-[#8a6a2f]">Total Number Of Person</span>
+                            <span className="text-xs underline cursor-pointer" onClick={() => setOpenEditSection(openEditSection === 'persons' ? null : 'persons')}>Edit</span>
+                        </div>
+                        {openEditSection === 'persons' ? (
+                            <input type="number" min="1" className="border px-2 py-1 rounded w-full mt-2" value={form.totalPersons || ''} onChange={e => setForm({ ...form, totalPersons: e.target.value })} />
+                        ) : (
+                            <div className="text-sm text-gray-700 mt-1">{form.totalPersons || 'Not set'}</div>
+                        )}
+                    </div>
+                    {/* Specific Requirements */}
+                    <div className="py-2">
+                        <div className="flex justify-between items-center">
+                            <span className="font-bold text-[#8a6a2f]">Any specific requirements</span>
+                            <span className="text-xs underline cursor-pointer" onClick={() => setOpenEditSection(openEditSection === 'specialReq' ? null : 'specialReq')}>Edit</span>
+                        </div>
+                        {openEditSection === 'specialReq' ? (
+                            <textarea className="border px-2 py-1 rounded w-full mt-2" rows={2} value={form.specialReq || ''} onChange={e => setForm({ ...form, specialReq: e.target.value })} />
+                        ) : (
+                            <div className="text-sm text-gray-700 mt-1">{form.specialReq || 'Not set'}</div>
+                        )}
+                    </div>
+                    {/* Additional Offer */}
+                    <div className="py-4">
+                        <div className="flex justify-between items-center">
+                            <span className="font-bold text-[#8a6a2f]">Additional Offer</span>
+                            <span className="text-xs underline cursor-pointer" onClick={() => setOpenEditSection(openEditSection === 'offers' ? null : 'offers')}>Edit</span>
+                        </div>
+                        {openEditSection === 'offers' ? (
+                            <input type="text" className="border px-2 py-1 rounded w-full mt-2" value={form.offers || ''} onChange={e => setForm({ ...form, offers: e.target.value })} />
+                        ) : (
+                            <div className="text-sm text-gray-700 mt-1">{form.offers || 'Not set'}</div>
+                        )}
                     </div>
                 </div>
                 <div className="flex gap-2 mt-6">
@@ -367,7 +450,6 @@ const BookingDetails = ({ room, onClose, type }) => {
                             }
                             try {
                                 if ((room?.type || type) === 'room') {
-                                    // Generate a mixed alphanumeric booking ID
                                     function generateBookingId() {
                                         const now = new Date();
                                         const pad = n => n.toString().padStart(2, '0');
@@ -375,7 +457,6 @@ const BookingDetails = ({ room, onClose, type }) => {
                                         return `HWR-${dateStr}`;
                                     }
                                     const bookingIdVal = generateBookingId();
-                                    // Extract detailed price breakdown as in sidebar
                                     const priceList = (room.prices && room.prices[0] && room.prices[0].prices) || [];
                                     const mainPrice = priceList.find(p => p.type === '02 Pax') || priceList.find(p => p.type === '01 Pax') || priceList[0] || {};
                                     const baseAmount = mainPrice?.amount || 0;
@@ -397,12 +478,10 @@ const BookingDetails = ({ room, onClose, type }) => {
                                     const totalTaxPercent = subtotal > 0 ? ((totalTaxAmount / subtotal) * 100).toFixed(2) : 0;
                                     const finalAmount = subtotal + totalTaxAmount;
 
-                                    // Compose booking payload with detailed breakdown
-                                    // Generate invoice number (date + random)
                                     const invoiceNumber = `INV${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
                                     const payload = {
-                                        ...form, // include all user fields (firstName, lastName, callNo, email, address, etc)
+                                        ...form,
                                         specialReq: form.specialReq,
                                         offers: form.offers,
                                         bookingId: bookingIdVal,
@@ -443,17 +522,15 @@ const BookingDetails = ({ room, onClose, type }) => {
                                     if (data.success) {
                                         toast.success('Booking successful!');
                                         setBookingId(bookingIdVal);
-                                        setShowConfirmation(true); // Show confirmation UI
+                                        setShowConfirmation(true);
                                         setInvoiceData(payload);
 
-                                        // --- Send Beautiful Invoice Email ---
                                         if (form.email) {
                                             try {
                                                 const [{ default: ReactDOMServer }, { default: BeautifulInvoice }] = await Promise.all([
                                                     import('react-dom/server'),
                                                     import('./BeautifulInvoice'),
                                                 ]);
-                                                // Render invoice as HTML string
                                                 const invoiceHtml = ReactDOMServer.renderToStaticMarkup(
                                                     <BeautifulInvoice
                                                         booking={payload}
@@ -461,7 +538,6 @@ const BookingDetails = ({ room, onClose, type }) => {
                                                         bookingDate={new Date()}
                                                     />
                                                 );
-                                                // Send to /api/brevo
                                                 const resEmail = await fetch('/api/brevo', {
                                                     method: 'POST',
                                                     headers: { 'Content-Type': 'application/json' },
@@ -486,7 +562,6 @@ const BookingDetails = ({ room, onClose, type }) => {
                                         toast.error(data.error || 'Booking failed');
                                     }
                                 } else {
-                                    // Placeholder for other types
                                     toast.error('Unsupported booking type');
                                 }
                             } catch (err) {

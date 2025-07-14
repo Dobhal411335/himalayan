@@ -56,7 +56,7 @@ const FontSize = Extension.create({
     }
   },
 })
-const productInfo = ({ productData, productId }) => {
+const productInfo = ({ productData, packageId }) => {
   const [sections, setSections] = useState([]); // Array of {title, description}
   const [tableLoading, setTableLoading] = useState(false);
   const [viewModal, setViewModal] = useState(false);
@@ -70,7 +70,7 @@ const productInfo = ({ productData, productId }) => {
   const fetchSections = async () => {
     setTableLoading(true);
     try {
-      const res = await fetch(`/api/productInfo?productId=${productId}`);
+      const res = await fetch(`/api/productInfo?packageId=${packageId}`);
       const data = await res.json();
       if (res.ok && data.info && Array.isArray(data.info.info)) {
         setSections(data.info.info);
@@ -87,8 +87,8 @@ const productInfo = ({ productData, productId }) => {
   };
 
   useEffect(() => {
-    if (productId) fetchSections();
-  }, [productId]);
+    if (packageId) fetchSections();
+  }, [packageId]);
 
   const [title, setTitle] = useState("");
 
@@ -125,7 +125,7 @@ const productInfo = ({ productData, productId }) => {
   const saveSection = async (e) => {
     e.preventDefault();
     const content = getCurrentContent();
-    if (!productId || !title) {
+    if (!packageId || !title) {
       toast.error('Please provide a title and valid product.');
       return;
     }
@@ -140,7 +140,7 @@ const productInfo = ({ productData, productId }) => {
         const res = await fetch('/api/productInfo', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId, title, description: content, sectionId: sections[editIndex]?._id })
+          body: JSON.stringify({ packageId, sectionIndex: editIndex, title, description: content })
         });
         const data = await res.json();
         if (!res.ok || data.error) {
@@ -156,7 +156,7 @@ const productInfo = ({ productData, productId }) => {
         const res = await fetch('/api/productInfo', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId, title, description: content })
+          body: JSON.stringify({ packageId, title, description: content })
         });
         const data = await res.json();
         if (!res.ok || data.error) {
@@ -218,13 +218,13 @@ const productInfo = ({ productData, productId }) => {
     setDeleteTargetIndex(null);
   };
   const confirmDelete = async () => {
-    if (!productId || deleteTargetIndex === null) return;
+    if (!packageId || deleteTargetIndex === null) return;
     setLoading(true);
     try {
       const res = await fetch('/api/productInfo', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId, sectionIndex: Number(deleteTargetIndex) })
+        body: JSON.stringify({ packageId, sectionIndex: Number(deleteTargetIndex) })
       });
       const data = await res.json();
       if (res.ok && data.success) {
@@ -250,7 +250,7 @@ const productInfo = ({ productData, productId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!productId || !title.trim() || !description.trim()) {
+    if (!packageId || !title.trim() || !description.trim()) {
       toast.error('Please provide both a heading and description for this section.');
       return;
     }
@@ -261,7 +261,7 @@ const productInfo = ({ productData, productId }) => {
         const res = await fetch('/api/productInfo', {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId, sectionIndex: editIndex, title: title.trim(), description: description.trim() })
+          body: JSON.stringify({ packageId, sectionIndex: editIndex, title: title.trim(), description: description.trim() })
         });
         const data = await res.json();
         if (!res.ok || data.error) {
@@ -279,7 +279,7 @@ const productInfo = ({ productData, productId }) => {
         const res = await fetch('/api/productInfo', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId, title: title.trim(), description: description.trim() })
+          body: JSON.stringify({ packageId, title: title.trim(), description: description.trim() })
         });
         const data = await res.json();
         if (!res.ok || data.error) {
@@ -312,7 +312,7 @@ const productInfo = ({ productData, productId }) => {
                 <div className="card-body px-4 py-2">
                   <div className="mb-3">
                     <div className="mb-4">
-                      <label className="font-semibold">Product Name</label>
+                      <label className="font-semibold">Package Name</label>
                       <Input
                         type="text"
                         className="form-control w-1/2"
@@ -322,7 +322,7 @@ const productInfo = ({ productData, productId }) => {
                       />
                     </div>
                     <label className="form-label">Section Heading</label>
-                    <Input value={title} onChange={e => setTitle(e.target.value)} className="mb-2" placeholder="Enter heading (e.g. Product Details, Shipping & Return, etc.)" />
+                    <Input value={title} onChange={e => setTitle(e.target.value)} className="mb-2" placeholder="Enter heading (e.g. Package Details)" />
                     <div className="mb-4">
                       <label className="form-label">Description</label>
                       <div className="flex flex-col gap-2">
@@ -454,7 +454,7 @@ const productInfo = ({ productData, productId }) => {
 
       {/* Product Info Sections Table */}
       <div className="mt-6">
-        <h5 className="mb-3 font-semibold">Product Info Sections</h5>
+        <h5 className="mb-3 font-semibold">Package Info Sections</h5>
         <Table className="min-w-full divide-y divide-gray-200">
           <TableHeader>
             <TableRow className="bg-gray-100">
@@ -488,7 +488,7 @@ const productInfo = ({ productData, productId }) => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={3} className="text-center py-4">No sections found for this product.</TableCell>
+                <TableCell colSpan={3} className="text-center py-4">No sections found for this Package.</TableCell>
               </TableRow>
             )}
           </TableBody>

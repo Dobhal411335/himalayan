@@ -43,7 +43,7 @@ const InstaBlog = () => {
     // Normalize reviews to a standard format
     function normalizeReview(review) {
         // console.log('Raw review data:', review);
-      
+
         let imageUrl = '';
         if (review.thumb?.url) {
             imageUrl = review.thumb.url.startsWith('http') ? review.thumb.url : `https:${review.thumb.url}`;
@@ -237,179 +237,181 @@ const InstaBlog = () => {
     return (
         <div className='bg-[#fcf7f1] w-full overflow-hidden max-w-screen overflow-x-hidden'>
             {/*Blogs /  News & Announcement Section */}
-            <div className="w-full flex flex-col items-center py-20 bg-blue-100">
-                <div className="w-full flex flex-col md:flex-row gap-8 min-h-[350px]">
-                    <div className="flex flex-col md:flex-row w-full gap-8">
-                        {/* Blogs Section */}
+            {blogs.length > 0 || news.length > 0 && (
+                <div className="w-full flex flex-col items-center py-20 bg-blue-100">
+                    <div className="w-full flex flex-col md:flex-row gap-8 min-h-[350px]">
+                        <div className="flex flex-col md:flex-row w-full gap-8">
+                            {/* Blogs Section */}
 
-                        {!isBlogsLoading && blogs && blogs.length > 0 && (
-                            <div className="flex-1 bg-[#fcf7f1] rounded-lg flex flex-col justify-between min-h-[350px] px-5 py-5 md:px-10">
-                                <div className="font-bold text-3xl mb-4 p-2">
-                                    <span className='border-b-2 border-black'>
-                                        <span className='italic'>Blog</span> and Events
-                                    </span></div>
-                                <h2 className='font-semibold text-xl p-1 '>Experience , Engage, Explore, Event by Event.</h2>
-                                <p className="text-gray-800 mb-8 text-lg md:text-md font-medium">
-                                    "We're preparing exciting new content and updates for our users, including upcoming news and events. We’re working behind the scenes to bring you fresh news, upcoming events, and new features to enhance your experience.
-                                    <br /><br />
-                                    Stay connected — great things are coming soon!"
-                                </p>
-                                <div className="w-full mx-auto md:max-w-7xl mb-8 p-1 md:p-2">
-                                    <Carousel className="w-full" plugins={[Autoplay({ delay: 4000 })]}>
-                                        <CarouselContent className="">
-                                            {blogs.map((blog, idx) => {
-                                                // Determine media (YouTube or image)
-                                                let mediaUrl = blog.image || (Array.isArray(blog.images) && blog.images.length > 0 ? blog.images[0].url || blog.images[0] : undefined) || blog.youtubeUrl;
-                                                let isYoutube = false;
-                                                let embedUrl = '';
-                                                if (mediaUrl && /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//.test(mediaUrl)) {
-                                                    isYoutube = true;
-                                                    embedUrl = mediaUrl;
-                                                    if (embedUrl.includes('youtube.com/watch?v=')) {
-                                                        const videoId = embedUrl.split('v=')[1].split('&')[0];
-                                                        embedUrl = `https://www.youtube.com/embed/${videoId}`;
-                                                    } else if (embedUrl.includes('youtu.be/')) {
-                                                        const videoId = embedUrl.split('youtu.be/')[1].split(/[?&]/)[0];
-                                                        embedUrl = `https://www.youtube.com/embed/${videoId}`;
-                                                    }
-                                                }
-                                                return (
-                                                    <CarouselItem key={blog._id || idx} className="w-full">
-                                                        <div className="flex flex-col md:flex-row bg-[#FFF3C9] rounded-xl min-h-[220px] w-full overflow-hidden">
-                                                            {/* Image/Video section */}
-                                                            <div className="w-full h-40 md:w-2/5 md:h-auto flex items-center justify-center rounded-t-xl md:rounded-l-xl md:rounded-t-none overflow-hidden">
-                                                                {isYoutube ? (
-                                                                    <div className="w-full h-full aspect-video overflow-hidden flex items-center justify-center">
-                                                                        <iframe
-                                                                            src={embedUrl}
-                                                                            title={blog.title}
-                                                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                                            allowFullScreen
-                                                                            className="w-full h-full min-h-[160px] max-h-[220px] border-0"
-                                                                        />
-                                                                    </div>
-                                                                ) : mediaUrl ? (
-                                                                    <img
-                                                                        src={mediaUrl}
-                                                                        alt={blog.title}
-                                                                        className="object-cover w-full h-full max-h-[220px]"
-                                                                    />
-                                                                ) : (
-                                                                    <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
-                                                                        No Image
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                            {/* Content section */}
-                                                            <div className="flex flex-col justify-between p-2 md:p-4 flex-1 rounded-b-xl md:rounded-r-xl md:rounded-b-none">
-                                                                <div>
-                                                                    <div className="font-bold text-base md:text-xl text-black mb-2 leading-snug">{blog.title || 'No title available.'}</div>
-                                                                    <div className="text-gray-800 text-sm md:text-base mb-1 md:mb-2 line-clamp-3 min-h-[48px] overflow-y-auto">{blog.shortDescription || blog.shortDesc || 'No description available.'}</div>
-                                                                </div>
-                                                                <div className="flex items-center mt-auto">
-                                                                    <Link
-                                                                        href={`/blogs/${blog._id}`}
-                                                                        rel="noopener noreferrer"
-                                                                        className="text-gray-700 font-semibold hover:underline flex items-center group transition focus:outline-none text-sm md:text-base"
-                                                                    >
-                                                                        Read More  &gt;
-                                                                    </Link>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </CarouselItem>
-                                                );
-                                            })}
-                                        </CarouselContent>
-                                        <div className="flex items-center gap-2 mt-2 md:mt-0 justify-center md:justify-end">
-                                            <CarouselPrevious className="bg-black text-white py-2 px-3 font-bold rounded hover:bg-gray-800 transition-colors text-base md:text-lg" />
-                                            <CarouselNext className="bg-black text-white py-2 px-3 font-bold rounded hover:bg-gray-800 transition-colors text-base md:text-lg" />
-                                        </div>
-                                    </Carousel>
-                                </div>
-                                <Link href="/blogs">
-                                    <button className="w-full bg-black text-white py-3 font-bold rounded hover:bg-gray-800 transition-colors text-lg">
-                                        Read More
-                                    </button>
-                                </Link>
-                            </div>
-                        )}
-                        {/* News box */}
-                        {news && news.length > 0 && (
-                            <div className="flex-1 bg-[#fcf7f1] rounded-lg p-4 flex flex-col min-h-[350px] border-[1px] border-black">
-                                <div className="flex-1 pr-2 mb-4">
-                                    <div className="font-bold text-2xl mb-4 px-2">
+                            {!isBlogsLoading && blogs && blogs.length > 0 && (
+                                <div className="flex-1 bg-[#fcf7f1] rounded-lg flex flex-col justify-between min-h-[350px] px-5 py-5 md:px-10">
+                                    <div className="font-bold text-3xl mb-4 p-2">
                                         <span className='border-b-2 border-black'>
-                                            Upcoming News & Notice
+                                            <span className='italic'>Blog</span> and Events
                                         </span></div>
-                                    <div className="h-[400px] overflow-y-auto p-0 border-none rounded-xl">
-                                        {news && news.length > 0 ? (
-                                            <>
-                                                {/* First News - plain heading and description, not in a box */}
-                                                <div className="mb-4 px-2">
-                                                    <div className="font-bold text-lg md:text-xl mb-1">{news[0].title || 'News'}</div>
-                                                    <div className="text-gray-700 mb-1">
-                                                        {(() => {
-                                                            const desc = news[0].description ?? "";
-                                                            const words = desc.trim().split(/\s+/);
-                                                            return words.slice(0, 24).join(" ") + (words.length > 24 ? " ..." : "");
-                                                        })()} &nbsp;
-                                                        <button
-                                                            onClick={() => setQuickViewNews(news[0])}
-                                                            className="inline-block text-purple-700 hover:underline font-bold mt-1"
-                                                        >
-                                                            See more
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                {/* Remaining News - alternating color cards */}
-                                                <div className="flex flex-col gap-3">
-                                                    {news.slice(1).map((item, idx) => {
-                                                        const colorClasses = [
-                                                            'bg-[#fff7eb] border-[#ffe7c7]', // light orange
-                                                            'bg-[#f2fff6] border-[#c7ffe6]', // light green
-                                                            'bg-[#f2f6ff] border-[#c7d6ff]'  // light blue
-                                                        ];
-                                                        const colorIdx = idx % 3;
-                                                        return (
-                                                            <div
-                                                                key={item._id}
-                                                                className={`rounded-xl border font-barlow px-4 py-3 ${colorClasses[colorIdx]} shadow-md`}
-                                                            >
-                                                                <div className="font-bold text-base md:text-lg mb-1">{item.title || 'News'}</div>
-                                                                <div className="text-gray-700 mb-2">
-                                                                    {(() => {
-                                                                        const desc = item.description ?? "";
-                                                                        const words = desc.trim().split(/\s+/);
-                                                                        return words.slice(0, 30).join(" ") + (words.length > 30 ? " ..." : "");
-                                                                    })()}&nbsp;
-                                                                    <button
-                                                                        onClick={() => setQuickViewNews(item)}
-                                                                        className="inline-block text-blue-600 hover:underline font-semibold my-1"
-                                                                    >
-                                                                        See more
-                                                                    </button>
+                                    <h2 className='font-semibold text-xl p-1 '>Experience , Engage, Explore, Event by Event.</h2>
+                                    <p className="text-gray-800 mb-8 text-lg md:text-md font-medium">
+                                        "We're preparing exciting new content and updates for our users, including upcoming news and events. We’re working behind the scenes to bring you fresh news, upcoming events, and new features to enhance your experience.
+                                        <br /><br />
+                                        Stay connected — great things are coming soon!"
+                                    </p>
+                                    <div className="w-full mx-auto md:max-w-7xl mb-8 p-1 md:p-2">
+                                        <Carousel className="w-full" plugins={[Autoplay({ delay: 4000 })]}>
+                                            <CarouselContent className="">
+                                                {blogs.map((blog, idx) => {
+                                                    // Determine media (YouTube or image)
+                                                    let mediaUrl = blog.image || (Array.isArray(blog.images) && blog.images.length > 0 ? blog.images[0].url || blog.images[0] : undefined) || blog.youtubeUrl;
+                                                    let isYoutube = false;
+                                                    let embedUrl = '';
+                                                    if (mediaUrl && /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//.test(mediaUrl)) {
+                                                        isYoutube = true;
+                                                        embedUrl = mediaUrl;
+                                                        if (embedUrl.includes('youtube.com/watch?v=')) {
+                                                            const videoId = embedUrl.split('v=')[1].split('&')[0];
+                                                            embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                                                        } else if (embedUrl.includes('youtu.be/')) {
+                                                            const videoId = embedUrl.split('youtu.be/')[1].split(/[?&]/)[0];
+                                                            embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                                                        }
+                                                    }
+                                                    return (
+                                                        <CarouselItem key={blog._id || idx} className="w-full">
+                                                            <div className="flex flex-col md:flex-row bg-[#FFF3C9] rounded-xl min-h-[220px] w-full overflow-hidden">
+                                                                {/* Image/Video section */}
+                                                                <div className="w-full h-40 md:w-2/5 md:h-auto flex items-center justify-center rounded-t-xl md:rounded-l-xl md:rounded-t-none overflow-hidden">
+                                                                    {isYoutube ? (
+                                                                        <div className="w-full h-full aspect-video overflow-hidden flex items-center justify-center">
+                                                                            <iframe
+                                                                                src={embedUrl}
+                                                                                title={blog.title}
+                                                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                                                allowFullScreen
+                                                                                className="w-full h-full min-h-[160px] max-h-[220px] border-0"
+                                                                            />
+                                                                        </div>
+                                                                    ) : mediaUrl ? (
+                                                                        <img
+                                                                            src={mediaUrl}
+                                                                            alt={blog.title}
+                                                                            className="object-cover w-full h-full max-h-[220px]"
+                                                                        />
+                                                                    ) : (
+                                                                        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">
+                                                                            No Image
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                                {/* Content section */}
+                                                                <div className="flex flex-col justify-between p-2 md:p-4 flex-1 rounded-b-xl md:rounded-r-xl md:rounded-b-none">
+                                                                    <div>
+                                                                        <div className="font-bold text-base md:text-xl text-black mb-2 leading-snug">{blog.title || 'No title available.'}</div>
+                                                                        <div className="text-gray-800 text-sm md:text-base mb-1 md:mb-2 line-clamp-3 min-h-[48px] overflow-y-auto">{blog.shortDescription || blog.shortDesc || 'No description available.'}</div>
+                                                                    </div>
+                                                                    <div className="flex items-center mt-auto">
+                                                                        <Link
+                                                                            href={`/blogs/${blog._id}`}
+                                                                            rel="noopener noreferrer"
+                                                                            className="text-gray-700 font-semibold hover:underline flex items-center group transition focus:outline-none text-sm md:text-base"
+                                                                        >
+                                                                            Read More  &gt;
+                                                                        </Link>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <div className="text-gray-500 text-center py-8">No news available at the moment.</div>
-                                        )}
+                                                        </CarouselItem>
+                                                    );
+                                                })}
+                                            </CarouselContent>
+                                            <div className="flex items-center gap-2 mt-2 md:mt-0 justify-center md:justify-end">
+                                                <CarouselPrevious className="bg-black text-white py-2 px-3 font-bold rounded hover:bg-gray-800 transition-colors text-base md:text-lg" />
+                                                <CarouselNext className="bg-black text-white py-2 px-3 font-bold rounded hover:bg-gray-800 transition-colors text-base md:text-lg" />
+                                            </div>
+                                        </Carousel>
                                     </div>
+                                    <Link href="/blogs">
+                                        <button className="w-full bg-black text-white py-3 font-bold rounded hover:bg-gray-800 transition-colors text-lg">
+                                            Read More
+                                        </button>
+                                    </Link>
                                 </div>
-                                <Link href="/contact">
-                                    <button className="w-full bg-lime-400 text-black font-bold py-3 rounded hover:bg-lime-500 transition-colors text-lg mt-2">
-                                        Get Connected
-                                    </button>
-                                </Link>
-                            </div>
-                        )}
+                            )}
+                            {/* News box */}
+                            {news && news.length > 0 && (
+                                <div className="flex-1 bg-[#fcf7f1] rounded-lg p-4 flex flex-col min-h-[350px] border-[1px] border-black">
+                                    <div className="flex-1 pr-2 mb-4">
+                                        <div className="font-bold text-2xl mb-4 px-2">
+                                            <span className='border-b-2 border-black'>
+                                                Upcoming News & Notice
+                                            </span></div>
+                                        <div className="h-[400px] overflow-y-auto p-0 border-none rounded-xl">
+                                            {news && news.length > 0 ? (
+                                                <>
+                                                    {/* First News - plain heading and description, not in a box */}
+                                                    <div className="mb-4 px-2">
+                                                        <div className="font-bold text-lg md:text-xl mb-1">{news[0].title || 'News'}</div>
+                                                        <div className="text-gray-700 mb-1">
+                                                            {(() => {
+                                                                const desc = news[0].description ?? "";
+                                                                const words = desc.trim().split(/\s+/);
+                                                                return words.slice(0, 24).join(" ") + (words.length > 24 ? " ..." : "");
+                                                            })()} &nbsp;
+                                                            <button
+                                                                onClick={() => setQuickViewNews(news[0])}
+                                                                className="inline-block text-purple-700 hover:underline font-bold mt-1"
+                                                            >
+                                                                See more
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    {/* Remaining News - alternating color cards */}
+                                                    <div className="flex flex-col gap-3">
+                                                        {news.slice(1).map((item, idx) => {
+                                                            const colorClasses = [
+                                                                'bg-[#fff7eb] border-[#ffe7c7]', // light orange
+                                                                'bg-[#f2fff6] border-[#c7ffe6]', // light green
+                                                                'bg-[#f2f6ff] border-[#c7d6ff]'  // light blue
+                                                            ];
+                                                            const colorIdx = idx % 3;
+                                                            return (
+                                                                <div
+                                                                    key={item._id}
+                                                                    className={`rounded-xl border font-barlow px-4 py-3 ${colorClasses[colorIdx]} shadow-md`}
+                                                                >
+                                                                    <div className="font-bold text-base md:text-lg mb-1">{item.title || 'News'}</div>
+                                                                    <div className="text-gray-700 mb-2">
+                                                                        {(() => {
+                                                                            const desc = item.description ?? "";
+                                                                            const words = desc.trim().split(/\s+/);
+                                                                            return words.slice(0, 30).join(" ") + (words.length > 30 ? " ..." : "");
+                                                                        })()}&nbsp;
+                                                                        <button
+                                                                            onClick={() => setQuickViewNews(item)}
+                                                                            className="inline-block text-blue-600 hover:underline font-semibold my-1"
+                                                                        >
+                                                                            See more
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <div className="text-gray-500 text-center py-8">No news available at the moment.</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <Link href="/contact">
+                                        <button className="w-full bg-lime-400 text-black font-bold py-3 rounded hover:bg-lime-500 transition-colors text-lg mt-2">
+                                            Get Connected
+                                        </button>
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* Instagram-like Image Carousel using Carousel classes */}
             {!isInstaLoading && !isFbLoading && allPosts.length > 0 && (
@@ -483,7 +485,7 @@ const InstaBlog = () => {
 
                 {/* Review Card Overlay */}
                 <div className="hidden md:flex absolute right-1 gap-2 top-[30%] z-10 flex flex-col justify-start w-full md:w-1/2 items-end pr-1">
-                    <div className="mr-60">
+                    <div className="px-20">
                         <Button className="bg-white text-black hover:bg-black hover:text-white transition-colors duration-300" onClick={() => setShowReviewModal(true)}>Write Reviews</Button>
                     </div>
                     <Carousel className="w-full md:w-[600px]"
@@ -495,18 +497,19 @@ const InstaBlog = () => {
                                     key={review._id}
                                     className="min-w-0 snap-center w-full"
                                 >
-                                    <div className="bg-white rounded-3xl px-8 py-5 flex flex-col justify-between h-full min-h-[320px] relative overflow-visible">
+                                    <div className="bg-white rounded-3xl px-8 py-5 flex flex-col justify-center gap-5 h-full min-h-[320px] relative overflow-visible">
                                         {/* Review text */}
-                                        <div className="text-md md:text-2xl text-gray-800 font-bold leading-relaxed text-left">
-                                            {review?.title || 'No review text.'}
-                                        </div>
-                                        <div className="text-md md:text-md text-gray-800 font-medium leading-relaxed text-left">
-                                            {review?.shortDescription || 'No review text.'}
+                                        <div className='py-5'>
+                                            <div className="text-md md:text-2xl text-gray-800 font-bold leading-relaxed text-left mb-2">
+                                                {review?.title || 'No review text.'}
+                                            </div>
+                                            <div className="text-md md:text-md text-gray-800 font-medium leading-relaxed text-left">
+                                                {review?.shortDescription || 'No review text.'}
+                                            </div>
                                         </div>
                                         {/* Bottom row: avatar, name, subtitle, nav buttons */}
-
                                         {/* Avatar, Name, Subtitle */}
-                                        <div className="flex items-center justify-between">
+                                        <div className="flex items-center justify-between pt-5">
                                             <div className="flex items-center">
                                                 <img
                                                     src={review?.image || "/placeholder.jpeg"}
@@ -537,8 +540,8 @@ const InstaBlog = () => {
                             ))}
                         </CarouselContent>
                         <div className="flex items-center gap-3">
-                            <CarouselPrevious className="absolute top-[1%] left-[70%] bg-[#f7eedd] !rounded-full !w-12 !h-12 !flex !items-center !justify-center transition" />
-                            <CarouselNext className="absolute top-[1%] left-[85%] bg-[#f7eedd] !rounded-full !w-12 !h-12 !flex !items-center !justify-center transition" />
+                            <CarouselPrevious className="absolute top-[8%] left-[70%] bg-[#f7eedd] !rounded-full !w-12 !h-12 !flex !items-center !justify-center transition" />
+                            <CarouselNext className="absolute top-[8%] left-[83%] bg-[#f7eedd] !rounded-full !w-12 !h-12 !flex !items-center !justify-center transition" />
                         </div>
                     </Carousel>
                 </div>
