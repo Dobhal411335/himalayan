@@ -32,7 +32,7 @@ import ProductTax from '@/models/ProductTax';
 const PackagePage = async ({ params }) => {
     await connectDB();
 
-    const { slug } = params;
+    const { slug } = await params;
     const decodedSlug = decodeURIComponent(slug);
     const rawProduct = await Packages.findOne({ slug: decodedSlug })
         .populate('gallery video description info categoryTag reviews taxes')
@@ -78,7 +78,7 @@ const PackagePage = async ({ params }) => {
                 ? data
                 : (Array.isArray(data.rooms) ? data.rooms : []);
         }
-        console.log(rooms)
+        // console.log(rooms)
     } catch (error) {
         console.error("Error fetching rooms:", error.message);
     }

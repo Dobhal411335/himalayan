@@ -114,7 +114,7 @@ const Banner = () => {
 
             {/* Promotional Banner Section */}
             {promotinalBanner.length > 0 && (
-                <div className="w-full py-20 bg-blue-100">
+                <div className="w-full py-20 bg-[#ededed]">
                     <h2 className="pacifico-h2 text-green-800 text-2xl md:text-3xl text-center mb-5 uppercase">
                         <span className="">Our Best Retreats – Reconnect. Realign. Rejuvenate Yourself.
                         </span>

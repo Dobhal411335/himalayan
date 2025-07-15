@@ -123,17 +123,6 @@ const InvoiceModal = ({ open, onClose, booking, bookingId, bookingDate }) => {
           <div className="text-right w-64">
             {/* Room price */}
             <div className="flex justify-between mb-1"><span className="font-bold">Room Price</span> <span>Rs {baseAmount.toLocaleString()}</span></div>
-            {/* Extra Bed */}
-            {hasExtraBed && (
-              <div className="flex justify-between mb-1"><span className="font-bold">Extra Bed Price</span> <span>Rs {extrabedAmount.toLocaleString()}</span></div>
-            )}
-            {/* Subtotal */}
-            <div className="flex justify-between mb-1"><span className="font-bold">Subtotal ({hasExtraBed ? 'Room + Extra Bed' : 'Room'})</span> <span>Rs {subtotal.toLocaleString()}</span></div>
-            {/* Coupon */}
-            {coupon && <div className="text-xs text-gray-600 mb-1">Applied Coupon Code</div>}
-            {/* CGST/SGST */}
-            <div className="flex justify-between mb-1"><span className="font-bold">CGST ({hasExtraBed ? 'Room + Extra Bed' : 'Room'})</span> <span>Rs {totalCgst.toLocaleString()}</span></div>
-            <div className="flex justify-between mb-1"><span className="font-bold">SGST ({hasExtraBed ? 'Room + Extra Bed' : 'Room'})</span> <span>Rs {totalSgst.toLocaleString()}</span></div>
             {/* Total Tax */}
             <div className="flex justify-between mb-1"><span className="font-bold">Total Tax ({totalTaxPercent}%)</span> <span>Rs {totalTaxAmount.toLocaleString()}</span></div>
             <div className="border-t border-gray-400 my-2"></div>
