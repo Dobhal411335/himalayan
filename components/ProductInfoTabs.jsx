@@ -41,7 +41,7 @@ export default function ProductInfoTabs({ product }) {
     // Fetch reviews from API
     const fetchReviews = async () => {
         try {
-            const response = await fetch(`/api/productReviews?productId=${product._id}`);
+            const response = await fetch(`/api/productReviews?packageId=${product._id}`);
             const data = await response.json();
             if (response.ok) {
                 setLocalReviews(data.reviews || []);

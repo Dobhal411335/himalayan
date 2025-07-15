@@ -8,13 +8,13 @@ export async function GET(req) {
     const category = url?.searchParams.get('category');
     if (category) {
       // Return only the selected category's FAQs
-      const faqs = await Faq.find({ category }).sort({ createdAt: -1 });
+      const faqs = await Faq.find({ category });
       return new Response(JSON.stringify(faqs), { status: 200 });
     } else {
       // Return all FAQs grouped by category
-      const allFaqs = await Faq.find().sort({ createdAt: -1 });
+      const allFaqs = await Faq.find();
       const grouped = {};
-      for (const cat of ['General', 'Returns', 'Gift', 'Refunds', 'Payments', 'Shipping']) {
+      for (const cat of ['General', 'Packages / Product', 'Privacy FaQ', 'Refunds & Cancellation', 'Payments', 'House Rules']) {
         grouped[cat] = allFaqs.filter(faq => faq.category === cat);
       }
       return new Response(JSON.stringify(grouped), { status: 200 });

@@ -4,21 +4,21 @@ import { useEffect, useState } from "react";
 
 const categories = [
   { label: "General", icon: "💬" },
-  { label: "Returns", icon: "↩️" },
-  { label: "Gift", icon: "🎁" },
-  { label: "Refunds", icon: "💸" },
+  { label: "Packages / Product", icon: "↩️" },
+  { label: "Privacy FaQ", icon: "🎁" },
+  { label: "Refunds & Cancellation", icon: "💸" },
   { label: "Payments", icon: "💳" },
-  { label: "Shipping", icon: "🚚" }
+  { label: "House Rules", icon: "🏡" }
 ];
 
-const leftImage = 'https://pixio-react.vercel.app/assets/pic1-BRVDdwXc.jpg';
+const leftImage = './FaqBanner.jpg';
 
 const Faq = () => {
   const [selectedSection, setSelectedSection] = useState(categories[0].label);
   const [search, setSearch] = useState('');
   const [openIdx, setOpenIdx] = useState(null);
   const [faqs, setFaqs] = useState({});
-  console.log(faqs)
+  // console.log(faqs)
 
   useEffect(() => {
     const fetchFaqs = async () => {

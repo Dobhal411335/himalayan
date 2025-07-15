@@ -86,6 +86,20 @@ const Header = () => {
         <div className="flex flex-row justify-center items-center gap-4">
           <div className="items-center z-50 gap-4 flex">
             <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4">
+                  <Mail size={18} />
+                  <Link href={"mailto:himalayanwellnessretreats@gmail.com"}>
+                    <p className="text-sm font-semibold hover:underline">himalayanwellnessretreats@gmail.com</p>
+                  </Link>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Phone size={18} />
+                  <Link href={"tel:+919897515305"}>
+                    <p className="text-sm font-semibold tracking-widest hover:underline"> +91 9897515305,7060340176</p>
+                  </Link>
+                </div>
+              </div>
 
               <div className="relative">
                 {status === "loading" ? (
@@ -183,7 +197,7 @@ const Header = () => {
 
         <div className="flex items-center gap-3">
 
-              <div className="relative">
+          <div className="relative">
             {status === "loading" ? (
               <Loader2 className="animate-spin text-blue-600" size={36} />
             ) : isUser ? (

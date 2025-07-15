@@ -104,78 +104,80 @@ const Footer = () => {
                         <AccordionItem value="item-1">
                             <AccordionTrigger className="text-black px-6 py-4 text-base ">IMPORTANT NOTICE</AccordionTrigger>
                             <AccordionContent className="text-gray-900 px-6 pb-6 pt-1 text-sm">
-                                Terms & House Rules – Himalayan Wellness Retreats
-                                To ensure a peaceful and fulfilling experience for all our guests, we kindly request you to read and follow our terms and house rules:
-                                <br />
-
-                                1. Booking & Payment :
-                                All bookings must be confirmed with a minimum advance deposit (as per package).
-                                <br />
-
-                                The remaining balance is payable upon arrival/check-in.
-
-                                We accept payments via bank transfer, UPI, or cash.
-                                <br />
-
-                                2. Cancellation Policy
-                                
-                                Cancellations made 15 days prior to arrival are eligible for a full refund.
-
-                                Cancellations within 7–14 days will receive a 50% refund.
-
-                                No refunds for cancellations made less than 7 days before arrival.
-
-                                In case of emergencies or natural disruptions, we may offer date rescheduling.
-                                <br />
-
-                                3. Check-In / Check-Out
-                                Check-In: 12:00 PM | Check-Out: 10:00 AM
-
-                                Early check-in or late check-out is subject to availability and additional charges.
-                                <br />
-
-                                4. House Rules
-                                This is a wellness and mindful living space — silence is appreciated during yoga, meditation, and evening hours.
-
-                                Alcohol, smoking, and non-vegetarian food are strictly prohibited on the retreat premises.
-
-                                Guests are expected to treat the space, staff, and fellow participants with respect and kindness.
-
-                                Please inform us in advance about any allergies or dietary restrictions.
-
-                                Modest and comfortable attire is recommended, especially during spiritual or outdoor activities.
-                                <br />
-
-                                5. Health & Safety
-                                Guests are responsible for their own health and safety; kindly inform us of any medical conditions at the time of booking.
-
-                                We follow eco-friendly practices — please help us conserve water, electricity, and avoid plastic use.
-
-                                First aid is available on-site; for medical emergencies, the nearest clinic is accessible within 15 minutes.
-                                <br />
-
-                                6. Photography & Privacy
-                                Kindly seek permission before taking photos of staff, other guests, or during ceremonies.
-
-                                We respect your privacy and will never share your information without consent.
-
-                                By booking with Himalayan Wellness Retreats, you agree to these terms and support our mission to provide a peaceful, nurturing environment for all.</AccordionContent>
+  <strong>Terms &amp; House Rules – Himalayan Wellness Retreats</strong>
+  <br />
+  To ensure a serene, respectful, and fulfilling experience for all guests, we kindly request your adherence to the following terms and house rules:
+  <ul className="list-decimal ml-6 mt-4 space-y-3">
+    <li>
+      <strong>Booking &amp; Payment</strong>
+      <ul className="list-disc ml-5 mt-1">
+        <li>All bookings must be confirmed with an advance deposit (as per selected package).</li>
+        <li>The balance amount is payable upon arrival/check-in.</li>
+        <li>Accepted payment methods: Bank Transfer, UPI, or Cash.</li>
+        <li>Personal cheques are not accepted.</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Cancellation &amp; Rescheduling Policy</strong>
+      <ul className="list-disc ml-5 mt-1">
+        <li>Cancellations made 25+ days prior to arrival: <strong>100% refund</strong></li>
+        <li>Cancellations within 7 to 15 days: <strong>50% refund</strong></li>
+        <li>Cancellations made less than 7 days before arrival: <strong>Non-refundable</strong></li>
+        <li>In exceptional cases (e.g., emergencies, natural disruptions), rescheduling may be offered at our discretion.</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Check-In &amp; Check-Out</strong>
+      <ul className="list-disc ml-5 mt-1">
+        <li>Check-In: 12:00 PM onwards</li>
+        <li>Check-Out: By 10:00 AM</li>
+        <li>Early check-in and late check-out are subject to availability and may incur additional charges.</li>
+      </ul>
+    </li>
+    <li>
+      <strong>House Etiquette</strong>
+      <ul className="list-disc ml-5 mt-1">
+        <li>This is a wellness-focused, mindful environment. We encourage quietness during yoga, meditation, and evening hours.</li>
+        <li>Smoking, alcohol, and non-vegetarian food are strictly prohibited on the property.</li>
+        <li>Respectful behavior towards staff, fellow guests, and retreat space is expected.</li>
+        <li>Please inform us in advance of any allergies or dietary preferences.</li>
+        <li>Modest, comfortable clothing is recommended, especially during yoga, spiritual practices, or outdoor excursions.</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Health &amp; Safety</strong>
+      <ul className="list-disc ml-5 mt-1">
+        <li>Guests are responsible for their own health and well-being. Please disclose any medical conditions at the time of booking.</li>
+        <li>We practice eco-conscious hospitality—help us conserve water, electricity, and reduce plastic use.</li>
+        <li>First aid is available onsite; a medical facility is within 15 minutes of the retreat.</li>
+      </ul>
+    </li>
+    <li>
+      <strong>Photography &amp; Guest Privacy</strong>
+      <ul className="list-disc ml-5 mt-1">
+        <li>Kindly request permission before photographing staff, fellow guests, or sacred ceremonies.</li>
+        <li>We are committed to your privacy and will not share your personal information without consent.</li>
+      </ul>
+    </li>
+  </ul>
+  <br />
+  By confirming your booking with Himalayan Wellness Retreats, you agree to these terms and support our mission to provide a peaceful, safe, and spiritually enriching environment for all.
+</AccordionContent>
                         </AccordionItem>
                     </Accordion>
                 </div>
             </div>
-
             <Card className="my-2 px-2 py-8 max-w-xl lg:max-w-4xl xl:max-w-7xl mx-auto">
                 <CardContent className="flex flex-col lg:flex-row items-start justify-between">
                     <div className="text-justify">
                         <Image src="/logo.png" width={200} height={100} alt="footer" />
-                        <p className="text-black text-sm lg:w-[40vw] xl:w-[35vw] font-barlow mt-6">Experience the Essence of Himalayan Wellness
-                            Our wellness retreat packages are thoughtfully designed to rejuvenate your body, mind, and spirit amidst the tranquil beauty of the Himalayas. Each retreat offers a holistic blend of daily yoga and meditation sessions led by experienced instructors, nourishing yogic meals prepared with local, organic ingredients, and immersive experiences that let you explore the simple, soulful lifestyle of the region.
+                        <p className="text-black text-sm lg:w-[40vw] xl:w-[35vw] font-barlow mt-6">
+                            <span className="text-xl font-bold py-2">
 
-                            Guests enjoy comfortable, serene accommodations with scenic views, nature walks, and guided excursions to nearby temples, waterfalls, and cultural landmarks. Witness the spiritual grandeur of the Ganga Aarti, engage in mindful practices, connect with local artisans, and embrace a slower, more meaningful way of living.
-
-                            Whether you seek inner peace, healing, or just a break from the noise of modern life, our retreats offer a sacred space to reset and reconnect — naturally and soulfully.</p>
-                        {/* <p className="text-black text-sm lg:w-[40vw] xl:w-[35vw] font-barlow mt-6">Our website is your gateway to the heart of Rishikesh, offering rich and soulful handmade creations crafted by local artisans.</p> */}
+                            Experience the Essence of Himalayan Wellness
+                            </span>
+                            <br />
+                        Reconnect with yourself in the serene embrace of the Himalayas. Our wellness retreat packages blend daily yoga and meditation, nourishing sattvic meals, and immersive cultural experiences. Enjoy peaceful accommodations with scenic views, guided nature walks, and visits to sacred sites like temples and the Ganga Aarti. Perfect for those seeking inner peace, healing, or a mindful escape — naturally and soulfully.</p>
                     </div>
                     <div className="font-barlow mt-10 lg:mt-0">
                         <h1 className="font-semibold text-xl ">Subscribe to our newsletter</h1>
