@@ -11,7 +11,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 
 
-const CategoryTag = ({ productData, productId }) => {
+const CategoryTag = ({ productData, packageId }) => {
   // ...existing state
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [rowToDelete, setRowToDelete] = useState(null);
@@ -27,40 +27,19 @@ const CategoryTag = ({ productData, productId }) => {
   const [categoryRows, setCategoryRows] = useState([]); // [{ product, productName, tags, categoryTagId }]
   const [editRow, setEditRow] = useState(null); // { product, tags, categoryTagId }
   // console.log(categoryRows)
-  const [productTitle, setProductTitle] = useState("")
-  useEffect(() => {
-    if (!productData && productId) {
-      fetch(`/api/product/${productId}`)
-        .then(async res => {
-          if (!res.ok) {
-            setProductTitle("");
-            return;
-          }
-          const text = await res.text();
-          if (!text) {
-            setProductTitle("");
-            return;
-          }
-          const data = JSON.parse(text);
-          setProductTitle(data.title || "");
-        })
-        .catch(() => setProductTitle(""));
-    }
-  }, [productData, productId]);
-
-  const productName = productData?.title || productTitle || "";
+  const productName = productData?.title || "";
   // Fetch only the current product's category tags and all tags on mount or when product changes
   useEffect(() => {
-    if (!productId) return;
+    if (!packageId) return;
     // Fetch category tags for this product only
-    fetch(`/api/productCategory?product=${productId}`)
+    fetch(`/api/productCategory?packageId=${packageId}`)
       .then(res => res.json())
       .then(data => {
         // Only set a single row for the current product
         if (data && data.success && data.data && Array.isArray(data.data.tags) && data.data.tags.length > 0) {
           setCategoryRows([{
-            product: productId,
-            productName: productData?.title || productTitle || "",
+            packageId: packageId,
+            productName: productData?.title || "",
             tags: data.data.tags,
             categoryTagId: data.data._id
           }]);
@@ -76,7 +55,7 @@ const CategoryTag = ({ productData, productId }) => {
           setTags(data.tags.map(tag => tag.name));
         }
       });
-  }, [productId, productData, productTitle]);
+  }, [packageId, productData]);
 
   // Remove ALL code that sets or merges categoryRows with multiple products
   // categoryRows should always be an array with at most one object for the current product
@@ -144,19 +123,19 @@ const CategoryTag = ({ productData, productId }) => {
     // If editing, PATCH; else POST
     try {
       let res;
-      // Always use productId prop if present, else selectedProduct
-      const productToSend = productId || selectedProduct;
+      // Always use packageId prop if present, else selectedProduct
+      const productToSend = packageId || selectedProduct;
       if (editRow && editRow.categoryTagId) {
         res = await fetch("/api/productCategory", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ product: productToSend, tags: selectedTags })
+          body: JSON.stringify({ packageId: productToSend, tags: selectedTags })
         });
       } else {
         res = await fetch("/api/productCategory", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ product: productToSend, tags: selectedTags }),
+          body: JSON.stringify({ packageId: productToSend, tags: selectedTags }),
 
         });
       }
@@ -164,12 +143,12 @@ const CategoryTag = ({ productData, productId }) => {
       if (res.ok) {
         toast.success(editRow ? "Category updated!" : "Category created!");
         // Re-fetch category tags for the current product only
-        fetch(`/api/productCategory?product=${productToSend}`)
+        fetch(`/api/productCategory?packageId=${productToSend}`)
           .then(res => res.json())
           .then(data => {
             if (data && data.success && data.data && Array.isArray(data.data.tags) && data.data.tags.length > 0) {
               setCategoryRows([{
-                product: productToSend,
+                packageId: productToSend,
                 productName: productData?.title || productTitle || "",
                 tags: data.data.tags,
                 categoryTagId: data.data._id
@@ -198,13 +177,13 @@ const CategoryTag = ({ productData, productId }) => {
   };
   // Delete handler
   const handleDelete = async (row) => {
-    const productToDelete = row.product || productId || selectedProduct;
+    const productToDelete = row.product || packageId || selectedProduct;
     if (!productToDelete) {
       toast.error("No product ID found for deletion!");
       return;
     }
     try {
-      const res = await fetch(`/api/productCategory?product=${encodeURIComponent(productToDelete)}`, {
+      const res = await fetch(`/api/productCategory?packageId=${encodeURIComponent(productToDelete)}`, {
         method: "DELETE"
       });
       const json = await res.json();
@@ -212,12 +191,12 @@ const CategoryTag = ({ productData, productId }) => {
       if (res.ok && json.success) {
         toast.success("Category deleted!");
         // Re-fetch the category rows for the current product
-        fetch(`/api/productCategory?product=${productToDelete}`)
+        fetch(`/api/productCategory?packageId=${productToDelete}`)
           .then(res => res.json())
           .then(data => {
             if (data && data.success && data.data && Array.isArray(data.data.tags) && data.data.tags.length > 0) {
               setCategoryRows([{
-                product: productToDelete,
+                packageId: productToDelete,
                 productName: productData?.title || productTitle || "",
                 tags: data.data.tags,
                 categoryTagId: data.data._id
@@ -280,7 +259,7 @@ const CategoryTag = ({ productData, productId }) => {
                     >
                       <option value="" disabled>Select tag</option>
                       {tags.map((tag, idx) => (
-                        <option key={tag} value={tag}>{tag}</option>
+                        <option key={idx} value={tag}>{tag}</option>
                       ))}
                     </select>
                     {/* Input for new tag */}
@@ -303,7 +282,7 @@ const CategoryTag = ({ productData, productId }) => {
                     </button>                  </div>
                   <div className="flex gap-2 flex-wrap mt-2">
                     {selectedTags.map((tag, idx) => (
-                      <span key={tag} className="bg-gray-200 px-2 py-1 rounded-full flex items-center">
+                      <span key={idx} className="bg-gray-200 px-2 py-1 rounded-full flex items-center">
                         {tag}
                         <button type="button" className="ml-2 text-red-500" onClick={() => setSelectedTags(selectedTags.filter(t => t !== tag))}>
                           ×
@@ -344,13 +323,13 @@ const CategoryTag = ({ productData, productId }) => {
               <TableBody>
                 {categoryRows.length > 0 ? (
                   categoryRows.map((row, idx) => (
-                    <TableRow key={row.product}>
+                    <TableRow key={idx}>
                       <TableCell>{idx + 1}</TableCell>
                       <TableCell>{row.productName}</TableCell>
                       <TableCell>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                          {row.tags.map(tag => (
-                            <span key={tag} style={{ background: '#eee', padding: '6px', border: '1px solid #ccc', borderRadius: 12 }}>{tag}</span>
+                          {row.tags.map((tag, idx) => (
+                            <span key={idx} style={{ background: '#eee', padding: '6px', border: '1px solid #ccc', borderRadius: 12 }}>{tag}</span>
                           ))}
                         </div>
                       </TableCell>

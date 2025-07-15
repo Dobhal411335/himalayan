@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 
 const ProductReviewSchema = new mongoose.Schema({
-  room: {
+  packageId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Room',
+    ref: 'Packages',
     required: true,
+    unique: true
   },
   rating: {
     type: Number,

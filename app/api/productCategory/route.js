@@ -1,6 +1,6 @@
-import CategoryTag from '../../../models/CategoryTag';
+import CategoryTag from '@/models/CategoryTag';
 import connectDB from "@/lib/connectDB";
-import Product from '@/models/Product';
+import Packages from '@/models/Packages';
 
 // GET: Return all unique tags if allTags=1, else normal behavior
 export async function GET(req) {
@@ -17,36 +17,36 @@ export async function GET(req) {
     });
     return Response.json({ tags: Array.from(tagsSet) });
   }
-  const product = url.searchParams.get('product');
-  if (product) {
+  const packageId = url.searchParams.get('packageId');
+  if (packageId) {
     try {
-      const entry = await CategoryTag.findOne({ product });
+      const entry = await CategoryTag.findOne({ packageId });
       return Response.json({ success: true, data: entry });
     } catch (error) {
       return Response.json({ error: error.message }, { status: 500 });
     }
   }
-  return Response.json({ error: 'Missing required query parameter: allTags=1 or product=ID' }, { status: 400 });
+  return Response.json({ error: 'Missing required query parameter: allTags=1 or packageId=ID' }, { status: 400 });
 }
 
-// POST: Create or update tags for a product
+// POST: Create or update tags for a packageId
 export async function POST(req) {
   await connectDB();
   try {
-    const { product, tags } = await req.json();
-    if (!product || !Array.isArray(tags)) {
-      return Response.json({ error: 'Product and tags are required.' }, { status: 400 });
+    const { packageId, tags } = await req.json();
+    if (!packageId || !Array.isArray(tags)) {
+      return Response.json({ error: 'packageId and tags are required.' }, { status: 400 });
     }
-    // Check if a CategoryTag already exists for this product
-    const exists = await CategoryTag.findOne({ product });
+    // Check if a CategoryTag already exists for this packageId
+    const exists = await CategoryTag.findOne({ packageId });
     if (exists) {
-      return Response.json({ error: 'Category already exists for this product.' }, { status: 409 });
+      return Response.json({ error: 'Category already exists for this packageId.' }, { status: 409 });
     }
     // Create new category tag
-    const created = await CategoryTag.create({ product, tags });
+    const created = await CategoryTag.create({ packageId, tags });
     // Push the CategoryTag _id to the product's categoryTag field
     if (created && created._id) {
-      await Product.findByIdAndUpdate(product, { $set: { categoryTag: created._id } });
+      await Packages.findByIdAndUpdate(packageId, { $set: { categoryTag: created._id } });
     }
     return Response.json({ success: true, data: created });
   } catch (error) {
@@ -58,12 +58,12 @@ export async function POST(req) {
 export async function PATCH(req) {
   await connectDB();
   try {
-    const { product, tags } = await req.json();
-    if (!product || !Array.isArray(tags)) {
-      return Response.json({ error: 'Product and tags are required.' }, { status: 400 });
+    const { packageId, tags } = await req.json();
+    if (!packageId || !Array.isArray(tags)) {
+      return Response.json({ error: 'packageId and tags are required.' }, { status: 400 });
     }
     const updated = await CategoryTag.findOneAndUpdate(
-      { product },
+      { packageId },
       { $set: { tags } },
       { new: true }
     );
@@ -84,19 +84,19 @@ export async function DELETE(req) {
   await connectDB();
   try {
     const url = new URL(req.url, 'http://localhost');
-    const product = url.searchParams.get('product');
+    const packageId = url.searchParams.get('packageId');
     const id = url.searchParams.get('id');
     const tag = url.searchParams.get('tag'); 
     let result;
-    if (product) {
-      result = await CategoryTag.deleteOne({ product });
-      await Product.findByIdAndUpdate(product, { $unset: { categoryTag: "" } });
+    if (packageId) {
+      result = await CategoryTag.deleteOne({ packageId });
+      await Packages.findByIdAndUpdate(packageId, { $unset: { categoryTag: "" } });
     } else if (id) {
       result = await CategoryTag.deleteOne({ _id: id });
     } else {
       // Remove a single tag from the tags array
       const updated = await CategoryTag.findOneAndUpdate(
-        { product },
+        { packageId },
         { $pull: { tags: tag } },
         { new: true }
       );

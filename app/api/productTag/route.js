@@ -1,4 +1,4 @@
-import Tag from '../../../models/Tag';
+import Tag from '@/models/Tag';
 import connectDB from '@/lib/connectDB';
 
 // GET: Fetch all tags

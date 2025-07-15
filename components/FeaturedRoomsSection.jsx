@@ -15,7 +15,7 @@ const amenityIcons = {
         <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M8 16V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v10M4 20h16M4 20a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2M4 20h16" /></svg>
     ),
     'Wi-Fi': <Wifi size={24} />,
-    'Telivision': <Tv size={24} />,
+    'Television': <Tv size={24} />,
     'Bath Tub': <Bath size={24} />,
     'Elevator': (
         <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -25,7 +25,7 @@ const amenityIcons = {
         </svg>
     ),
     'Laggage': <Luggage size={24} />,
-    'Team Maker': <Coffee size={24} />,
+    'Tea Maker': <Coffee size={24} />,
     'Room AC': <Snowflake size={24} />,
 };
 
@@ -34,7 +34,7 @@ export default function FeaturedRoomsSection({ rooms = [], onBook, onShowReviews
 
     return (
         <div className="w-full px-2 bg-[#ededed]">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between  p-6 rounded-lg mb-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between p-6 rounded-lg mb-8">
                 <div className="">
                     <div className="flex justify-between gap-2">
 
@@ -51,7 +51,7 @@ export default function FeaturedRoomsSection({ rooms = [], onBook, onShowReviews
                 </div>
 
             </div>
-            <Carousel className="w-full mx-20">
+            <Carousel className="w-full px-10 gap-2 mx-auto">
                 <CarouselContent>
                     {rooms.map((item, idx) => {
                         const imageUrls = [
@@ -59,7 +59,7 @@ export default function FeaturedRoomsSection({ rooms = [], onBook, onShowReviews
                         ];
                         if (imageUrls.length === 0) imageUrls.push('/placeholder.jpeg');
                         return (
-                            <CarouselItem key={item._id || idx} className="md:basis-1/3 lg:basis-1/4">
+                            <CarouselItem key={item._id || idx} className="md:basis-1/3 basics-1">
                                 <div className="flex flex-col bg-[#f8f5ef] h-[550px] my-5 w-[450px] relative group overflow-hidden">
                                     {/* Room Image (Banner style) */}
                                     <div className="block w-full h-[250px] relative ">
@@ -74,16 +74,18 @@ export default function FeaturedRoomsSection({ rooms = [], onBook, onShowReviews
                                     {/* Card Details */}
                                     <div className="flex-1 p-5 flex flex-col gap-2 justify-between min-h-[210px] relative">
                                         <div className="flex items-center justify-between">
-                                            <h3 className="text-2xl font-bold text-gray-900">{item.title || "Room Name"}</h3>
+                                            <h3 className="text-xl font-bold text-gray-900">{item.title || "Room Name"}</h3>
                                             <button
-                                                className="flex items-center justify-between cursor-pointer group bg-transparent border-0 p-0"
+                                                className="flex flex-col items-center justify-between cursor-pointer group bg-transparent border-0 p-0"
                                                 onClick={() => onShowReviews?.(item)}
                                                 style={{ outline: 'none' }}
                                                 aria-label="Show reviews"
                                             >
+                                                <div className="flex items-center gap-1">
                                                 {[...Array(Math.round((item.reviews?.[0]?.rating || 5)))].map((_, i) => (
-                                                    <Star key={i} size={16} color="#12b76a" fill="#12b76a" className="inline" />
+                                                    <Star key={i} size={14} color="#12b76a" fill="#12b76a" className="inline" />
                                                 ))}
+                                                </div>
                                                 <span className="text-xs text-gray-700 ml-1 group-hover:underline">
                                                     Based On {item.reviews?.length || 0} Review{(item.reviews?.length || 0) !== 1 ? 's' : ''}
                                                 </span>
@@ -109,7 +111,7 @@ export default function FeaturedRoomsSection({ rooms = [], onBook, onShowReviews
                                                         <Tooltip key={am._id || i}>
                                                             <TooltipTrigger asChild>
                                                                 <span className="bg-gray-100 px-1 rounded flex items-center justify-center cursor-pointer">
-                                                                    {amenityIcons[am.label] || am.label}
+                                                                    {amenityIcons[am.label]}
                                                                     {/* {am.label} */}
                                                                 </span>
                                                             </TooltipTrigger>

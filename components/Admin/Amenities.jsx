@@ -11,7 +11,7 @@ const amenityIcons = {
     <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M8 16V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v10M4 20h16M4 20a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2M4 20h16" /></svg>
   ),
   'Wi-Fi': <Wifi size={32} />,
-  'Telivision': <Tv size={32} />,
+  'Television': <Tv size={32} />,
   'Bath Tub': <Bath size={32} />,
   'Elevator': (
     <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -21,7 +21,7 @@ const amenityIcons = {
     </svg>
   ),
   'Laggage': <Luggage size={32} />,
-  'Team Maker': <Coffee size={32} />,
+  'Tea Maker': <Coffee size={32} />,
   'Room AC': <Snowflake size={32} />,
 };
 
