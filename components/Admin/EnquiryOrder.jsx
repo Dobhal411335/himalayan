@@ -58,7 +58,7 @@ const EnquiryOrder = () => {
   const [page, setPage] = useState(1);
   const [viewOrder, setViewOrder] = useState(null); // For modal
   const rowsPerPage = 8;
-  console.log(orders)
+  // console.log(orders)
   // Filtering logic
   const filteredOrders = orders.filter(order => {
     // Search filter

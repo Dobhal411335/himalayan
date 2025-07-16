@@ -480,10 +480,6 @@ const RandomTourPackageSection = () => {
                       return (
                         <CarouselItem key={card.id} className="pl-5 md:basis-1/2 lg:basis-1/4 min-w-0 snap-start">
                           <div className="relative rounded-2xl overflow-hidden shadow-md group transition-all h-full flex flex-col bg-[#fbeff2]">
-                            {/* Date Badge */}
-                            <div className="absolute top-5 left-5 z-20 flex items-center gap-2">
-                              <span className="bg-white rounded px-3 py-1 text-md font-bold shadow text-gray-800">{card.subtitle}</span>
-                            </div>
                             {/* Card Image */}
                             <div className="relative w-full h-96">
                               <img

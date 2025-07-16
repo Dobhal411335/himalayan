@@ -23,12 +23,11 @@ export async function POST(req) {
     connectDB();
   try {
     const body = await req.json();
-    if (body.type === 'room') {
+    if (body.type === 'room' || body.type === 'packages') {
       const booking = new BookingDetails({ ...body });
       await booking.save();
       return NextResponse.json({ success: true, booking });
     } else {
-      // Handle other types if needed
       return NextResponse.json({ success: false, error: 'Unsupported booking type' }, { status: 400 });
     }
   } catch (error) {

@@ -162,7 +162,7 @@ const data = {
     },
     {
       name: "Package Booking Orders",
-      url: "/admin/all_orders",
+      url: "/admin/package_booking",
       icon: ShoppingCart,
     },
     // Space (empty item)

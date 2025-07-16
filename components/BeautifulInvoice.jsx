@@ -4,7 +4,7 @@ import React from "react";
  * BeautifulInvoice - Modern invoice UI for booking confirmation and email.
  * Props: { booking, bookingId, bookingDate }
  */
-export default function BeautifulInvoice({ booking, bookingId, bookingDate }) {
+export default function BeautifulInvoice({ booking, bookingId, bookingDate,invoiceNumber }) {
   // Helper for formatting
   const formatDate = (date) => {
     if (!date) return "";

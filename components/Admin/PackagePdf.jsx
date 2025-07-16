@@ -1,8 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast"
 import { Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 const PackagePdf = ({ productData, packageId }) => {
   // State for PDF entries
   const [pdfRows, setPdfRows] = useState([]);
@@ -10,252 +11,262 @@ const PackagePdf = ({ productData, packageId }) => {
   const [uploadingIdx, setUploadingIdx] = useState(null);
   const [pdfLog, setPdfLog] = useState([]); // [{ name, url }]
   const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
-  const handleDeleteRow = (idx) => {
-    if (pdfRows.length === 1) return;
-    setPdfRows(rows => rows.filter((_, i) => i !== idx));
-  }
+  const [newPdf, setNewPdf] = useState({ name: "", file: null });
+  const [uploading, setUploading] = useState(false);
   const productName = productData?.title || "";
   console.log(pdfRows)
-  // Add more PDF row
-  const handleAddRow = () => setPdfRows([...pdfRows, { name: "", file: null }]);
-  // Remove a row
-  // Handle input change
-  const handleChange = (idx, field, value) =>
-    setPdfRows(rows => rows.map((row, i) => (i === idx ? { ...row, [field]: value } : row)));
   // Cloudinary PDF upload handler
-  const handlePdfUpload = async (file, idx) => {
+  const handlePdfUpload = async (file) => {
     if (!file) return;
-    if (file.type !== "application/pdf") {
+    if (
+      file.type !== "application/pdf" ||
+      !file.name.toLowerCase().endsWith(".pdf")
+    ) {
       toast.error("Only PDF files are allowed!");
       return;
     }
-    if (!pdfRows[idx]?.name || pdfRows[idx].name.trim() === "") {
+    if (!newPdf.name.trim()) {
       toast.error("First enter the PDF title before uploading the file.");
       return;
     }
-    setUploadingIdx(idx);
-    setSaving(true);
+    setUploading(true);
     try {
       const formData = new FormData();
-      formData.append('file', file);
-      // Pass the PDF name as 'title' for filename use
-      formData.append('title', pdfRows[idx]?.name || file.name || 'Untitled');
-      // Optionally: formData.append('upload_preset', 'your_upload_preset');
-      const res = await fetch('/api/uploadPdf', {
-        method: 'POST',
+      formData.append("file", file);
+      formData.append("title", newPdf.name || file.name || "Untitled");
+      const res = await fetch("/api/uploadPdf", {
+        method: "POST",
         body: formData,
       });
-      if (!res.ok) throw new Error('PDF upload failed');
+      if (!res.ok) throw new Error("PDF upload failed");
       const result = await res.json();
-      // Update the PDF row with Cloudinary url and key
-      setPdfRows(rows =>
-        rows.map((row, i) =>
-          i === idx ? { ...row, file, url: result.url, key: result.key } : row
-        )
-      );
-      // Optionally show a toast
-      toast.success('PDF uploaded successfully');
+      setNewPdf(prev => ({
+        ...prev,
+        url: result.secure_url || result.url,
+        key: result.public_id || result.key,
+      }));
+      toast.success("PDF uploaded successfully");
     } catch (err) {
-      toast.error('PDF upload failed');
+      toast.error("PDF upload failed");
     } finally {
-      setSaving(false);
-      setUploadingIdx(null);
+      setUploading(false);
     }
   };
+// State for editing
+const [editIdx, setEditIdx] = useState(null);
+const [editName, setEditName] = useState("");
+const [editFile, setEditFile] = useState(null);
+const [editUploading, setEditUploading] = useState(false);
+const [editFileUrl, setEditFileUrl] = useState("");
+const [editFileKey, setEditFileKey] = useState("");
 
-  // Save handler to upload PDF data to DB
-  const handleSave = async e => {
+// Start editing
+const handleEdit = (idx, row) => {
+  setEditIdx(idx);
+  setEditName(row.name);
+  setEditFile(null);
+  setEditFileUrl("");
+  setEditFileKey("");
+};
+
+// Handle file change in edit
+const handleEditFileChange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.type !== "application/pdf" || !file.name.toLowerCase().endsWith(".pdf")) {
+    toast.error("Only PDF files are allowed!");
+    return;
+  }
+  setEditUploading(true);
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("title", editName || file.name || "Untitled");
+    const res = await fetch("/api/uploadPdf", {
+      method: "POST",
+      body: formData,
+    });
+    if (!res.ok) throw new Error("PDF upload failed");
+    const result = await res.json();
+    setEditFile(file);
+    setEditFileUrl(result.url);
+    setEditFileKey(result.key);
+    toast.success("PDF uploaded for edit");
+  } catch (err) {
+    toast.error("PDF upload failed");
+  }
+  setEditUploading(false);
+};
+
+// Save edit
+const handleEditSave = async (row) => {
+  try {
+    const body = { id: row._id, name: editName };
+    if (editFileUrl && editFileKey) {
+      body.url = editFileUrl;
+      body.key = editFileKey;
+    }
+    const res = await fetch('/api/packagePdf', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.success) {
+      toast.success("PDF updated");
+      fetchAllPdfs();
+      setEditIdx(null);
+      setEditName("");
+      setEditFile(null);
+      setEditFileUrl("");
+      setEditFileKey("");
+    } else {
+      toast.error(data.error || "Failed to update");
+    }
+  } catch {
+    toast.error("Failed to update");
+  }
+};
+  const handleSave = async (e) => {
     e.preventDefault();
-    // Check for missing fields before saving
-    // Only submit rows that have BOTH name and url
-    const rowsToSave = pdfRows.filter(row => row.name && row.url);
-    if (rowsToSave.length === 0) {
-      toast.error("Please enter both a PDF name and upload a PDF file for every row before saving.");
+    if (!newPdf.name || !newPdf.url || !newPdf.key) {
+      toast.error("Please upload a PDF and enter a name before saving.");
       return;
     }
     setSaving(true);
-    let allSuccess = true;
-    for (const row of rowsToSave) {
-      // Only save if not already in DB (no _id)
-      if (row.url && !row._id) {
-        try {
-          const res = await fetch('/api/packagePdf', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              packageId,
-              name: row.name,
-              url: row.url,
-              key: row.key
-            })
-          });
-          const result = await res.json();
-          if (!result.success) {
-            allSuccess = false;
-            toast.error(result.error || 'Failed to save PDF');
-          } else {
-            toast.success('PDF saved to database');
-            setPdfLog(log => [...log, { name: row.name, url: row.url, key: row.key }]);
-          }
-        } catch (err) {
-          allSuccess = false;
-          toast.error('Error saving PDF to DB');
-        }
+    try {
+      const res = await fetch('/api/packagePdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          packageId,
+          name: newPdf.name,
+          url: newPdf.url,
+          key: newPdf.key
+        })
+      });
+      const result = await res.json();
+      if (!result.success) {
+        toast.error(result.error || 'Failed to save PDF');
+      } else {
+        toast.success("PDF saved!");
+        setNewPdf({ name: "", file: null, url: "", key: "" });
+        fetchAllPdfs();
       }
-    }
-    if (allSuccess) {
-      // Refetch all PDFs from the backend to update the UI with all saved PDFs
-      try {
-        const res = await fetch(`/api/packagePdf?packageId=${packageId}`);
-        const data = await res.json();
-        if (data.success && Array.isArray(data.data)) {
-          let newRows = data.data.map(pdf => ({
-            _id: pdf._id,
-            name: pdf.name,
-            url: pdf.url,
-            key: pdf.key,
-            file: null
-          }));
-          // Always show at least one empty row if no PDFs exist
-          if (newRows.length === 0) {
-            newRows = [{ name: '', file: null }];
-          } else if (!newRows.some(row => !row.name && !row.url)) {
-            newRows.push({ name: '', file: null });
-          }
-          setPdfRows(newRows);
-        } else {
-          setPdfRows([{ name: '', file: null }]);
-        }
-      } catch {
-        setPdfRows([{ name: '', file: null }]);
-      }
+    } catch (err) {
+      toast.error('Error saving PDF to DB');
     }
     setSaving(false);
   };
-
-
-  // View PDF handler
-  const handleView = url => setSelectedPdfUrl(url);
-
-  // Fetch PDFs for this package on mount
-  React.useEffect(() => {
-    async function fetchPdfs() {
-      try {
-        const res = await fetch(`/api/packagePdf?packageId=${packageId}`);
-        const data = await res.json();
-        if (data.success && Array.isArray(data.data)) {
-          let newRows = data.data.map(pdf => ({
-            _id: pdf._id,
-            name: pdf.name,
-            url: pdf.url,
-            key: pdf.key,
-            file: null
-          }));
-          // Always show at least one empty row if no PDFs exist
-          if (newRows.length === 0) {
-            newRows = [{ name: '', file: null }];
-          } else if (!newRows.some(row => !row.name && !row.url)) {
-            newRows.push({ name: '', file: null });
-          }
-          setPdfRows(newRows);
-        } else {
-          setPdfRows([{ name: '', file: null }]);
-        }
-      } catch {
-        setPdfRows([{ name: "", file: null }]);
-      }
+  const fetchAllPdfs = async () => {
+    const res = await fetch(`/api/packagePdf?packageId=${packageId}`);
+    const data = await res.json();
+    if (data.success && Array.isArray(data.data)) {
+      setPdfRows(data.data);
     }
-    fetchPdfs();
-  }, [packageId]);
+  };
 
+  React.useEffect(() => {
+    fetchAllPdfs();
+  }, [packageId]);
+  // Modal state for PDF delete
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [rowToDelete, setRowToDelete] = useState(null);
+
+  const handleDeleteRow = (row) => {
+    setRowToDelete(row);
+    setShowDeleteModal(true);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setRowToDelete(null);
+  };
+
+  const [deleting, setDeleting] = useState(false);
+
+  const confirmDelete = async () => {
+    if (!rowToDelete) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/packagePdf?id=${rowToDelete._id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("PDF deleted");
+        fetchAllPdfs();
+      } else {
+        toast.error(data.error || "Failed to delete");
+      }
+    } catch {
+      toast.error("Failed to delete");
+    }
+    setDeleting(false);
+    setShowDeleteModal(false);
+    setRowToDelete(null);
+  };
+
+  const inputRef = useRef();
   return (
-    <div className="max-w-2xl mx-auto mt-6">
-      <h2 className="text-xl font-bold underline mb-2">Upload PDF</h2>
+    <>
+      <div className="max-w-2xl mx-auto mt-6">
+        <h2 className="text-xl font-bold underline mb-2">Upload PDF</h2>
       <form onSubmit={handleSave} className="space-y-4">
-        {pdfRows.map((row, idx) => (
+        <div className="flex items-center gap-2 mb-3 bg-white rounded-lg shadow-sm px-2 py-2 border border-blue-100">
+          <input
+            type="text"
+            value={newPdf.name}
+            onChange={e => setNewPdf({ ...newPdf, name: e.target.value })}
+            placeholder="PDF Name"
+            className="bg-blue-50 text-gray-900 px-3 py-2 rounded-l-md border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 flex-1 font-medium text-base"
+            style={{ minWidth: 0 }}
+          />
+          <input
+            type="file"
+            accept="application/pdf"
+            className="hidden"
+            ref={inputRef}
+            onChange={async e => {
+              const file = e.target.files[0];
+              if (!file) return;
+              setNewPdf(prev => ({ ...prev, file }));
+              await handlePdfUpload(file);
+            }}
+          />
+
           <div
-            key={row._id || idx}
-            className="flex items-center gap-2 mb-3 bg-white rounded-lg shadow-sm px-2 py-2 border border-blue-100"
+            className={`transition-colors duration-150 px-4 py-2 rounded-md font-semibold text-base flex items-center justify-center
+              ${uploading ? 'bg-green-600 text-white' : 'bg-black text-white hover:bg-blue-700'}
+            `}
+            style={{ minWidth: 200, cursor: "pointer" }}
+            onClick={() => inputRef.current && inputRef.current.click()}
           >
-            <input
-              type="text"
-              value={row.name}
-              onChange={e => handleChange(idx, "name", e.target.value)}
-              placeholder="PDF Name"
-              className="bg-blue-50 text-gray-900 px-3 py-2 rounded-l-md border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 flex-1 font-medium text-base"
-              style={{ minWidth: 0 }}
-            />
-            <input
-              type="file"
-              accept="application/pdf"
-              className="hidden"
-              onChange={e => handlePdfUpload(e.target.files[0], idx)}
-            />
-            <div
-              className={`transition-colors duration-150 px-4 py-2 rounded-md font-semibold text-base flex items-center justify-center
-    ${row.file || row.url ? 'bg-green-600 text-white' : 'bg-black text-white hover:bg-blue-700'}
-  `}
-              style={{ minWidth: 200 }}
-            >
-              {uploadingIdx === idx ? (
+            {uploading
+              ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="animate-spin px-2" />
                   Uploading...
                 </span>
-              ) : row.url ? (
-                <span className="flex flex-col items-center gap-1">
-                  <span className="flex items-center gap-1">
-                    <svg className="w-5 h-5 text-white inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                    {row.name || (row.file && row.file.name) || 'Uploaded!'}
-                  </span>
-                </span>
-              ) : row.file ? (
-                <span className="flex flex-col items-center gap-1">
-                  <span className="flex items-center gap-1">
-                    <svg className="w-5 h-5 text-white inline-block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                    {row.name || row.file.name || 'Uploaded!'}
-                  </span>
-                </span>
-              ) : (
-                row.name ? `Upload: ${row.name}` : "Upload PDF"
-              )}
-            </div>
-            {row.url && (
-              <button
-                type="button"
-                className="ml-2 text-blue-700 hover:text-blue-900"
-                title="View PDF"
-                onClick={() => handleView(row.url)}
-                style={{ background: 'none', border: 'none', padding: 0, display: 'flex', alignItems: 'center' }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-              </button>
-            )}
-            {pdfRows.length > 1 && (
-              <button
-                type="button"
-                className="ml-1 bg-red-600 hover:bg-red-800 text-white w-9 h-9 flex items-center justify-center rounded-full text-xl font-bold shadow"
-                onClick={() => handleDeleteRow(idx)}
-                tabIndex={-1}
-                aria-label="Delete PDF Row"
-                title="Delete this row"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-              </button>
-            )}
-            {idx === pdfRows.length - 1 && (
-              <button
-                type="button"
-                className="ml-2 bg-blue-500 hover:bg-blue-700 text-white w-9 h-9 flex items-center justify-center rounded-full text-2xl font-bold shadow"
-                onClick={handleAddRow}
-                tabIndex={-1}
-                aria-label="Add PDF Row"
-              >
-                +
-              </button>
-            )}
+              )
+              : (newPdf.file?.name || "Upload PDF")}
           </div>
-        ))}
+        </div>
+        {/* PDF Preview Section for main upload */}
+        {newPdf.file && newPdf.url && (
+          <div className="mb-4 flex flex-col items-start">
+            <div className="font-medium text-gray-700 mb-1">Selected PDF: {newPdf.file.name}</div>
+            <iframe
+              src={newPdf.url}
+              width="400px"
+              height="300px"
+              style={{ border: '1px solid #ccc', borderRadius: 6 }}
+              title="PDF Preview"
+            />
+          </div>
+        )}
+
         <button
           type="submit"
           className="w-full bg-black text-white py-2 font-semibold text-lg mt-2"
@@ -264,6 +275,66 @@ const PackagePdf = ({ productData, packageId }) => {
           {saving ? "Saving..." : "Data Save"}
         </button>
       </form>
+      <table className="w-full mt-6 border">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>View</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {pdfRows.map((row, idx) => (
+            <tr key={row.key || idx}>
+              <td className="px-2 py-2 border border-black text-center">
+                {editIdx === idx ? (
+                  <>
+                    <input
+                      value={editName}
+                      onChange={e => setEditName(e.target.value)}
+                      className="border px-1"
+                    />
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      style={{ display: 'inline-block', marginLeft: 8 }}
+                      onChange={e => handleEditFileChange(e)}
+                      disabled={editUploading}
+                    />
+                    {editUploading && <Loader2 className="animate-spin inline-block ml-2" />}
+                    {/* PDF Preview Section for edit */}
+                    {(editFile && editFileUrl) && (
+                      <div className="mt-2">
+                        <div className="text-xs text-gray-700 mb-1">Selected PDF: {editFile.name}</div>
+                        <iframe
+                          src={editFileUrl}
+                          width="300px"
+                          height="200px"
+                          style={{ border: '1px solid #ccc', borderRadius: 6 }}
+                          title="PDF Preview"
+                        />
+                      </div>
+                    )}
+                    <button onClick={() => handleEditSave(row)} className="ml-2 text-green-600" disabled={editUploading}>Save</button>
+                    <button onClick={() => setEditIdx(null)} className="ml-2 text-gray-600" disabled={editUploading}>Cancel</button>
+                  </>
+                ) : (
+                  <>
+                    {row.name}
+                    <button onClick={() => handleEdit(idx, row)} className="ml-2 text-blue-600">Edit</button>
+                  </>
+                )}
+              </td>
+              <td className="px-2 py-2 border border-black text-center">
+                <a href={row.url} target="_blank" rel="noopener noreferrer" className="text-white font-bold border p-1 rounded bg-blue-400">View</a>
+              </td>
+              <td className="px-2 py-2 border border-black text-center">
+                <button onClick={() => handleDeleteRow(row)} className="text-white font-bold border p-1 rounded bg-red-400">Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
       {/* Modal PDF Viewer */}
       {selectedPdfUrl && (
         <div style={{
@@ -283,6 +354,24 @@ const PackagePdf = ({ productData, packageId }) => {
         </div>
       )}
     </div>
+
+      {/* Delete PDF Modal */}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete PDF</DialogTitle>
+          </DialogHeader>
+          <p>Are you sure you want to delete this PDF?</p>
+          <DialogFooter>
+            <Button variant="secondary" onClick={cancelDelete}>Cancel</Button>
+            <Button variant="destructive" onClick={confirmDelete} disabled={deleting}>
+              {deleting ? <Loader2 className="animate-spin mr-2 inline-block" /> : null}
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

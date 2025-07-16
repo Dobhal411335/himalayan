@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 import { NextResponse } from 'next/server';
 
@@ -29,10 +30,8 @@ export async function POST(req) {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           resource_type: 'raw',
-          folder: 'pdfs',
-          use_filename: true,
-          filename_override: filename,
-          unique_filename: false,
+          type: 'upload',
+          public_id: `pdfs/${filename}`  // KEEP ".pdf"
         },
         (err, result) => {
           if (err) reject(err);
@@ -41,6 +40,7 @@ export async function POST(req) {
       );
       uploadStream.end(buffer);
     });
+    console.log(result)
 
     return NextResponse.json({ url: result.secure_url, key: result.public_id }, { status: 200 });
 
@@ -51,25 +51,26 @@ export async function POST(req) {
 
 // DELETE: Remove PDF from Cloudinary
 export async function DELETE(req) {
-    try {
-        const { publicId } = await req.json();
-        if (!publicId) {
-            return NextResponse.json({ error: 'Missing publicId' }, { status: 400 });
-        }
-
-        const result = await cloudinary.uploader.destroy(publicId, {
-            resource_type: 'raw', // 👈 this must match
-        });
-
-        if (result.result !== 'ok') {
-            return NextResponse.json(
-                { error: 'Failed to delete PDF from Cloudinary', cloudinaryResult: result },
-                { status: 500 }
-            );
-        }
-
-        return NextResponse.json({ success: true }, { status: 200 });
-    } catch (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+  try {
+    const { publicId } = await req.json();
+    if (!publicId) {
+      return NextResponse.json({ error: 'Missing publicId' }, { status: 400 });
     }
+
+    const result = await cloudinary.uploader.destroy(publicId, {
+      resource_type: 'raw', 
+      type: 'upload',
+    });
+
+    if (result.result !== 'ok') {
+      return NextResponse.json(
+        { error: 'Failed to delete PDF from Cloudinary', cloudinaryResult: result },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }

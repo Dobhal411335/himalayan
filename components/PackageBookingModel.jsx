@@ -6,38 +6,11 @@ import InvoiceModal from './InvoiceModal';
 const stateList = [
     "Uttarakhand", "Uttar Pradesh", "Delhi", "Haryana", "Punjab", "Himachal Pradesh", "Rajasthan", "Maharashtra", "Karnataka", "Tamil Nadu", "Kerala", "West Bengal", "Gujarat", "Madhya Pradesh", "Bihar", "Jharkhand", "Goa", "Assam", "Odisha", "Chhattisgarh", "Telangana", "Andhra Pradesh", "Sikkim", "Tripura", "Nagaland", "Manipur", "Mizoram", "Meghalaya", "Arunachal Pradesh", "Jammu & Kashmir", "Ladakh"
 ];
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
-import { Bed, Phone, ParkingCircle, ShowerHead, Wifi, Tv, Bath, Elevator, Luggage, Coffee, Snowflake, Utensils } from 'lucide-react';
-const amenityIcons = {
-    'Restaurant': <Utensils size={16} />,
-    'Bed': <Bed size={16} />,
-    'Room Phone': <Phone size={16} />,
-    'Parking': <ParkingCircle size={16} />,
-    'Shower': <ShowerHead size={16} />,
-    'Towel In Room': (
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M8 16V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v10M4 20h16M4 20a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2M4 20h16" /></svg>
-    ),
-    'Wi-Fi': <Wifi size={16} />,
-    'Television': <Tv size={16} />,
-    'Bath Tub': <Bath size={16} />,
-    'Elevator': (
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <rect x="6" y="3" width="12" height="18" rx="2" strokeWidth="2" />
-            <path d="M9 9h6M9 13h6M12 16v2" strokeWidth="2" />
-            <path d="M10.5 6l1.5-2 1.5 2" strokeWidth="2" />
-        </svg>
-    ),
-    'Laggage': <Luggage size={16} />,
-    'Tea Maker': <Coffee size={16} />,
-    'Room AC': <Snowflake size={16} />,
-};
 import toast from 'react-hot-toast';
-// For SSR rendering of invoice
-// Will be dynamically imported when needed
-
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
-const PackageBookingModel = ({ room, onClose, type }) => {
+const PackageBookingModel = ({ packages, onClose, type }) => {
+    console.log(packages)
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [showInvoice, setShowInvoice] = useState(false);
@@ -46,15 +19,19 @@ const PackageBookingModel = ({ room, onClose, type }) => {
     const router = useRouter();
     const pathname = usePathname();
     const [openAccordion, setOpenAccordion] = React.useState(null);
-    const [openEditSection, setOpenEditSection] = React.useState(null);
+    const [showFullDesc, setShowFullDesc] = React.useState(false);
+    const desc = packages.description?.overview || "No Description";
+    const words = desc.split(' ');
+    const [uploadedID, setUploadedID] = useState(null); // { url, key }
+    const [selectedID, setSelectedID] = useState(null); // url
+    const [uploadingID, setUploadingID] = useState(false);
+    const [uploadProgressID, setUploadProgressID] = useState(0);
     // Step state
     const [step, setStep] = useState(1);
     // Form data state
     const [form, setForm] = useState({
         arrival: '',
-        departure: '',
-        roomNo: '',
-        days: 1,
+        id: '',
         firstName: '',
         lastName: '',
         email: '',
@@ -71,8 +48,8 @@ const PackageBookingModel = ({ room, onClose, type }) => {
         offers: [],
     });
     const [invoiceData, setInvoiceData] = useState(null);
-    const roomName = room?.title || 'Room Name';
-    const roomImg = room?.mainPhoto?.url || '/placeholder.jpeg';
+    const packageName = packages?.title || 'Room Name';
+    const packageImg = packages?.gallery?.mainImage?.url || '/placeholder.jpeg';
     // Offer list
     const offerList = [
         'Rafting',
@@ -86,7 +63,8 @@ const PackageBookingModel = ({ room, onClose, type }) => {
 
     // Handlers
     const handleChange = (field, value) => {
-        setForm(prev => ({ ...prev, [field]: value }));
+        setForm(prev => ({ ...prev,
+            [field]: value }));
     }
     const handleOfferToggle = offer => setForm(prev => ({ ...prev, offers: prev.offers.includes(offer) ? prev.offers.filter(o => o !== offer) : [...prev.offers, offer] }));
 
@@ -99,9 +77,7 @@ const PackageBookingModel = ({ room, onClose, type }) => {
         let stepErrors = {};
         if (step === 1) {
             if (!form.arrival) stepErrors.arrival = 'Arrival date is required';
-            if (!form.departure) stepErrors.departure = 'Departure date is required';
-            if (!form.roomNo) stepErrors.roomNo = 'Number of room is required';
-            if (!form.days || form.days < 1) stepErrors.days = 'Number of days must be at least 1';
+            if (!form.id) stepErrors.id = 'ID is required';
         } else if (step === 2) {
             if (!form.firstName) stepErrors.firstName = 'First name is required';
             if (!form.lastName) stepErrors.lastName = 'Last name is required';
@@ -132,6 +108,53 @@ const PackageBookingModel = ({ room, onClose, type }) => {
         setErrors({});
         setStep(step - 1);
     };
+    const handleIDChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setUploadingID(true);
+        setUploadProgressID(0);
+        try {
+            const formData = new FormData();
+            formData.append("file", file);
+            const res = await fetch("/api/cloudinary", {
+                method: "POST",
+                body: formData,
+            });
+            if (!res.ok) throw new Error("ID upload failed");
+            const result = await res.json();
+            setUploadedID(result); // { url, key }
+            setSelectedID(result.url);
+            setForm(prev => ({
+                ...prev,
+                id: result.url // or { url: result.url, key: result.key } if you want more info
+              }));
+            toast.success("Document uploaded successfully");
+        } catch (err) {
+            toast.error("Document upload failed");
+        } finally {
+            setUploadingID(false);
+            setUploadProgressID(0);
+        }
+    };
+    const handleRemoveID = async () => {
+        setUploadedID(null);
+        setSelectedID(null);
+        if (uploadedID && uploadedID.key) {
+            try {
+                const res = await fetch('/api/cloudinary', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ publicId: uploadedID.key }),
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    toast.error('Cloudinary error: ' + (data.error || 'Failed to delete document from Cloudinary'));
+                }
+            } catch (err) {
+                toast.error('Failed to delete document from Cloudinary');
+            }
+        }
+    };
 
     let stepContent;
     if (step === 1) {
@@ -152,43 +175,57 @@ const PackageBookingModel = ({ room, onClose, type }) => {
                         />
                         {errors.arrival && <div className="text-red-600 text-xs mt-1">{errors.arrival}</div>}
                     </div>
-                    <div className="font-bold text-md text-[#8a6a2f] mb-4">Departure Date</div>
-                    <div className="flex flex-col items-center mb-8">
-                        <input
-                            type="date"
-                            className="w-full bg-gray-200 rounded-full px-5 py-2 text-md focus:outline-none appearance-none"
-                            value={form.departure}
-                            onChange={e => handleChange('departure', e.target.value)}
-                        />
-                        {errors.departure && <div className="text-red-600 text-xs mt-1">{errors.departure}</div>}
-                    </div>
-                    <div className="font-bold text-md text-[#8a6a2f] mb-4">Total Number Of Room</div>
-                    <div className="flex flex-col items-center mb-8">
-                        <input
-                            id="roomNo"
-                            type="text"
-                            inputMode="numeric"
-                            pattern="\d*"
-                            maxLength={10}
-                            placeholder="Enter Number Of Room"
-                            className="w-full bg-gray-200 rounded-full px-5 py-2 text-md"
-                            value={form.roomNo}
-                            onChange={(e) => {
-                                const val = e.target.value;
-                                if (/^\d*$/.test(val) && val.length <= 10) {
-                                    handleChange('roomNo', val);
-                                }
-                            }}
-                        />
-                        {errors.roomNo && <div className="text-red-600 text-xs mt-1">{errors.roomNo}</div>}
-                    </div>
 
-                    <div className="font-bold text-md text-[#8a6a2f] mb-3">Total Days For Stay</div>
-                    <div className="flex items-center bg-gray-200 rounded-full px-2 py-2 w-full mb-8">
-                        <button className="text-2xl px-4" onClick={() => handleChange('days', Math.max(1, (form.days || 1) - 1))}>-</button>
-                        <span className="flex-1 text-center text-2xl font-semibold">{form.days || 1}</span>
-                        {errors.days && <div className="text-red-600 text-xs mt-1">{errors.days}</div>}
-                        <button className="text-2xl px-4" onClick={() => handleChange('days', (form.days || 1) + 1)}>+</button>
+                    <div style={{ background: "#fff8ee", padding: 24, borderRadius: 8 }}>
+                        <div style={{ fontWeight: 600, color: "#6d4b1e", marginBottom: 10 }}>
+                            Kindly Provide Government-Approved ID for Office Use
+                        </div>
+                        {selectedID ? (
+                            <div style={{ marginBottom: 10 }}>
+                                <img src={selectedID} alt="Uploaded ID" style={{ maxWidth: 180, borderRadius: 8, marginBottom: 8 }} />
+                                <div>
+                                    <button onClick={handleRemoveID} style={{ color: "#fff", background: "#e74c3c", border: "none", padding: "6px 14px", borderRadius: 6 }}>
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                        ): uploadingID ? (
+                        <div style={{
+                            background: "#ff4d1c",
+                            color: "#fff",
+                            fontWeight: 600,
+                            fontSize: 22,
+                            padding: "10px 0",
+                            borderRadius: 28,
+                            textAlign: "center",
+                            marginBottom: 10
+                        }}>
+                            Uploading...
+                        </div>
+                        ) : (
+                        <label style={{ display: "block", marginBottom: 10 }}>
+                            <input type="file" accept="image/*" onChange={handleIDChange} style={{ display: "none" }} disabled={uploadingID} />
+                            <div style={{
+                                background: "#ff4d1c",
+                                color: "#fff",
+                                fontWeight: 600,
+                                fontSize: 22,
+                                padding: "10px 0",
+                                borderRadius: 28,
+                                textAlign: "center",
+                                cursor: "pointer"
+                            }}>
+                                Uplode From Here
+                            </div>
+                        </label>
+)}
+                        <div style={{ fontSize: 15, marginTop: 8 }}>
+                            We request you to submit any one of the following valid government-issued identification documents for official records:
+                            <br />
+                            <span style={{ fontWeight: 600 }}>Aadhar Card, Passport, Driving Licence, Voter ID</span>
+                            <br />
+                            Your cooperation is appreciated.
+                        </div>
                     </div>
                 </div>
                 <div className="flex gap-2 mt-10">
@@ -375,19 +412,9 @@ const PackageBookingModel = ({ room, onClose, type }) => {
                 value: form.arrival || 'Not set',
             },
             {
-                key: 'departure',
-                label: 'Departure Date',
-                value: form.departure || 'Not set',
-            },
-            {
-                key: 'roomNo',
-                label: 'Number of Room',
-                value: form.roomNo || 'Not set',
-            },
-            {
-                key: 'days',
-                label: 'Number of Days',
-                value: form.days || 'Not set',
+                key: 'Document Image',
+                label: 'Document Image',
+                value: form.id || 'Not Uploaded',
             },
             {
                 key: 'basic',
@@ -466,7 +493,7 @@ const PackageBookingModel = ({ room, onClose, type }) => {
                                 return;
                             }
                             try {
-                                if ((room?.type || type) === 'room') {
+                                if ((packages?.type || type) === 'packages') {
                                     function generateBookingId() {
                                         const now = new Date();
                                         const pad = n => n.toString().padStart(2, '0');
@@ -474,26 +501,12 @@ const PackageBookingModel = ({ room, onClose, type }) => {
                                         return `HWR-${dateStr}`;
                                     }
                                     const bookingIdVal = generateBookingId();
-                                    const priceList = (room.prices && room.prices[0] && room.prices[0].prices) || [];
-                                    const mainPrice = priceList.find(p => p.type === '02 Pax') || priceList.find(p => p.type === '01 Pax') || priceList[0] || {};
-                                    const baseAmount = mainPrice?.amount || 0;
-                                    const cgst = mainPrice?.cgst || 0;
-                                    const sgst = mainPrice?.sgst || 0;
-                                    const oldPrice = mainPrice?.oldPrice || 0;
-
-                                    const extrabed = priceList.find(p => p.type === 'Extra Bed') || {};
-                                    const extrabedAmount = extrabed?.amount || 0;
-                                    const extrabedOldPrice = extrabed?.oldPrice || 0;
-                                    const extrabedCgst = extrabed?.cgst || 0;
-                                    const extrabedSgst = extrabed?.sgst || 0;
-                                    const hasExtraBed = extrabedAmount > 0;
-
-                                    const totalCgst = cgst + (hasExtraBed ? extrabedCgst : 0);
-                                    const totalSgst = sgst + (hasExtraBed ? extrabedSgst : 0);
-                                    const totalTaxAmount = totalCgst + totalSgst;
-                                    const subtotal = baseAmount + (hasExtraBed ? extrabedAmount : 0);
-                                    const totalTaxPercent = subtotal > 0 ? ((totalTaxAmount / subtotal) * 100).toFixed(2) : 0;
-                                    const finalAmount = subtotal + totalTaxAmount;
+                                    const packagesPrices = {
+                                        onePerson: Array.isArray(packages?.packagePrice?.onePerson) ? packages.packagePrice.onePerson : [],
+                                        twoPerson: Array.isArray(packages?.packagePrice?.twoPerson) ? packages.packagePrice.twoPerson : [],
+                                        eightPerson: Array.isArray(packages?.packagePrice?.eightPerson) ? packages.packagePrice.eightPerson : [],
+                                      };
+                                   
 
                                     const invoiceNumber = `INV${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
@@ -504,31 +517,10 @@ const PackageBookingModel = ({ room, onClose, type }) => {
                                         bookingId: bookingIdVal,
                                         invoiceNumber,
                                         userId: session.user.id || session.user._id,
-                                        roomId: room?._id,
-                                        type: 'room',
-                                        roomName: room?.title || '',
-                                        priceBreakdown: {
-                                            main: {
-                                                type: mainPrice?.type || '',
-                                                amount: baseAmount,
-                                                oldPrice: oldPrice,
-                                                cgst: cgst,
-                                                sgst: sgst,
-                                            },
-                                            extraBed: hasExtraBed ? {
-                                                type: extrabed?.type || '',
-                                                amount: extrabedAmount,
-                                                oldPrice: extrabedOldPrice,
-                                                cgst: extrabedCgst,
-                                                sgst: extrabedSgst,
-                                            } : null,
-                                        },
-                                        subtotal,
-                                        totalCgst,
-                                        totalSgst,
-                                        totalTaxPercent,
-                                        totalTaxAmount,
-                                        finalAmount,
+                                        packagesId: packages?._id,
+                                        type: 'packages',
+                                        packageName: packages?.title || '',
+                                        packagesPrices,                
                                     };
                                     const res = await fetch('/api/bookingDetails', {
                                         method: 'POST',
@@ -552,6 +544,7 @@ const PackageBookingModel = ({ room, onClose, type }) => {
                                                         booking={payload}
                                                         bookingId={bookingIdVal}
                                                         bookingDate={new Date()}
+                                                        invoiceNumber={payload.invoiceNumber}
                                                     />
                                                 );
                                                 const resEmail = await fetch('/api/brevo', {
@@ -559,8 +552,8 @@ const PackageBookingModel = ({ room, onClose, type }) => {
                                                     headers: { 'Content-Type': 'application/json' },
                                                     body: JSON.stringify({
                                                         to: form.email,
-                                                        subject: `Your Booking Invoice - ${room?.title || 'Himalayan Wellness Retreat'}`,
-                                                        invoiceNumber: payload.invoiceNumber,
+                                                        subject: `Your Booking Invoice - ${packages?.title || 'Himalayan Wellness Retreat'}`,
+                                                      
                                                         htmlContent: invoiceHtml,
                                                     })
                                                 });
@@ -604,6 +597,7 @@ const PackageBookingModel = ({ room, onClose, type }) => {
                 booking={invoiceData}
                 bookingId={bookingId}
                 bookingDate={new Date()}
+                invoiceNumber={invoiceData.invoiceNumber}
             />
         );
     }
@@ -669,121 +663,115 @@ const PackageBookingModel = ({ room, onClose, type }) => {
                 {/* Right: Room Summary */}
                 <div className="bg-white rounded-xl border border-gray-200 shadow-md p-2 max-w-[350px] w-full flex flex-col">
                     <div className="w-full h-60 relative mb-3 rounded-lg overflow-hidden">
-                        {/* <Image src={roomImg} alt={roomName} fill className="object-contain" /> */}
+                        <Image src={packageImg} alt={packageName} fill className="object-contain" />
                     </div>
                     <div className="p-2">
                         <div className="flex items-center justify-between">
-                            {/* <div className="font-bold text-md  mb-2">{roomName}</div> */}
-                            <button
-                                className="flex flex-col items-center justify-center bg-transparent border-0 p-0"
-                                style={{ outline: 'none' }}
-                                aria-label="Show reviews"
-                            >
-                                <div className="flex items-center">
-                                    {/* {[...Array(Math.round((room.reviews?.[0]?.rating || 5)))].map((_, i) => (
-                                        <Star key={i} size={13} color="#12b76a" fill="#12b76a" className="inline" />
-                                    ))} */}
-                                </div>
-                                <span className="text-xs text-gray-700 ml-1">
-                                    {/* Based On {room.reviews?.length || 0} Review{(room.reviews?.length || 0) !== 1 ? 's' : ''} */}
-                                </span>
-                            </button>
+                            <div className="font-bold text-md  mb-2">{packageName}</div>
+                            {packages?.code && (
+                                <span className="text-sm text-black my-2 md:my-0 w-fit font-mono bg-gray-100 px-2 py-1 rounded border border-gray-200">Code: {packages?.code}</span>
+                            )}
                         </div>
-                        <div className="text-gray-800 text-sm">
-                            {/* {(() => {
-                                const text = (room.paragraph || '').replace(/<[^>]+>/g, '');
-                                const words = text.split(' ');
-                                if (words.length > 15) {
-                                    return words.slice(0, 15).join(' ') + '...';
-                                }
-                                return text;
-                            })()} */}
+                        <div className="flex items-center gap-2 mb-3 md:mb-0">
+                            <span className="font-semibold flex items-center">
+                                {(() => {
+                                    if (Array.isArray(packages?.reviews) && packages.reviews.length > 0) {
+                                        const avg = packages.reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / packages.reviews.length;
+                                        return avg.toFixed(1);
+                                    }
+                                    return "0";
+                                })()} Rating</span>
+                            <span className="text-gray-700 text-sm">({packages.reviews?.length || 0} customer reviews)</span>
                         </div>
-                        <div className="font-semibold text-gray-800 text-sm mt-2">Room Amenities</div>
-                        <div className="flex gap-2 mb-1 text-lg">
-                            <TooltipProvider>
-                                <div className="flex gap-2 mb-1 text-md flex-wrap">
-                                    {/* {(room.amenities || []).map((am, i) => (
-                                        <Tooltip key={am._id || i}>
-                                            <TooltipTrigger asChild>
-                                                <span className="bg-gray-100 p-1 my-2 rounded flex items-center justify-center cursor-pointer">
-                                                    {amenityIcons[am.label]}
-                                                </span>
-                                            </TooltipTrigger>
-                                            <TooltipContent side="top">
-                                                {am.label}
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    ))} */}
-                                </div>
-                            </TooltipProvider>
-                        </div>
-                        {/* Occupancy & Extra Bed */}
-                        {/* {(() => {
-                            const priceList = (room.prices && room.prices[0] && room.prices[0].prices) || [];
+                        {(() => {
+
+                            if (desc === "No Description") {
+                                return <p className="text-gray-700 mb-4 max-w-lg">No Description</p>;
+                            }
+                            if (showFullDesc || words.length <= 10) {
+                                return (
+                                    <div className="text-gray-700 my-6 text-md max-w-lg">
+                                        <div dangerouslySetInnerHTML={{ __html: desc }} />
+                                        {words.length > 10 && (
+                                            <>
+                                                {' '}<button className="text-blue-600 underline ml-2" onClick={() => setShowFullDesc(false)}>Close</button>
+                                            </>
+                                        )}
+                                    </div>
+                                );
+                            }
                             return (
-                                <div className="flex gap-8 text-sm">
-                                    <span>
-                                        Max occupancy: {
-                                            priceList.some(p => p.type === '02 Pax')
-                                                ? '02 Pax'
-                                                : priceList.some(p => p.type === '01 Pax')
-                                                    ? '01 Pax'
-                                                    : 'N/A'
-                                        }
-                                    </span>
-                                    <span>
-                                        Extra bed available: {
-                                            priceList.some(p => p.type === 'Extra Bed') ? 'Yes' : 'No'
-                                        }
-                                    </span>
+                                <div className="text-gray-700 my-4 text-md max-w-lg">
+                                    <div dangerouslySetInnerHTML={{ __html: words.slice(0, 10).join(' ') + '...' }} />
+                                    <button className="text-blue-600 underline" onClick={() => setShowFullDesc(true)}>Read more</button>
                                 </div>
                             );
                         })()}
-                        {(() => {
-                            if (!room?.prices || !Array.isArray(room.prices) || room.prices.length === 0) {
-                                return (
-                                    <div className="text-red-600 font-semibold">No price data found for this room.<br />Check room.prices structure.</div>
-                                );
-                            }
-                            const priceList = (room.prices && room.prices[0] && room.prices[0].prices) || [];
-                            const mainPrice = priceList.find(p => p.type === '02 Pax') || priceList.find(p => p.type === '01 Pax') || priceList[0];
+                        <div className="mb-6">
+                            {/* Package Price Table */}
+                            <div className="text-green-800 font-bold text-sm mb-1 text-right">Package Price: Base Rate</div>
+                            <table className="w-full border-separate border-spacing-0">
+                                <thead>
+                                    <tr className="bg-orange-100">
+                                        <th className="text-green-800 text-sm font-semibold px-3 py-2 text-left rounded-tl-sm">Accommodation Type</th>
+                                        <th className="text-green-800 text-sm font-semibold px-3 py-2 text-left">In INR</th>
+                                        <th className="text-green-800 text-sm font-semibold px-3 py-2 text-left rounded-tr-lg">US Dollar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {/* One Person */}
 
-                            const baseAmount = mainPrice?.amount || 0;
-                            const oldPrice = mainPrice?.oldPrice || 0;
-                            const extrabed = priceList.find(p => p.type === 'Extra Bed');
-                            const extrabedAmount = extrabed?.amount || 0;
-                            const hasExtraBed = extrabedAmount > 0;
-                            return (
-                                <>
-                                    <div className="font-bold text-lg my-2">
-                                        Room Price
-                                        <span className="text-md text-gray-600">
-                                            <span className="float-right text-black flex items-center gap-2">
-                                                Rs&nbsp;{baseAmount.toLocaleString()}
-                                                {oldPrice > 0 && (
-                                                    <div className="text-sm text-gray-800 font-bold line-through">
-                                                        Rs&nbsp;{oldPrice.toLocaleString()}
-                                                    </div>
-                                                )}
-                                                / Night
-                                            </span>
-                                        </span>
-                                    </div>
-                                    <hr className="my-1 border-gray-300" />
-                                    {hasExtraBed && (
-                                        <div className="flex justify-between mt-1">
-                                            <span className='text-md font-bold'>Extra Bed Price</span>
-                                            <div className="flex items-center gap-2">
-                                                <span className='text-md text-black font-bold'>Rs&nbsp;{extrabedAmount.toLocaleString()}</span>
-                                            </div>
-                                        </div>
+                                    {Array.isArray(packages?.packagePrice?.onePerson) && packages?.packagePrice.onePerson.length > 0 && (
+                                        <>
+                                            <tr>
+                                                <td colSpan={3} className="font-semibold text-sm text-black text-start px-2">
+                                                    Base Price : 01 Person
+                                                </td>
+                                            </tr>
+                                            {packages?.packagePrice.onePerson.map((item, idx) => (
+                                                <tr key={`onePerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
+                                                    <td className="px-3 py-1">{item.type || "1 Person"}</td>
+                                                    <td className="px-3 py-1 border-l-2 border-red-500">{item.inr}</td>
+                                                    <td className="px-3 py-1 border-l-2 border-red-500">{item.usd}</td>
+                                                </tr>
+                                            ))}
+                                        </>
                                     )}
-                                    <hr className="my-1 border-gray-300" />
-                                </>
-                            );
-
-                        })()} */}
+                                    {/* Two Person */}
+                                    {Array.isArray(packages?.packagePrice?.twoPerson) && packages?.packagePrice.twoPerson.length > 0 && (
+                                        <>
+                                            <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm">
+                                                Base Price : 02 Person
+                                            </td>
+                                            </tr>
+                                            {packages?.packagePrice.twoPerson.map((item, idx) => (
+                                                <tr key={`twoPerson-${idx}`} className="bg-blue-100 border-y-2 border-white">
+                                                    <td className="px-3 py-1">{item.type || "2 Person"}</td>
+                                                    <td className="px-3 py-1 border-l-2 border-red-500">{item.inr}</td>
+                                                    <td className="px-3 py-1 border-l-2 border-red-500">{item.usd}</td>
+                                                </tr>
+                                            ))}
+                                        </>
+                                    )}
+                                    {/* Eight Person */}
+                                    {Array.isArray(packages?.packagePrice?.eightPerson) && packages?.packagePrice.eightPerson.length > 0 && (
+                                        <>
+                                            <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm">
+                                                Base Price : 08 Person
+                                            </td>
+                                            </tr>
+                                            {packages?.packagePrice.eightPerson.map((item, idx) => (
+                                                <tr key={`eightPerson-${idx}`} className="bg-blue-50 border-y-2 border-white">
+                                                    <td className="px-3 py-1">{item.type || "8 Person"}</td>
+                                                    <td className="px-3 py-1 border-l-2 border-red-500">{item.inr}</td>
+                                                    <td className="px-3 py-1 border-l-2 border-red-500">{item.usd}</td>
+                                                </tr>
+                                            ))}
+                                        </>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

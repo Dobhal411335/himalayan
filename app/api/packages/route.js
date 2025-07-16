@@ -52,6 +52,7 @@ export async function GET(req) {
         .populate('info')
         .populate('reviews')
         .populate('packagePrice')
+        .populate('PackagePdf')
       if (!packages || !packages.active) {
         return new Response(JSON.stringify({ error: 'packages not found' }), { status: 404 });
       }
@@ -72,6 +73,7 @@ export async function GET(req) {
         .populate('info')
         .populate('reviews')
         .populate('packagePrice')
+        .populate('PackagePdf')
       return new Response(JSON.stringify(packages), { status: 200 });
     }
   } catch (error) {

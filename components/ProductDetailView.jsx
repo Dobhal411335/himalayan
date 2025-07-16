@@ -22,7 +22,14 @@ import {
 import VisuallyHidden from '@/components/VisuallyHidden';
 import Autoplay from "embla-carousel-autoplay";
 import PackageBookingModel from "./PackageBookingModel";
+import { useSession } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
 export default function ProductDetailView({ product }) {
+  // ...other state
+  const [showPdfModal, setShowPdfModal] = useState(false);
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null);
+  const { data: session, status } = useSession();
+  const pathname = usePathname();
   console.log(product);
   // --- Ask An Expert Modal State ---
   const [showExpertModal, setShowExpertModal] = useState(false);
@@ -82,58 +89,17 @@ export default function ProductDetailView({ product }) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [showShareBox]);
 
-  const [quantity, setQuantity] = React.useState(1);
-  const [selectedSize, setSelectedSize] = React.useState(null);
-  const [selectedWeight, setSelectedWeight] = React.useState(null);
-  const [selectedColor, setSelectedColor] = React.useState(null);
   const [showFullDesc, setShowFullDesc] = React.useState(false);
   const desc = product.description?.overview || "No Description";
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedPackages, setSelectedPackages] = useState(null);
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const words = desc.split(' ');
 
 
-  // Extract variants
-  const variants = Array.isArray(product?.quantity?.variants) ? product.quantity.variants : [];
 
-  // Find the selected variant
-  const selectedVariant = variants.find(v => {
-    return (
-      (selectedSize ? v.size === selectedSize : true) &&
-      (selectedWeight ? v.weight === selectedWeight : true) &&
-      (selectedColor ? v.color === selectedColor : true)
-    );
-  });
-  // console.log(selectedVariant?.price);
 
-  // Set default selection on mount or when variants change
-  React.useEffect(() => {
-    if (variants.length && !selectedSize && !selectedColor) {
-      setSelectedSize(variants[0].size);
-      setSelectedWeight(variants[0].weight);
-      setSelectedColor(variants[0].color);
-    }
-  }, [variants]);
 
-  // Cap quantity to available stock
-  React.useEffect(() => {
-    if (selectedVariant && quantity > selectedVariant.qty) {
-      setQuantity(selectedVariant.qty);
-    }
-  }, [selectedVariant, quantity]);
-
-  const coupon = product.coupon || product.coupons?.coupon;
-  let discountedPrice = selectedVariant ? selectedVariant.price : 0;
-  let hasDiscount = false;
-  let couponText = '';
-  if (coupon && typeof coupon.percent === 'number' && coupon.percent > 0) {
-    discountedPrice = selectedVariant.price - (selectedVariant.price * coupon.percent) / 100;
-    hasDiscount = true;
-    couponText = `${coupon.couponCode || ''} (${coupon.percent}% OFF)`;
-  } else if (coupon && typeof coupon.amount === 'number' && coupon.amount > 0) {
-    discountedPrice = selectedVariant?.price - coupon.amount;
-    hasDiscount = true;
-    couponText = `${coupon.couponCode || ''} (₹${coupon.amount} OFF)`;
-  }
   // Gather all images (main + sub) at the top-level
   // Gather all images, filter out empty/undefined/null, and fallback to placeholder if empty
   const allImagesRaw = [product.gallery?.mainImage?.url, ...(product.gallery?.subImages?.map(img => img.url) || [])];
@@ -411,8 +377,8 @@ export default function ProductDetailView({ product }) {
             )}
 
 
-            {/* Package Price Table */}
             <div className="mb-6">
+              {/* Package Price Table */}
               <div className="text-green-800 font-bold text-lg mb-1 text-right">Package Price: Base Rate</div>
               <table className="w-full border-separate border-spacing-0">
                 <thead>
@@ -484,18 +450,68 @@ export default function ProductDetailView({ product }) {
               <span className="font-semibold">Payment & Security</span>
               <span className="text-gray-500 text-xs w-52">Your payment information is processed securly. We do not store credit card details nor have access to your credit card infomation</span>
             </div>
-            <h2 className="font-bold py-3 text-center my-2">"Shop with Confidence - 100% Money-Back Guarantee!"</h2>
+            <h2 className="font-bold text-md py-3 text-center">"Shop with Confidence - 100% Money-Back Guarantee!"</h2>
           </div>
 
           <div className="flex gap-4 mb-6 items-center">
+            {/* PDF Modal Trigger */}
             <button
               className="bg-black text-white py-3 px-8 font-semibold hover:bg-gray-800 w-full"
-              onClick={() => {
-                toast.success("Added to cart!");
-              }}
+              onClick={() => setShowPdfModal(true)}
             >
               Get Package PDF
             </button>
+            {/* PDF Modal */}
+            <Dialog open={showPdfModal} onOpenChange={setShowPdfModal}>
+              <DialogContent className="max-w-lg">
+                <DialogTitle>Package PDFs</DialogTitle>
+                {Array.isArray(product.pdfs) && product.pdfs.length > 0 ? (
+                  <div className="divide-y divide-gray-200">
+                    {product.pdfs.map((pdf, idx) => (
+                      <div key={pdf._id || pdf.key || idx} className="flex items-center justify-between py-2 gap-2">
+                        <span className="font-medium text-gray-800">{pdf.name}</span>
+                        <div className="flex gap-2">
+                          <button
+                            className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm font-semibold"
+                            onClick={() => setPdfPreviewUrl(pdf.url)}
+                          >
+                            Preview
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* PDF Preview Modal */}
+                    <Dialog open={!!pdfPreviewUrl} onOpenChange={() => setPdfPreviewUrl(null)}>
+                      <DialogContent className="max-w-2xl">
+                        <DialogTitle>PDF Preview</DialogTitle>
+                        {pdfPreviewUrl && (
+                          <iframe
+                            src={pdfPreviewUrl}
+                            width="100%"
+                            height="600px"
+                            style={{ border: '1px solid #ccc', borderRadius: 8 }}
+                            title="Package PDF Preview"
+                          />
+                        )}
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <button className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded">Close</button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                ) : (
+                  <div className="text-gray-500 py-4">No PDFs available for this package.</div>
+                )}
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded">Close</button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
             <div className="relative">
               <button
                 className="p-2 rounded-full border hover:bg-gray-50"
@@ -561,13 +577,21 @@ export default function ProductDetailView({ product }) {
           <button
             className="border border-black py-3 mb-4 font-semibold hover:bg-gray-100 w-full"
             onClick={async () => {
-              setShowBookingModal(true);
+              if (status === 'loading') return;
+              if (!session || !session.user) {
+                router.replace(`/sign-in?callbackUrl=${encodeURIComponent(pathname)}`);
+                return;
+              }
+              setSelectedPackages({ ...product, type: 'packages' });
+              setBookingModalOpen(true);
             }}
           >
             Book Now
           </button>
-          {showBookingModal && (
-            <PackageBookingModel onClose={() => setShowBookingModal(false)} />
+          {bookingModalOpen && (
+            <PackageBookingModel
+              packages={selectedPackages}
+              onClose={() => setBookingModalOpen(false)} />
           )}
         </div>
       </div>

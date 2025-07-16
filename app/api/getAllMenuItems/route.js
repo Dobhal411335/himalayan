@@ -8,6 +8,7 @@ import Description from '@/models/Description';
 import Info from '@/models/Info';
 import ProductReview from '@/models/ProductReview';
 import PackagePrice from '@/models/PackagePrice';
+import PackagePdf from '@/models/PackagePdf';
 export async function GET(req) {
     await connectDB();
     const menu = await MenuBar.find({})
@@ -20,6 +21,7 @@ export async function GET(req) {
                 { path: 'info' },
                 { path: 'reviews' },
                 { path: 'packagePrice' },
+                { path: 'pdfs' },
             ]
         })
         .sort({ order: 1 });

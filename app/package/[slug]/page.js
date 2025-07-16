@@ -26,21 +26,20 @@ import Gallery from '@/models/Gallery';
 import Video from '@/models/Video';
 import Description from '@/models/Description';
 import Info from '@/models/Info';
-import CategoryTag from '@/models/CategoryTag';
 import ProductReview from '@/models/ProductReview';
-import ProductTax from '@/models/ProductTax';
+import PackagePrice from "@/models/PackagePrice"
 import FeaturedRoomsSection from "@/components/FeaturedRoomsSection";
 import ReviewListModal from "@/components/ReviewListModal";
 import BookingDetails from "@/components/BookingDetails";
 import FeaturedRoomsClient from "@/components/FeaturedRoomsClient";
-
+import PackagePdf from '@/models/PackagePdf';
 const PackagePage = async ({ params }) => {
     await connectDB();
 
     const { slug } = await params;
     const decodedSlug = decodeURIComponent(slug);
     const rawProduct = await Packages.findOne({ slug: decodedSlug })
-        .populate('gallery video description info reviews packagePrice')
+        .populate('gallery video description info reviews packagePrice pdfs')
         .lean();
 
     // ✅ Convert to plain JSON
