@@ -94,15 +94,15 @@ export async function PUT(req) {
 export async function PATCH(req) {
     await connectDB();
     const body = await req.json();
-    const { roomId, ...updateFields } = body;
+    const { pkgId, ...updateFields } = body;
 
     try {
         // Update the room
-        const updatedRoom = await Packages.findByIdAndUpdate(roomId, updateFields, { new: true });
-        if (!updatedRoom) {
+        const updatedPackages = await Packages.findByIdAndUpdate(pkgId, updateFields, { new: true });
+        if (!updatedPackages) {
             return NextResponse.json({ message: "Packages not found" }, { status: 404 });
         }
-        return NextResponse.json({ message: "Packages updated successfully!", room: updatedRoom });
+        return NextResponse.json({ message: "Packages updated successfully!", packages: updatedPackages });
     } catch (error) {
         return NextResponse.json({ message: error.message }, { status: 500 });
     }
@@ -113,12 +113,12 @@ export async function DELETE(req) {
 
     try {
         // Find the room to delete
-        const roomToDelete = await Packages.findById(id);
-        if (!roomToDelete) {
+        const packagesToDelete = await Packages.findById(id);
+        if (!packagesToDelete) {
             return NextResponse.json({ message: "Packages not found!" }, { status: 404 });
         }
         // Delete the room from the database
-        const deletedRoom = await Packages.findByIdAndDelete(id);
+        const deletedPackages = await Packages.findByIdAndDelete(id);
 
         // Remove room references from MenuBar
         await MenuBar.updateMany(

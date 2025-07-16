@@ -29,13 +29,18 @@ import Info from '@/models/Info';
 import CategoryTag from '@/models/CategoryTag';
 import ProductReview from '@/models/ProductReview';
 import ProductTax from '@/models/ProductTax';
+import FeaturedRoomsSection from "@/components/FeaturedRoomsSection";
+import ReviewListModal from "@/components/ReviewListModal";
+import BookingDetails from "@/components/BookingDetails";
+import FeaturedRoomsClient from "@/components/FeaturedRoomsClient";
+
 const PackagePage = async ({ params }) => {
     await connectDB();
 
     const { slug } = await params;
     const decodedSlug = decodeURIComponent(slug);
     const rawProduct = await Packages.findOne({ slug: decodedSlug })
-        .populate('gallery video description info categoryTag reviews taxes')
+        .populate('gallery video description info reviews packagePrice')
         .lean();
 
     // ✅ Convert to plain JSON
@@ -97,9 +102,7 @@ const PackagePage = async ({ params }) => {
                 <div className="space-y-4">
                     <ProductInfoTabs product={product} />
                 </div>
-                <div className="space-y-4">
-                    <RoomsAccommodation rooms={rooms} />
-                </div>
+                <FeaturedRoomsClient rooms={rooms} />
 
                 {/* {frequentlyBoughtTogether.length > 0 && (
                     <div className="mt-8 px-4 py-10 bg-blue-100">

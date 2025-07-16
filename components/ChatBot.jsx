@@ -2,39 +2,270 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Send, MessageCircle, X } from "lucide-react";
-
-import Link from "next/link";
-
-// Helper: checks if the user is logged in
-
 function isLoggedIn(session) {
   return !!session?.user;
 }
 
 const productQnA = [
   {
-    q: "🛍 Product Information",
-    a: `Q: Is this product available in stock?\nA: Yes, the product is currently available.\n\nQ: What sizes/colors are available?\nA: This product comes in [List Sizes/Colors]. Please select your preferred option from the dropdown menu.\n\nQ: Is this product genuine/original?\nA: Yes, we only sell 100% genuine and authentic products.\n\nQ: Can I see more pictures of the product?\nA: Sure! You can find multiple images in the product gallery. Let us know if you need a close-up of any specific feature.\n\nQ: Does this product have a warranty?\nA: Yes, it comes with a [Duration] warranty provided by the manufacturer.`
+    q: "General Question",
+    subQuestions: [
+      { q: "What types of retreat packages do you offer?", a: "We offer yoga and wellness retreat packages including weekend getaways, 3-day, 5-day, and 7-day programs. Each package includes yoga sessions, meditation, satvic meals, and local excursions." },
+      { q: "What is included in the retreat package?", a: "All packages typically include:\n- Daily yoga & meditation sessions\n- Satvic meals (breakfast, lunch, dinner)\n- Comfortable accommodation\n- Nature walks, Ganga Aarti visit, or short treks\n- Wi-Fi and essential amenities\n(Some packages may include Ayurvedic treatments or workshops)" },
+      { q: "Are meals included in the package price?", a: "Yes, all retreat packages include 3 daily satvic vegetarian meals, herbal teas, and filtered drinking water." },
+      { q: "Do you offer single or shared accommodation options?", a: "Yes. We offer both private (single occupancy) and shared (double occupancy) room options depending on your preference and availability." },
+      { q: "Is prior yoga experience required?", a: "Not at all! Our retreats are open to all levels, from beginners to advanced practitioners. Instructors adapt the practice to suit your comfort level." },
+      { q: "How do I book a retreat package?", a: "You can book directly through our website, chat with our support team, or contact us via WhatsApp/phone for personalized assistance." },
+      { q: "What is your cancellation or refund policy?", a: "We offer flexible cancellation terms. Please refer to the cancellation policy section on our booking page or reach out to us for details." },
+      { q: "Do you provide airport or railway station pickup?", a: "Yes, pickup and drop services can be arranged at an additional cost. Let us know your arrival details in advance." },
+      { q: "Are group discounts or custom packages available?", a: "Yes! We offer custom packages for groups, families, or corporate wellness programs. Discounts apply for groups of 4 or more." },
+      { q: "What should I bring for the retreat?", a: "We recommend bringing:\n- Comfortable yoga clothing\n- Personal toiletries\n- Water bottle\n- Light jacket (even in summer evenings)\nYoga mats are provided, but you may bring your own if preferred." },
+      { q: "Is there mobile network and Wi-Fi available?", a: "Yes, all rooms and common areas have free high-speed Wi-Fi, and most major mobile networks work well in Tapovan, Rishikesh." },
+      { q: "Can I attend the retreat without staying at your property?", a: "Yes, we offer drop-in yoga classes and day participation options for some retreats. Please contact us to check availability." },
+      { q: "Do you offer silent retreats or detox programs?", a: "Yes, we occasionally host special retreats like silent meditation, digital detox, and ayurveda-based wellness cleanses. Keep an eye on our schedule or inquire with the team." },
+      { q: "Can children or families join the retreat?", a: "Some of our retreats are adult-only, but we also offer family-friendly wellness programs. Please contact us for family-specific options." },
+      { q: "Are the retreats open all year round?", a: "Yes, retreats are available year-round. The most popular seasons are October to March and during summer breaks in May-June." }
+    ]
   },
   {
-    q: "🚚 Shipping & Delivery",
-    a: `Q: When will I receive my order?\nA: Delivery usually takes [3 to 7 days], depending on your location.\n\nQ: Do you offer free shipping?\nA: We offer free shipping on orders over ₹2,999. Shipping fees apply to orders below that.\n\nQ: Can I track my order?\nA: Yes, once shipped, you will receive a tracking link via email/SMS or your client dashboard.`
+    q: "Privacy & Booking Policy",
+    subQuestions: [
+      {
+        q: "What personal ID is required at check-in?",
+        a: "Guests must present a valid government-issued photo ID (Aadhar, Passport, or Driver’s License). Foreign nationals need to show a passport and visa."
+      },
+      {
+        q: "Is full payment required on arrival?",
+        a: "Yes. We require 100% advance payment at check-in, either by cash or bank transfer. Personal cheques are not accepted."
+      },
+      {
+        q: "Can I cancel or modify my booking?",
+        a: "Modifications are allowed up to 72 hours before check-in, subject to availability. Cancellations made within 5 days of arrival incur a 25% room rate cancellation fee."
+      },
+      {
+        q: "What’s your check-in and check-out time?",
+        a: "Standard check-in starts at 1 PM. Check-out is by 10 AM (noon late check-out may be available)."
+      },
+      {
+        q: "Is early check-in or late check-out possible?",
+        a: "Yes, subject to availability, and pre-registration & payment may be required for guaranteed early arrival before midnight."
+      },
+      {
+        q: "Are there extra charges?",
+        a: "Extra beds: ₹ 800 each. GST / taxes: Applicable per government directives."
+      },
+      {
+        q: "What items or activities are prohibited?",
+        a: "Strictly no smoking, alcohol, non–vegetarian food, drugs, firearms, outside food, or pets on the premises."
+      },
+      {
+        q: "Can visitors enter my room?",
+        a: "Visitors are not allowed in guest rooms after 9 PM. If permitted earlier, photo ID and registration at front desk are required."
+      },
+      {
+        q: "What is your noise policy?",
+        a: "Guests must maintain quiet hours between 10 PM and 9 AM and respect local residential harmony."
+      },
+      {
+        q: "Who’s responsible for lost or damaged items?",
+        a: "We are not liable for lost or damaged belongings. Guests are responsible for any damage costs to property or furniture."
+      },
+      {
+        q: "How long do you retain found items?",
+        a: "Lost items (non-perishables) are held for 14 days (plus 1 month if unclaimed), then donated or disposed."
+      },
+      {
+        q: "Do you offer Wi‑Fi?",
+        a: "Yes, free Wi‑Fi is available for guests. Access is subject to data quotas; additional usage may incur a fee."
+      }
+    ]
   },
   {
-    q: "💳 Payment & Checkout",
-    a: `Q: What payment methods do you accept?\nA: We accept credit/debit cards, UPI, PayPal, and Cash on Delivery (COD) in selected areas.\n\nQ: Is it safe to make a payment on your site?\nA: Absolutely. Our website uses SSL encryption and secure payment gateways to protect your data.`
+    q: "Refund & Cancellation",
+    subQuestions: [
+      {
+        q: "How do I request a refund or return?",
+        a: "To request a refund, please email us at himalayanwellnessretreats@gmail.com within 24 hours of delivery/booking confirmation. We will guide you through the return process."
+      },
+      {
+        q: "What’s the refund eligibility period?",
+        a: "Refund or return requests must be made within 14 days of delivery. Requests after 15 days will not be accepted."
+      },
+      {
+        q: "Do I have to pay for return shipping?",
+        a: "Yes, return shipping costs are borne by the customer. We do not cover return shipping fees."
+      },
+      {
+        q: "What are my options after cancellation or return?",
+        a: "You can choose any of the following:\n- Replacement (same or different item)\n- Discount code equal to cancellation value\n- Full refund (to original card or via bank transfer if paid by cash)"
+      },
+      {
+        q: "Are custom-made or agent bookings refundable?",
+        a: "No, custom-made or third-party/agent bookings do not qualify for standard returns or refunds."
+      },
+      {
+        q: "What happens if a package is mispriced?",
+        a: "In case of a pricing error, we honor the lower price and confirm the booking at that rate. If the package is unavailable, we may cancel and process a refund."
+      },
+      {
+        q: "Can you cancel my booking for suspicious activity?",
+        a: "Yes. We reserve the right to cancel past, pending, or future bookings if fraudulent or suspicious activity is detected. We may also request additional documents for verification."
+      },
+      {
+        q: "When is a customer considered fraudulent?",
+        a: "A customer may be flagged for fraud if they:\n- Don’t respond to payment verification\n- Fail to provide valid ID or details\n- Use fake emails or phones\n- Refuse to pay or misuse vouchers\n- Attempt \"snatch & run\" behavior"
+      },
+      {
+        q: "How is a refund processed?",
+        a: "Refunds are issued to the original payment method. For cash payments, bank details must be provided via email for processing."
+      },
+      {
+        q: "Can I cancel or modify my booking anytime?",
+        a: "You can request modifications or cancellations within the policy time frame (ideally 14 days). After that, refunds may not be applicable."
+      },
+      {
+        q: "Will I get notified if the policy changes?",
+        a: "Yes, we notify users via email of any material changes to our terms & conditions. The latest version is always available on the website."
+      },
+      {
+        q: "Is uninterrupted site access guaranteed?",
+        a: "No. While we aim for continuous service, access may be affected by external factors, and we do not guarantee 24/7 uninterrupted access."
+      }
+    ]
   },
   {
-    q: "🔁 Returns & Refunds",
-    a: `Q: Can I return this product?\nA: Yes, we have a 30-day return policy. The product must be unused and in original condition.\n\nQ: How long does a refund take?\nA: Refunds are processed within 30 business days after we receive the returned item.`
+    q: "Accommodation House Rules",
+    subQuestions: [
+      {
+        q: "What are the check-in and check-out times?",
+        a: "Check-in: From 1:00 PM\nCheck-out: By 10:00 AM (late check-out till 12:00 PM subject to availability)\nEarly check-in or late check-out is allowed based on availability and may incur extra charges."
+      },
+      {
+        q: "Can I request an extra bed?",
+        a: "Yes, extra beds (floor mattress) are available on request at ₹800 per night."
+      },
+      {
+        q: "What ID is required at check-in?",
+        a: "Indian Nationals: Valid Government-issued photo ID (Aadhar, Driving Licence, etc.)\nForeign Nationals: Valid passport and visa\nAll visitors must also register with valid ID."
+      },
+      {
+        q: "What is the payment policy?",
+        a: "25% advance payment is required to confirm the booking.\nRemaining 75% is payable at check-in.\nNo personal cheques accepted.\nPayment via cash or bank transfer is accepted."
+      },
+      {
+        q: "What is not allowed on the premises?",
+        a: "Strictly prohibited:\n- Smoking, alcohol, drugs, gambling\n- Non-vegetarian food\n- Outside food & beverages\n- Firearms, flammable items, or illegal substances\n- Loud parties or disturbances"
+      },
+      {
+        q: "Are children allowed?",
+        a: "Yes. Children are welcome.\n0–4 years: Stay free (using existing bedding, no guaranteed breakfast)\nMust be supervised at all times."
+      },
+      {
+        q: "Can visitors enter guest rooms?",
+        a: "No visitors allowed after 10:00 PM.\nDay visitors must register at the front desk and may only enter rooms with management approval."
+      },
+      {
+        q: "Is there a quiet time policy?",
+        a: "Yes, quiet hours are from 10:00 PM to 9:00 AM.\nGuests are expected to maintain a peaceful environment."
+      },
+      {
+        q: "Is housekeeping available?",
+        a: "Yes, daily housekeeping is provided between 9:00 AM and 2:00 PM.\nLinen is changed on rotation or on request."
+      },
+      {
+        q: "Is Wi-Fi available?",
+        a: "Yes, free Wi-Fi is available for guests (with limited data).\nExtended usage may be available on request for an additional fee."
+      },
+      {
+        q: "Is parking available?",
+        a: "Yes, paid parking is available on-site, subject to availability and registration at check-in."
+      },
+      {
+        q: "What is the cancellation policy?",
+        a: "Cancel ≥ 5 days before arrival: No cancellation fee\nCancel < 5 days before arrival: 25% cancellation fee\nNo show: Charged one full night; remaining nights cancelled."
+      },
+      {
+        q: "Can I modify my booking?",
+        a: "Yes, booking changes are allowed up to 72 hours (3 days) before arrival, based on availability."
+      },
+      {
+        q: "What happens if I lose my room key?",
+        a: "A duplicate will be issued upon valid ID verification.\nGuests under 18 are not issued room keys."
+      },
+      {
+        q: "Is the property secure?",
+        a: "Yes. Management reserves the right to inspect rooms if:\n- Emergency\n- Policy violation\n- Safety concerns"
+      },
+      {
+        q: "Are in-room parties allowed?",
+        a: "No. Parties, loud music, or gatherings are strictly prohibited. Violators will be evicted without refund."
+      },
+      {
+        q: "Are weapons allowed?",
+        a: "No. Firearms or any kind of weapons are strictly banned on the property, even if legally owned."
+      },
+      {
+        q: "Can I store luggage after check-out?",
+        a: "Yes, up to 24 hours. Storage is at your own risk, and space is subject to availability."
+      },
+      {
+        q: "What is the linen policy?",
+        a: "Linen changed every 2 days or on request.\nTowels are refreshed daily.\nPlease remove personal items for housekeeping to make the bed."
+      },
+      {
+        q: "Can I shoot content (photos/videos) at the retreat?",
+        a: "Photography or videography for commercial or public use is not permitted without prior written approval."
+      }
+    ]
   },
   {
-    q: "📦 Order Status",
-    a: `Q: Can I track my order?\nA: Yes, once shipped, you will receive a tracking link via email/SMS or your client dashboard.\n\nQ: Can I change or cancel my order?\nA: You can cancel or modify your order within a certain period after placing it. Please contact us immediately for assistance.`
+    q: "Payments – FAQ",
+    subQuestions: [
+      {
+        q: "What payment methods are accepted?",
+        a: "We accept the following modes of payment:\n- Bank transfer (NEFT/IMPS/UPI)\n- Cash (at check-in)\n- UPI-based apps (Google Pay, PhonePe, etc.)\n\nNote: We do not accept personal cheques."
+      },
+      {
+        q: "Is advance payment required to confirm my booking?",
+        a: "Yes, a 25% advance deposit is mandatory to confirm your reservation. The remaining 75% is payable at check-in."
+      },
+      {
+        q: "How will I know my payment is confirmed?",
+        a: "Once your payment is received, you’ll receive a booking confirmation email or call with your reservation/order ID."
+      },
+      {
+        q: "Can I pay for someone else's booking?",
+        a: "Yes, but full payment must be made in advance, along with a copy of your ID (Aadhar/Passport/Driving License). Please inform us at least 72 hours before check-in for third-party bookings."
+      },
+      {
+        q: "Can I pay at the property?",
+        a: "Yes, but only for the balance amount (after 25% advance). Full payment must be made at check-in to receive your room key."
+      },
+      {
+        q: "Do you accept international cards or currency?",
+        a: "Currently, we do not accept international debit/credit cards or foreign currency. Payment must be in INR (Indian Rupees)."
+      },
+      {
+        q: "Will I get an invoice or receipt for my payment?",
+        a: "Yes. A GST-compliant invoice or booking receipt will be provided at the time of payment or check-in."
+      },
+      {
+        q: "Is GST included in the room tariff?",
+        a: "No. Taxes are charged separately as per government directives and will be added to the final bill."
+      },
+      {
+        q: "Can I split my payment between two people?",
+        a: "Yes, split payments are accepted. Please notify the front desk during check-in or booking confirmation."
+      },
+      {
+        q: "What if I cancel—how will my refund be processed?",
+        a: "If eligible, the refund will be made to the original payment method (bank/UPI). For cash payments, you must provide your bank account details via email."
+      }
+    ]
   },
   {
-    q: "🧑‍💬 Talk to Support",
-    a: `Yes, our customer support is available [Days & Hours]. You can also email us at support@rishikeshhandmade.com or call +91 7351009107, 9411571947.`
+    q: "Talk to Support",
+    a: `Yes, our customer support is available [Days & Hours]. You can also email us at himalayanwellnessretreat@gmail.com or call +91 9897515305, 7060340176`
   }
 ];
 
@@ -53,7 +284,8 @@ export default function ChatBot() {
   // FAQ/product state
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [faqClicked, setFaqClicked] = useState(null);
-
+  const [selectedMainTopic, setSelectedMainTopic] = useState(null);
+  const [selectedSubQuestion, setSelectedSubQuestion] = useState(null);
   const PRODUCT_FAQS = [
     {
       q: "Is this product available in stock?",
@@ -88,8 +320,35 @@ export default function ChatBot() {
     },
   ];
 
+  const handleSubQuestionClick = (sub) => {
+    // Show user's question and a "..." typing bubble from bot
+    setMessages(msgs => [
+      ...msgs,
+      { from: "You", sender: session?.user?.id || "user", text: sub.q, createdAt: new Date().toISOString() },
+      { from: "Bot", sender: "bot", text: "...", createdAt: new Date().toISOString(), isTyping: true }
+    ]);
+
+    // After a short delay, replace the typing bubble with the real answer
+    setTimeout(() => {
+      setMessages(msgs => {
+        // Remove the last message (typing bubble)
+        const msgsWithoutTyping = msgs.slice(0, -1);
+        // Add the real answer
+        return [
+          ...msgsWithoutTyping,
+          { from: "Bot", sender: "bot", text: sub.a, createdAt: new Date().toISOString() }
+        ];
+      });
+    }, 900); // 900ms typing effect
+  };
   const handleFaqClick = (faq) => {
-    if (!selectedProduct) return;
+    // If it's a main topic with subQuestions, show them
+    if (faq.subQuestions) {
+      setSelectedMainTopic(faq);
+      setSelectedSubQuestion(null);
+      return;
+    }
+    // Otherwise, show answer as before
     setFaqClicked(faq.key);
     setMessages(msgs => [
       ...msgs,
@@ -98,6 +357,9 @@ export default function ChatBot() {
     ]);
   };
 
+
+  // --- End Nested FAQ Support ---
+
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [showSupportOptions, setShowSupportOptions] = useState(false);
   const chatWindowRef = useRef(null);
@@ -105,21 +367,22 @@ export default function ChatBot() {
   // Load chat history from DB (or localStorage fallback)
   useEffect(() => {
     async function loadHistory() {
-      if (session?.user?.id) {
-        try {
-          const res = await fetch(`/api/getMessages?userId=${session.user.id}`);
-          const data = await res.json();
+      // if (session?.user?.id) {
+      //   try {
+      //     const res = await fetch(`/api/getMessages?userId=${session.user.id}`);
+      //     const data = await res.json();
 
-          if (data.messages && Array.isArray(data.messages)) {
-            setMessages((prev) => (JSON.stringify(prev) !== JSON.stringify(data.messages) ? data.messages : prev));
-            return;
-          } else {
-            setMessages([]);
-          }
-        } catch (error) {
-          setMessages([]);
-        }
-      }
+      //     if (data.messages && Array.isArray(data.messages)) {
+      //       setMessages((prev) => (JSON.stringify(prev) !== JSON.stringify(data.messages) ? data.messages : prev));
+      //       return;
+      //     } else {
+      //       setMessages([]);
+      //     }
+      //   } catch (error) {
+      //     setMessages([]);
+      //   }
+      // }
+
       // fallback to localStorage
       const localHistory = localStorage.getItem("chatbot_history");
       if (localHistory) {
@@ -132,7 +395,7 @@ export default function ChatBot() {
           {
             from: "Bot",
             sender: "bot",
-            text: "Hi there! 👋 Welcome to Rishikesh Handmade!\n\nI’m AI Support Intelligence from our online store – your virtual assistant here to help you with anything you need.\n\nHow can I assist you today?",
+            text: "Namaste & Welcome to Online AI Support!\nWe're glad you're here.Whether you're looking for a peaceful getaway, a yoga retreat, or simply have questions about our stay options. I’m here to help you!\n Let’s begin your journey to relaxation and rejuvenation.",
             createdAt: new Date().toISOString(),
           },
         ]);
@@ -147,7 +410,7 @@ export default function ChatBot() {
       {
         from: "Bot",
         sender: "bot",
-        text: "Hi there! 👋 Welcome to Rishikesh Handmade!\n\nI’m AI Support Intelligence from our online store – your virtual assistant here to help you with anything you need.\n\nHow can I assist you today?",
+        text: "Namaste & Welcome to Online AI Support!\nWe're glad you're here.Whether you're looking for a peaceful getaway, a yoga retreat, or simply have questions about our stay options. I’m here to help you!\n Let’s begin your journey to relaxation and rejuvenation.",
         createdAt: new Date().toISOString(),
       },
     ]);
@@ -178,7 +441,7 @@ export default function ChatBot() {
           {
             from: "Bot",
             sender: "bot",
-            text: `Hi there! 👋 Welcome to Rishikesh Handmade!\n\nI’m AI Support Intelligence from our online store – your virtual assistant here to help you with anything you need.\n\nHow can I assist you today?`,
+            text: "Namaste & Welcome to Online AI Support!\nWe're glad you're here.Whether you're looking for a peaceful getaway, a yoga retreat, or simply have questions about our stay options. I’m here to help you!\n Let’s begin your journey to relaxation and rejuvenation.",
             createdAt: new Date().toISOString()
           }
         ]);
@@ -234,28 +497,8 @@ export default function ChatBot() {
     setError("");
     setStep(3);
   };
-  const handleQnAOption = (qna) => {
-    setMessages((msgs) => [...msgs, { from: "You", sender: session?.user?.id || "user", text: qna.q, createdAt: new Date().toISOString() }]);
-
-    if (qna.q === "🛍 Product Information") {
-      setShowSupportOptions(false); // Always reset support mode when going to product info
-      setMessages((msgs) => [
-        ...msgs,
-        { from: "Bot", sender: "bot", text: "Sure! Please share the product name.", createdAt: new Date().toISOString() }
-      ]);
-      setStep("product-info");
-    } else if (qna.q === "🧑‍💬 Talk to Support") {
-      setShowSupportOptions(true); // Show only support options
-      setStep(3); // Stay on main menu step
-      setMessages((msgs) => [
-        ...msgs,
-        { from: "Bot", sender: "bot", text: qna.a, createdAt: new Date().toISOString() }
-      ]);
-    } else {
-      setShowSupportOptions(false); // Hide support options for all other QnA
-      setMessages((msgs) => [...msgs, { from: "Bot", sender: "bot", text: qna.a, createdAt: new Date().toISOString() }]);
-      setStep(4); // Or setStep(3) if you want to stay on main menu
-    }
+  const handleTalkToSupportClick = () => {
+    setShowSupportOptions(true);
   };
   const handleProduct = async (e) => {
     e.preventDefault();
@@ -330,7 +573,7 @@ export default function ChatBot() {
         {
           from: "Bot",
           sender: "bot",
-          text: `Hi there! 👋 Welcome to Rishikesh Handmade!\n\nI’m AI Support Intelligence from our online store – your virtual assistant here to help you with anything you need.\n\nHow can I assist you today?`,
+          text: "Namaste & Welcome to Online AI Support!\nWe're glad you're here.Whether you're looking for a peaceful getaway, a yoga retreat, or simply have questions about our stay options. I’m here to help you!\n Let’s begin your journey to relaxation and rejuvenation.",
           createdAt: new Date().toISOString()
         }
       ]);
@@ -414,6 +657,14 @@ export default function ChatBot() {
   };
   const isProductNotFound = step === "faq" && messages[messages.length - 1]?.text === "Sorry, product not found."
 
+  useEffect(() => {
+    if (chatWindowRef.current) {
+      chatWindowRef.current.scrollTo({
+        top: chatWindowRef.current.scrollHeight,
+        behavior: "smooth"
+      });
+    }
+  }, [messages, open]);
   return (
     <>
       {/* Floating chat bubble */}
@@ -429,7 +680,7 @@ export default function ChatBot() {
       {/* Chat window */}
       {open && (
         <div
-          className={`fixed bottom-2 right-[4%] z-50 w-[330px] max-w-[95vw] bg-white rounded-xl shadow-2xl flex flex-col border border-gray-200 animate-fadeIn
+          className={`fixed bottom-1 right-[4%] z-50 w-[330px] max-w-[95vw] bg-white rounded-xl shadow-2xl flex flex-col border border-gray-200 animate-fadeIn
           ${
             // Shrink to content only for support mode or product not found
             showSupportOptions || isProductNotFound || step === 0 || step === 1 || step === 2 || step === "product-info"
@@ -449,27 +700,37 @@ export default function ChatBot() {
             {messages.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex ${msg.sender === "bot" ? "justify-start" : "justify-end"}`}
+                className={`flex ${msg.sender === "bot" ? "justify-start" : "justify-end"} my-1`}
               >
                 <div
-                  className={`px-4 py-2 rounded-2xl text-sm shadow-sm max-w-[80%] whitespace-pre-wrap ${msg.sender === "bot"
-                    ? "bg-white text-gray-900 border border-gray-200"
-                    : "bg-blue-600 text-white border border-blue-600"
-                    }`}
+                  className={`
+        px-4 py-2 rounded-2xl text-sm shadow-sm max-w-[80%] whitespace-pre-wrap
+        ${msg.sender === "bot"
+                      ? "bg-white text-gray-900 border border-gray-200"
+                      : "bg-blue-600 text-white border border-blue-600"
+                    }
+      `}
                 >
-                  {msg.faqKey === 'url' ? (
-                    <span dangerouslySetInnerHTML={{ __html: msg.text }} />
+                  {msg.isTyping ? (
+                    <span className="inline-block italic animate-pulse">...</span>
                   ) : (
-                    msg.text
+                    <>
+                      {msg.faqKey === 'url' ? (
+                        <span dangerouslySetInnerHTML={{ __html: msg.text }} />
+                      ) : (
+                        msg.text
+                      )}
+                      <div className="flex text-xs mt-1 gap-1 justify-end">
+                        <span className={msg.sender === "bot" ? "text-gray-400" : "text-white/70"}>
+                          {msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                        </span>
+                      </div>
+                    </>
                   )}
-                  <div className="flex text-xs mt-1 gap-1 justify-end">
-                    <span className={msg.sender === "bot" ? "text-gray-400" : "text-white/70"}>
-                      {msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                    </span>
-                  </div>
                 </div>
               </div>
             ))}
+
             {loading && (
               <div className="flex justify-end">
                 <div className="px-4 py-2 rounded-2xl text-sm bg-blue-100 text-blue-600 animate-pulse">...
@@ -570,15 +831,49 @@ export default function ChatBot() {
                 </div>
               ) : (
                 <div className="flex flex-col gap-2 mb-1">
-                  {productQnA.map((qna) => (
-                    <button
-                      key={qna.q}
-                      className="flex-1 text-left px-4 py-1 rounded-lg border transition-colors duration-150 font-medium transition"
-                      onClick={() => handleQnAOption(qna)}
-                    >
-                      {qna.q}
-                    </button>
-                  ))}
+                  {!selectedMainTopic && (
+                    <div className="flex flex-col gap-2 mb-1">
+                      {productQnA.map((faq, idx) => (
+                        <button
+                          key={faq.q}
+                          className="flex-1 text-left px-4 py-1 rounded-lg border transition-colors duration-150 font-medium transition"
+                          onClick={() => {
+                            if (faq.q === "Talk to Support") {
+                              handleTalkToSupportClick();
+                            } else {
+                              handleFaqClick(faq);
+                            }
+                          }}>
+                          {faq.q}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {selectedMainTopic && selectedMainTopic.subQuestions && !selectedSubQuestion && (
+                    <div className="flex flex-col gap-2 mb-1">
+                      <div
+                        className="flex flex-col gap-2 overflow-y-auto"
+                        style={{ maxHeight: "250px", minHeight: "200px" }} // adjust as needed
+                      >
+                        {selectedMainTopic.subQuestions.map((sub, idx) => (
+                          <button
+                            key={sub.q}
+                            className="flex-1 text-left px-4 py-1 rounded-lg border transition-colors duration-150 font-medium transition"
+                            onClick={() => handleSubQuestionClick(sub)}
+                          >
+                            {sub.q}
+                          </button>
+                        ))}
+                      </div>
+                      <button
+                        className="w-full text-center px-4 py-2 rounded-lg border transition-colors duration-150 font-medium shadow-sm text-sm transition whitespace-nowrap"
+                        onClick={() => setSelectedMainTopic(null)}
+                      >
+                        👈 Back
+                      </button>
+                    </div>
+                  )}
                 </div>
               )
             )}

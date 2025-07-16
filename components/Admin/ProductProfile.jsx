@@ -14,19 +14,10 @@ import { Label } from "../ui/label";
 const ProductProfile = ({ id }) => {
     const [title, setTitle] = useState("");
     const [code, setCode] = useState(""); // Will be auto-generated
-    const [artisan, setArtisan] = useState("");
-    const [artisans, setArtisans] = useState([]);
     const [loading, setLoading] = useState(false);
     const [refreshTable, setRefreshTable] = useState(false);
     // For inline editing
     const [editingId, setEditingId] = useState(null);
-
-    // QR Modal state
-    const [qrModalOpen, setQrModalOpen] = useState(false);
-    const [qrModalUrl, setQrModalUrl] = useState("");
-    const [qrModalTitle, setQrModalTitle] = useState("");
-
-
 
     // Generate product code on mount
     useEffect(() => {
@@ -40,43 +31,53 @@ const ProductProfile = ({ id }) => {
         };
         setCode(generateCode());
     }, []);
-
-    useEffect(() => {
-        setLoading(true);
-        fetch('/api/createArtisan')
-            .then(res => res.json())
-            .then(data => {
-                setArtisans(Array.isArray(data) ? data : []);
-                setLoading(false);
-            })
-            .catch(() => setLoading(false));
-    }, []);
-
+    
+    // Slugify utility
+    function slugify(str) {
+        return str
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+            .replace(/-+/g, '-');
+    }
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title.trim()) return toast.error('Title cannot be empty');
-        if (!artisan) return toast.error('Select an artisan');
-        // Always create direct product
-        let payload = { title, code, artisan, isDirect: true };
-        const res = await fetch('/api/product', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+        const slug = slugify(title);
+    
+        let payload = { title, code, slug, isDirect: true };
+    
+        let res;
+        if (editingId) {
+            // UPDATE
+            res = await fetch(`/api/packages/${editingId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        } else {
+            // CREATE
+            res = await fetch('/api/packages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        }
+    
         if (res.ok) {
-            const newProduct = await res.json();
-            setTitle(""); setCode(""); setArtisan("");
+            const result = await res.json();
+            setTitle(""); setCode("");setEditingId(null);
             setRefreshTable(r => !r);
-            toast.success('Direct product saved!');
+            toast.success(editingId ? 'Package updated!' : 'Direct product saved!');
         } else {
             const err = await res.json();
-            toast.error('Failed to save product: ' + (err.error || 'Unknown error'));
+            toast.error('Failed to save package: ' + (err.error || 'Unknown error'));
         }
     };
 
     const [products, setProducts] = useState([]);
     useEffect(() => {
-        fetch('/api/product?isDirect=true')
+        fetch('/api/packages?isDirect=true')
             .then(res => res.json())
             .then(data => setProducts(Array.isArray(data) ? data : []));
     }, [refreshTable]);
@@ -97,36 +98,28 @@ const ProductProfile = ({ id }) => {
 
     const confirmDelete = async () => {
         if (!deleteTarget) return;
-        const res = await fetch(`/api/product/${deleteTarget}`, { method: 'DELETE' });
+        const res = await fetch(`/api/packages/${deleteTarget}`, { method: 'DELETE' });
         if (res.ok) {
-            setProducts(products => products.filter(p => p._id !== deleteTarget));
-            toast.success('Product deleted successfully');
+            setProducts(packages => packages.filter(p => p._id !== deleteTarget));
+            toast.success('packages deleted successfully');
         } else {
             const err = await res.json().catch(() => ({}));
-            toast.error('Failed to delete product: ' + (err.error || 'Unknown error'));
+            toast.error('Failed to delete packages: ' + (err.error || 'Unknown error'));
         }
         setShowDeleteModal(false);
         setDeleteTarget(null);
     };
 
 
-    // Slugify utility
-    function slugify(str) {
-        return str
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '')
-            .replace(/-+/g, '-');
-    }
     // Copy to clipboard helper
     function copyToClipboard(text) {
         navigator.clipboard.writeText(text);
         toast.success('URL copied!');
     }
-    // Toggle product active status for direct products
-    const toggleSwitch = async (productId, currentActive, isDirect) => {
+      // Toggle product active status
+      const toggleSwitch = async (productId, currentActive, isDirect) => {
         if (!isDirect) {
-            toast.error('Only direct products can be toggled.');
+            toast.error('Only non-direct products can be toggled.');
             return;
         }
         try {
@@ -149,57 +142,14 @@ const ProductProfile = ({ id }) => {
 
     return (
         <>
-            <form className="flex flex-col items-center justify-center gap-8 my-20 bg-gray-200 w-full max-w-xl md:max-w-3xl mx-auto p-4 rounded-lg" onSubmit={async e => {
-                e.preventDefault();
-                if (!title.trim()) return toast.error('Title cannot be empty');
-                if (!artisan) return toast.error('Select an artisan');
-                if (editingId) {
-                    // Update mode
-                    const res = await fetch(`/api/product/${encodeURIComponent(title)}`, {
-                        method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title, artisan })
-                    });
-                    if (res.ok) {
-                        const updated = await res.json();
-                        setProducts(ps => ps.map(p => p._id === editingId ? { ...p, title: updated.title, artisan: updated.artisan } : p));
-                        setEditingId(null);
-                        setTitle("");
-                        setArtisan("");
-                        toast.success('Product updated!');
-                    } else {
-                        let err;
-                        try {
-                            err = await res.json();
-                        } catch {
-                            err = { error: 'Failed to update' };
-                        }
-                        toast.error(err.error || 'Failed to update');
-                    }
-                }
-                 else {
-                    // Create mode
-                    const createdProduct = await handleSubmit(e);
-                    // If product created and subMenuId exists, link product to submenu
-                    if (createdProduct && subMenuId) {
-                        console.log('Linking product to submenu:', createdProduct._id, subMenuId);
-                        await fetch('/api/linkProductToSubMenu', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ subMenuId, productId: createdProduct._id })
-                        });
-                        // Refetch submenu/products to update table
-                        await fetchSubMenuItems();
-                    }
-                }
-            }}>
+            <form className="flex flex-col items-center justify-center gap-8 my-20 bg-gray-200 w-full max-w-xl md:max-w-3xl mx-auto p-4 rounded-lg" onSubmit={handleSubmit}>
                 <div className="flex md:flex-row flex-col items-center md:items-end gap-6 w-full">
                     <div className="flex flex-col gap-2 w-full">
-                        <label htmlFor="productCode" className="font-semibold">Rooms Code</label>
+                        <label htmlFor="productCode" className="font-semibold">Packages Code</label>
                         <Input name="productCode" className="w-full border-2 font-bold border-blue-600 focus:border-dashed focus:border-blue-500 focus:outline-none focus-visible:ring-0 bg-gray-100" placeholder="Pre Fix" value={code} readOnly />
                     </div>
                     <div className="flex flex-col gap-2 w-full">
-                        <label htmlFor="productTitle" className="font-semibold">Room Title</label>
+                        <label htmlFor="productTitle" className="font-semibold">Packages Title</label>
                         <Input name="productTitle" className="w-full border-2 font-bold border-blue-600 focus:border-dashed focus:border-blue-500 focus:outline-none focus-visible:ring-0" placeholder="Type Here:" value={title} onChange={e => setTitle(e.target.value)} />
                     </div>
                 </div>
@@ -209,19 +159,18 @@ const ProductProfile = ({ id }) => {
                         <Button type="button" className="bg-gray-400" onClick={() => { setEditingId(null); setTitle(""); }}>Cancel</Button>
                     </div>
                 ) : (
-                    <Button type="submit" className="bg-red-500">Save Product</Button>
+                    <Button type="submit" className="bg-red-500">Save packages</Button>
                 )}
             </form>
             {/* Product Table copied inline */}
             <div className="mt-10 flex flex-col items-center">
-                <h3 className="text-xl font-semibold mb-4">Product List</h3>
+                <h3 className="text-xl font-semibold mb-4">Packages List</h3>
                 <table className="w-full border border-black rounded-lg">
                     <thead>
                         <tr className="bg-gray-200">
                             <th className="py-2 px-4 text-center">Title</th>
                            
                             <th className="py-2 px-4 text-center">URL</th>
-                            <th className="py-2 px-4 text-center">QR</th>
                             <th className="py-2 px-4 text-center">Active</th>
                             <th className="py-2 px-4 text-center">Actions</th>
                         </tr>
@@ -233,7 +182,7 @@ const ProductProfile = ({ id }) => {
                                 <td className="py-2 px-4 text-center">
                                     {/* Product URL Copy Button Only */}
                                     {prod.title && (() => {
-                                        const url = `${window.location.origin}/room/${slugify(prod.title)}`;
+                                        const url = `${window.location.origin}/packages/${slugify(prod.title)}`;
                                         return (
                                             <Button
                                                 size="icon"
@@ -244,28 +193,6 @@ const ProductProfile = ({ id }) => {
                                             >
                                                 <Copy className="w-4 h-4" />
                                             </Button>
-                                        );
-                                    })()}
-                                </td>
-                                <td className="py-2 px-4 text-center">
-                                    {/* Product QR Copy/View Button */}
-                                    {prod.title && (() => {
-                                        const qr = `${window.location.origin}/room/${slugify(prod.title)}`;
-                                        return (
-                                            <div className="flex gap-2 justify-center">
-                                                <Button
-                                                    size="icon"
-                                                    variant="ghost"
-                                                    onClick={() => {
-                                                        setQrModalUrl(qr);
-                                                        setQrModalTitle(prod.title);
-                                                        setQrModalOpen(true);
-                                                    }}
-                                                    title="View QR & Download"
-                                                >
-                                                    <QrCode className="w-6 h-6" />
-                                                </Button>
-                                            </div>
                                         );
                                     })()}
                                 </td>
@@ -287,7 +214,7 @@ const ProductProfile = ({ id }) => {
                                     <div className="flex gap-2 justify-center">
                                         <button
                                             className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-800"
-                                            onClick={() => window.location.href = `/admin/add_direct_product/${prod._id}`}
+                                            onClick={() => window.location.href = `/admin/add_direct_packages/${prod._id}`}
                                         >
                                             Add Info
                                         </button>
@@ -296,7 +223,7 @@ const ProductProfile = ({ id }) => {
                                             onClick={() => {
                                                 setEditingId(prod._id);
                                                 setTitle(prod.title);
-                                                setArtisan(prod.artisan || "");
+                      
                                             }}
                                         >
                                             Edit
@@ -318,13 +245,6 @@ const ProductProfile = ({ id }) => {
                     </tbody>
                 </table>
             </div>
-            {/* QR Modal for viewing/downloading QR code */}
-            <ProductQrModal
-                open={qrModalOpen}
-                onOpenChange={setQrModalOpen}
-                qrUrl={qrModalUrl}
-                productTitle={qrModalTitle}
-            />
 
             {/* Delete Product Modal */}
             <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>

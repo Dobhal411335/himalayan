@@ -70,13 +70,6 @@ const AddProduct = ({ id }) => {
         setTitle('');
         setIsEditing(false);
     };
-
-
-    // QR Modal state
-    const [qrModalOpen, setQrModalOpen] = useState(false);
-    const [qrModalUrl, setQrModalUrl] = useState("");
-    const [qrModalTitle, setQrModalTitle] = useState("");
-
     // Slugify utility (copied from ProductProfile)
     function slugify(str) {
         if (!str) return '';
@@ -167,12 +160,12 @@ const AddProduct = ({ id }) => {
             const result = await response.json();
             if (response.ok) {
                 setProducts((prev) => prev.filter((prod) => prod._id !== id));
-                toast.success('Product deleted successfully!');
+                toast.success('packages deleted successfully!');
             } else {
-                toast.error(result.message || 'Failed to delete product.');
+                toast.error(result.message || 'Failed to delete packages.');
             }
         } catch (error) {
-            toast.error('Failed to delete product.');
+            toast.error('Failed to delete packages.');
         } finally {
             setIsLoading(false);
         }
@@ -197,7 +190,7 @@ const AddProduct = ({ id }) => {
                 });
                 result = await response.json();
                 if (response.ok) {
-                    toast.success('Room updated successfully!');
+                    toast.success('Package updated successfully!');
                     reset();
                     setProductCode(generateCode());
                     setIsEditing(false);
@@ -208,15 +201,9 @@ const AddProduct = ({ id }) => {
                         if (Array.isArray(data.packages)) {
                             setProducts(data.packages);
                         }
-                    } else {
-                        const res = await fetch('/api/product?isDirect=true');
-                        const data = await res.json();
-                        if (Array.isArray(data)) {
-                            setProducts(data);
-                        }
-                    }
+                    } 
                 } else {
-                    toast.error(result.message || 'Failed to update room');
+                    toast.error(result.message || 'Failed to update Package');
                 }
             } else {
                 response = await fetch('/api/admin/website-manage/addPackage', {
@@ -226,7 +213,7 @@ const AddProduct = ({ id }) => {
                 });
                 result = await response.json();
                 if (response.ok) {
-                    toast.success('Room added successfully!');
+                    toast.success('Package added successfully!');
                     reset();
                     setProductCode(generateCode());
                     // Refetch products
@@ -236,15 +223,9 @@ const AddProduct = ({ id }) => {
                         if (Array.isArray(data.packages)) {
                             setProducts(data.packages);
                         }
-                    } else {
-                        const res = await fetch('/api/product?isDirect=true');
-                        const data = await res.json();
-                        if (Array.isArray(data)) {
-                            setProducts(data);
-                        }
                     }
                 } else {
-                    toast.error(result.message || 'Failed to add room');
+                    toast.error(result.message || 'Failed to add Package');
                 }
             }
         } catch (error) {
@@ -252,33 +233,6 @@ const AddProduct = ({ id }) => {
         } finally {
             setIsLoading(false);
         }
-
-
-        // if (!title) {
-        //     toast.error("All fields are required", { style: { borderRadius: "10px", border: "2px solid red" } });
-        //     return;
-        // }
-        // try {
-        //     const response = await fetch("/api/admin/website-manage/addPackage", {
-        //         method: "POST",
-        //         headers: {
-        //             "Content-Type": "application/json",
-        //         },
-        //         body: JSON.stringify({ code: productCode, title }),
-        //     });
-
-        //     const res = await response.json();
-
-        //     if (response.ok) {
-        //         toast.success("Packages added successfully!", { style: { borderRadius: "10px", border: "2px solid green" } })
-        //         window.location.reload();
-        //     } else {
-        //         toast.error("Failed to add package", { style: { borderRadius: "10px", border: "2px solid red" } })
-        //     }
-        // } catch (error) {
-        //     toast.error("Something went wrong", { style: { borderRadius: "10px", border: "2px solid red" } })
-        // }
-
     };
     return (
         <>

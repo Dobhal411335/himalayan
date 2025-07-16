@@ -167,8 +167,8 @@ export default function FeaturedRoomsSection({ rooms = [], onBook, onShowReviews
                         );
                     })}
                 </CarouselContent>
-               <CarouselPrevious className="bg-gray-300 !rounded-full !w-12 !h-12 !flex !items-center !justify-center transition" />
-               <CarouselNext className="bg-gray-300 !rounded-full !w-12 !h-12 !flex !items-center !justify-center transition" />
+                <CarouselNext className="!right-2 !top-1/2 !-translate-y-1/2 z-10 " />
+                <CarouselPrevious className="!left-1 !top-1/2 !-translate-y-1/2 z-10" />
             </Carousel>
         </div>
     );

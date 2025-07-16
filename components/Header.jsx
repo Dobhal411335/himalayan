@@ -87,21 +87,20 @@ const Header = () => {
           <div className="items-center z-50 gap-4 flex">
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 px-2 border-r-2 border-black">
                   <Mail size={18} />
                   <Link href={"mailto:himalayanwellnessretreats@gmail.com"}>
                     <p className="text-sm font-semibold hover:underline">himalayanwellnessretreats@gmail.com</p>
                   </Link>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="border-r-2 border-black items-center flex h-6 pr-4">
                   <Phone size={18} />
                   <Link href={"tel:+919897515305"}>
                     <p className="text-sm font-semibold tracking-widest hover:underline"> +91 9897515305,7060340176</p>
                   </Link>
                 </div>
               </div>
-
-              <div className="relative">
+              <div className="relative border-r-2 border-black items-center flex h-6">
                 {status === "loading" ? (
                   <Loader2 className="animate-spin text-blue-600" size={36} />
                 ) : isUser ? (
@@ -151,8 +150,8 @@ const Header = () => {
                   </>
                 ) : (
                   <div className="relative">
-                    <button onClick={() => setIsAuthDropdownOpen(!isAuthDropdownOpen)} className="flex items-center px-4 py-2">
-                      <User className="ml-2" size={20} />
+                    <button onClick={() => setIsAuthDropdownOpen(!isAuthDropdownOpen)} className="flex items-center pr-4 py-2">
+                      <User className="" size={20} />
                     </button>
                     {isAuthDropdownOpen && (
                       <div className="absolute top-12 right-0 mt-2 w-48 text-black bg-white shadow-lg rounded-lg border">
