@@ -106,7 +106,10 @@ const Faq = () => {
   `}
                   style={{ pointerEvents: openIdx === idx ? 'auto' : 'none' }}
                 >
-                  {faq.answer}
+                  <div
+                    className="custom-desc-list text-gray-700 mb-2 text-lg py-2"
+                    dangerouslySetInnerHTML={{ __html: faq.answer }}
+                  />
                 </div>
               </div>
             ))}

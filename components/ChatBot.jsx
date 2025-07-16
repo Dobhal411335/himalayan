@@ -680,7 +680,7 @@ export default function ChatBot() {
       {/* Chat window */}
       {open && (
         <div
-          className={`fixed bottom-1 right-[4%] z-50 w-[330px] max-w-[95vw] bg-white rounded-xl shadow-2xl flex flex-col border border-gray-200 animate-fadeIn
+          className={`fixed bottom-1 md:right-[4%] right-[7%] z-50 w-[330px] max-w-[95vw] bg-white rounded-xl shadow-2xl flex flex-col border border-gray-200 animate-fadeIn
           ${
             // Shrink to content only for support mode or product not found
             showSupportOptions || isProductNotFound || step === 0 || step === 1 || step === 2 || step === "product-info"

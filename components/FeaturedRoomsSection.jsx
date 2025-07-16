@@ -34,16 +34,16 @@ export default function FeaturedRoomsSection({ rooms = [], onBook, onShowReviews
 
     return (
         <div className="w-full px-2 bg-[#ededed]">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between p-6 rounded-lg mb-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between p-6 rounded-lg md:mb-8 mb-4">
                 <div className="">
-                    <div className="flex justify-between gap-2">
+                    <div className="flex flex-col md:flex-row justify-between gap-2">
 
-                    <h2 className="pacifico-h2 text-green-800 text-2xl md:text-3xl text-center my-5">Comfort Meets Calm – Your Ideal Stay Awaits</h2>
-                    <div className="my-auto px-10">
-                        <Link href={"/accommodation"} className="p-3 bg-orange-500 hover:bg-orange-600 text-white font-bold px-7  text-md shadow-lg transition-all duration-200">
-                            View All Room
-                        </Link>
-                    </div>
+                        <h2 className="pacifico-h2 text-green-800 text-xl md:text-3xl text-center my-5 px-2">Comfort Meets Calm – Your Ideal Stay Awaits</h2>
+                        <div className="md:my-auto md:px-10 p-2 flex justify-end">
+                            <Link href={"/accommodation"} className="p-3 bg-orange-500 hover:bg-orange-600 text-white font-bold px-7  text-md shadow-lg transition-all duration-200">
+                                View All Room
+                            </Link>
+                        </div>
                     </div>
                     <p className="text-base md:text-md leading-snug mt-2">
                         Our accommodation offers the perfect blend of comfort, serenity, and functionality—making it an ideal stay for all kinds of travelers, whether solo, with family, or in a group. Each room is thoughtfully designed with elegant interiors, cozy bedding, and large windows that open to serene natural views. We provide all modern amenities including high-speed Wi-Fi, air conditioning, 24/7 hot water, in-room tea/coffee makers, spacious bathrooms, and secure locker facilities. Daily housekeeping ensures a clean and welcoming environment throughout your stay. With easy access to yoga halls, meditation spaces, and common lounges, our stay is more than just a room—it’s a peaceful retreat that truly feels like home.
@@ -51,7 +51,7 @@ export default function FeaturedRoomsSection({ rooms = [], onBook, onShowReviews
                 </div>
 
             </div>
-            <Carousel className="w-full px-10 gap-2 mx-auto">
+            <Carousel className="w-full md:px-10 gap-2 mx-auto">
                 <CarouselContent>
                     {rooms.map((item, idx) => {
                         const imageUrls = [
@@ -59,8 +59,8 @@ export default function FeaturedRoomsSection({ rooms = [], onBook, onShowReviews
                         ];
                         if (imageUrls.length === 0) imageUrls.push('/placeholder.jpeg');
                         return (
-                            <CarouselItem key={item._id || idx} className="md:basis-1/3 basics-1">
-                                <div className="flex flex-col bg-[#f8f5ef] h-[550px] my-5 w-[450px] relative group overflow-hidden">
+                            <CarouselItem key={item._id || idx} className="md:basis-1/3">
+                                <div className="flex flex-col bg-[#f8f5ef] h-[550px] my-5 w-full md:w-[450px] relative group overflow-hidden">
                                     {/* Room Image (Banner style) */}
                                     <div className="block w-full h-[250px] relative ">
                                         <Image
@@ -82,9 +82,9 @@ export default function FeaturedRoomsSection({ rooms = [], onBook, onShowReviews
                                                 aria-label="Show reviews"
                                             >
                                                 <div className="flex items-center gap-1">
-                                                {[...Array(Math.round((item.reviews?.[0]?.rating || 5)))].map((_, i) => (
-                                                    <Star key={i} size={14} color="#12b76a" fill="#12b76a" className="inline" />
-                                                ))}
+                                                    {[...Array(Math.round((item.reviews?.[0]?.rating || 5)))].map((_, i) => (
+                                                        <Star key={i} size={14} color="#12b76a" fill="#12b76a" className="inline" />
+                                                    ))}
                                                 </div>
                                                 <span className="text-xs text-gray-700 ml-1 group-hover:underline">
                                                     Based On {item.reviews?.length || 0} Review{(item.reviews?.length || 0) !== 1 ? 's' : ''}
@@ -112,7 +112,6 @@ export default function FeaturedRoomsSection({ rooms = [], onBook, onShowReviews
                                                             <TooltipTrigger asChild>
                                                                 <span className="bg-gray-100 px-1 rounded flex items-center justify-center cursor-pointer">
                                                                     {amenityIcons[am.label]}
-                                                                    {/* {am.label} */}
                                                                 </span>
                                                             </TooltipTrigger>
                                                             <TooltipContent side="top">

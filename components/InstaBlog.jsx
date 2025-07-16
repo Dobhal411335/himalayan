@@ -30,7 +30,6 @@ const InstaBlog = () => {
     const [artisanReviews, setArtisanReviews] = useState([]);
     const [isLoadingReviews, setIsLoadingReviews] = useState(true);
     const [showReviewModal, setShowReviewModal] = useState(false);
-    const [customReview, setcustomReview] = useState([]);
     const [allReviews, setAllReviews] = useState([]);
     const [loadingPromotions, setIsLoadingPromotions] = useState(true);
 
@@ -161,7 +160,7 @@ const InstaBlog = () => {
             setIsLoadingReviews(true);
             const response = await fetch('/api/saveReviews?type=all&active=true');
             const data = await response.json();
-            console.log('Fetched artisan reviews:', data);
+            // console.log('Fetched artisan reviews:', data);
             if (response.ok) {
                 // Only show approved and active reviews
                 const approvedReviews = data.reviews.filter(review =>
@@ -238,7 +237,7 @@ const InstaBlog = () => {
         <div className='bg-[#fcf7f1] w-full overflow-hidden max-w-screen overflow-x-hidden'>
             {/*Blogs /  News & Announcement Section */}
             {blogs.length > 0 || news.length > 0 && (
-                <div className="w-full flex flex-col items-center py-20 bg-blue-100">
+                <div className="w-full flex flex-col items-center py-20 bg-[#ededed]">
                     <div className="w-full flex flex-col md:flex-row gap-8 min-h-[350px]">
                         <div className="flex flex-col md:flex-row w-full gap-8">
                             {/* Blogs Section */}
@@ -322,9 +321,13 @@ const InstaBlog = () => {
                                                     );
                                                 })}
                                             </CarouselContent>
-                                            <div className="flex items-center gap-2 mt-2 md:mt-0 justify-center md:justify-end">
+                                            <div className="hidden md:flex items-center gap-2 mt-2 md:mt-0 justify-center md:justify-end">
                                                 <CarouselPrevious className="bg-black text-white py-2 px-3 font-bold rounded hover:bg-gray-800 transition-colors text-base md:text-lg" />
                                                 <CarouselNext className="bg-black text-white py-2 px-3 font-bold rounded hover:bg-gray-800 transition-colors text-base md:text-lg" />
+                                            </div>
+                                            <div className='md:hidden'>
+                                                <CarouselNext className="!right-2 !top-1/2 !-translate-y-1/2 z-10 " />
+                                                <CarouselPrevious className="!left-1 !top-1/2 !-translate-y-1/2 z-10" />
                                             </div>
                                         </Carousel>
                                     </div>
@@ -472,7 +475,7 @@ const InstaBlog = () => {
             )}
 
             {/* Reviews Section */}
-            <div className="w-full mx-auto relative min-h-[650px] flex items-center justify-end relative">
+            <div className="w-full mx-auto relative md:min-h-[650px] min-h-[450px] flex items-center justify-end relative">
                 {/* Background Image */}
                 <div className="hidden md:flex absolute inset-0 w-full h-full z-0">
                     <img
@@ -547,8 +550,15 @@ const InstaBlog = () => {
                 </div>
 
                 {/* Review Card (Mobile) */}
-                <div className="block md:hidden gap-2 flex flex justify-start w-full md:w-1/2 items-end pr-1">
-
+                <div className="block md:hidden gap-2 flex flex-col justify-start w-full md:w-1/2 items-end pr-1">
+                    <div className="button">
+                        <Button
+                            className="bg-white text-black hover:bg-black hover:text-white transition-colors duration-300"
+                            onClick={() => setShowReviewModal(true)}
+                        >
+                            Write a Review
+                        </Button>
+                    </div>
                     <Carousel className="w-full md:w-[600px]"
                         plugins={[Autoplay({ delay: 4000 })]}>
 
@@ -570,10 +580,10 @@ const InstaBlog = () => {
                                     <div className="bg-white rounded-3xl px-8 py-5 flex flex-col justify-between h-full md:min-h-[320px] relative overflow-visible">
                                         {/* Review text */}
 
-                                        <div className="text-md md:text-2xl text-gray-800 font-bold leading-relaxed mt-4 text-left">
+                                        <div className="text-md text-gray-800 font-bold leading-relaxed mt-4 text-left">
                                             {review?.title || 'No review text.'}
                                         </div>
-                                        <div className="text-md text-gray-800 font-medium leading-relaxed my-2 text-left">
+                                        <div className="text-sm text-gray-800 font-medium leading-relaxed my-2 text-left">
                                             {review?.shortDescription || 'No review text.'}
                                         </div>
                                         {/* Bottom row: avatar, name, subtitle, nav buttons */}
@@ -584,24 +594,27 @@ const InstaBlog = () => {
                                                     <img
                                                         src={review?.image || "/placeholder.jpeg"}
                                                         alt={review?.createdBy || 'Anonymous'}
-                                                        className="w-14 h-14 rounded-full border-4 border-white shadow object-cover"
+                                                        className="w-14 h-14 rounded-full object-top border-4 border-white shadow object-cover"
                                                         onError={(e) => {
                                                             // console.log('Image failed to load:', e.target.src);
                                                             e.target.src = '/placeholder.jpeg';
                                                         }}
                                                     />
-                                                    <div className="ml-4 text-left">
-                                                        <div className="font-bold text-xl text-black">{review?.createdBy || review?.title || 'Anonymous'}</div>
-                                                    </div>
                                                 </div>
-                                                <div className="flex items-center gap-1">
-                                                    {review?.rating && (
-                                                        <>
-                                                            {[...Array(review?.rating)].map((_, i) => (
-                                                                <Star key={i} size={22} className="text-yellow-400 fill-yellow-400" />
-                                                            ))}
-                                                        </>
-                                                    )}
+                                                <div className="flex flex-col items-start gap-1">
+                                                    <div className="px-3 text-left">
+                                                        <div className="font-bold text-md text-black">{review?.createdBy || review?.title || 'Anonymous'}</div>
+                                                    </div>
+                                                    <div className="flex px-3">
+
+                                                        {review?.rating && (
+                                                            <>
+                                                                {[...Array(review?.rating)].map((_, i) => (
+                                                                    <Star key={i} size={15} className="text-yellow-400 fill-yellow-400" />
+                                                                ))}
+                                                            </>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -612,14 +625,7 @@ const InstaBlog = () => {
                         </CarouselContent>
                         <CarouselPrevious />
                         <CarouselNext />
-                        <div className="button">
-                            <Button
-                                className="absolute top-0 right-0 bg-white text-black hover:bg-black hover:text-white transition-colors duration-300"
-                                onClick={() => setShowReviewModal(true)}
-                            >
-                                Write a Review
-                            </Button>
-                        </div>
+
                     </Carousel>
                 </div>
             </div>

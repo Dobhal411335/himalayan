@@ -16,16 +16,12 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/
 import Link from "next/link";
 
 const HeroSection = () => {
-  const { addToCart } = useCart();
-  const [loading, setLoading] = useState(false);
   const [banners, setBanners] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [desktopApi, setDesktopApi] = useState();
   const [desktopSelectedIndex, setDesktopSelectedIndex] = useState(0);
   const [mobileApi, setMobileApi] = useState(null);
   const [mobileSelectedIndex, setMobileSelectedIndex] = useState(0);
-  const [selectedIndex,setSelectedIndex]=useState(0)
-  const [api,setApi]=useState(null)
   const plugin = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
 
   const dummyBanners = [
@@ -34,18 +30,6 @@ const HeroSection = () => {
       subTitle: "Explore Our Collection",
       image: { url: "https://dummyimage.com/1280x720/000/fff" },
       link: "/"
-    },
-    {
-      title: "Discover",
-      subTitle: "Find Amazing Deals",
-      image: { url: "https://dummyimage.com/1280x720/333/fff" },
-      link: "/products"
-    },
-    {
-      title: "Shop Now",
-      subTitle: "Limited Time Offers",
-      image: { url: "https://dummyimage.com/1280x720/666/fff" },
-      link: "/offers"
     },
   ];
 
@@ -93,12 +77,6 @@ const HeroSection = () => {
     };
   }, [mobileApi]);
 
-  // Sync carousel to selectedIndex when it changes (for pagination dots)
-  // useEffect(() => {
-  //   if (api && typeof api.scrollTo === "function") {
-  //     api.scrollTo(selectedIndex);
-  //   }
-  // }, [selectedIndex, api]);
 
   const { isSearchOpen, setIsSearchOpen } = useSearch();
   const router = useRouter();
@@ -140,7 +118,7 @@ const HeroSection = () => {
   }
 
   return (
-    <section className="bg-[#fcf7f1] relative xl:h-screen h-full w-full px-2 overflow-hidden z-0 group">
+    <section className="bg-[#fcf7f1] relative xl:h-screen h-full w-full p-2 overflow-hidden z-0 group">
       <div className="hidden xl:block w-full h-screen ">
         <div className="hidden xl:block w-full h-full">
           <Carousel

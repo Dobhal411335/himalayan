@@ -6,7 +6,7 @@ const FaqSchema = new Schema({
     category: { 
         type: String, 
         required: true, 
-        enum: ['General', 'Returns', 'Gift', 'Refunds', 'Payments', 'Shipping']
+        enum: ['General', 'Packages /Product', 'Privacy FAQ', 'Refunds & Cancellation', 'Payments', 'House Rules']
     }
 }, { timestamps: true });
 

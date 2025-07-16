@@ -1,7 +1,6 @@
 import { Schema, models, model } from "mongoose";
 
 const ReviewSchema = new Schema({
-  active: { type: Boolean, default: true },
   deleted: { type: Boolean, default: false },
   name: { type: String, required: true },
   date: { type: Number, required: true },

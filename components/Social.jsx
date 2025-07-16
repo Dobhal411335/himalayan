@@ -37,7 +37,7 @@ const Social = () => {
     <div
       style={{
         position: "fixed",
-        top: "50%",
+        top: "45%",
         right: 0,
         transform: "translateY(-50%)",
         zIndex: 1000,
@@ -46,7 +46,7 @@ const Social = () => {
         boxShadow: "0 2px 16px rgba(0,0,0,0.09)",
         padding: "18px 10px",
         display: "flex",
-        flexDirection: "column",
+        flexDirection: "column",  
         alignItems: "center",
         gap: "22px",
       }}

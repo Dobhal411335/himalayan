@@ -476,9 +476,9 @@ const AddInfo = () => {
   });
 
   // Filter "Day Plan" info
-  const dayPlanInfo = packages.info.filter(info => info.typeOfSelection === "Day Plan")
+  const dayPlanInfo = (packages?.info || []).filter(info => info.typeOfSelection === "Day Plan")
   // Filter other info
-  const otherInfo = packages.info.filter(info => info.typeOfSelection !== "Day Plan")
+  const otherInfo = (packages?.info || []).filter(info => info.typeOfSelection !== "Day Plan")
 
   useEffect(() => {
     if (isOpen && !editItem&& addEditor) {

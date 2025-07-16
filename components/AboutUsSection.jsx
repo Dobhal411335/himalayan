@@ -82,13 +82,13 @@ const AboutUsSection = () => {
     return (
         <section className="bg-[#f8f9f6] relative py-10 w-full px-10 md:px-5 overflow-hidden max-w-screen overflow-x-hidden">
             <div className="w-full">
-                <h2 className="pacifico-h2 text-green-800 text-3xl text-center mt-2 md:mt-7 uppercase">
+                <h2 className="pacifico-h2 text-green-800 text-xl md:text-3xl  text-center mt-2 md:mt-7 uppercase">
                     <span className="">Experience the Soul of Himalayan Wellness in Rishikesh,</span>
                 </h2>
-                <p className=" text-xl font-lg md:text-xl text-center mt-2">
+                <p className="text-md font-lg md:text-xl text-center mt-2">
                     emphasizes uniqueness, tradition, artistry, and authentic
                 </p>
-                <hr className="h-[2px] w-[50%] mx-auto bg-black" />
+                <hr className="h-[2px] md:w-[50%] mx-auto bg-black" />
 
                 <p className="text-gray-600 md:py-8 py-4 text-center font-barlow md:w-[55%] w-full mx-auto">
                     Experience the Soul of Himalayan Wellness
@@ -116,7 +116,7 @@ const AboutUsSection = () => {
                         featuredPackages.map((item) => (
                             <div
                                 key={item._id}
-                                className="flex flex-col items-center w-42 mx-auto md:w-80 rounded-3xl group"
+                                className="flex flex-col items-center w-48 mx-auto md:w-80 rounded-3xl group"
                                 style={{ padding: "1rem 0 0.5rem 0" }}
                             >
                                 <div className="w-full aspect-[4/5] rounded-2xl border overflow-hidden flex items-end justify-center">
@@ -128,7 +128,7 @@ const AboutUsSection = () => {
                                 </div>
                                 <div className="mt-4 text-center px-2 w-full flex justify-start">
                                     <Link key={item._id} href={item.link}>
-                                        <div className="font-bold text-sm md:text-xl text-black hover:underline transition cursor-pointer">{item.title}</div>
+                                        <div className="font-bold text-md md:text-xl text-black hover:underline transition cursor-pointer">{item.title}</div>
                                     </Link>
                                 </div>
                             </div>

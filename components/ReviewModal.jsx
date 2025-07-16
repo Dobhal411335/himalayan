@@ -123,7 +123,6 @@ export default function ReviewModal({ open, onClose, onSubmit, artisan, type = '
       thumb: formValues.thumb,
       type: formValues.type,
       approved: false,
-      active: true,
       deleted: false
     };
 

@@ -5,11 +5,11 @@ import toast from "react-hot-toast";
 import { Switch } from "../ui/switch";
 
 
-const statusOptions = [
-    { label: "Active", value: "active" },
-    { label: "Inactive", value: "inactive" },
-    { label: "All", value: "all" },
-];
+// const statusOptions = [
+//     { label: "Active", value: "active" },
+//     { label: "Inactive", value: "inactive" },
+//     { label: "All", value: "all" },
+// ];
 const typeOptions = [
     { label: "All Types", value: "all" },
     { label: "Product", value: "product" },
@@ -24,7 +24,6 @@ const columns = [
     "Rating",
     "Thumb",
     "Approved",
-    "Action",
     "View",
 ];
 
@@ -100,9 +99,9 @@ const ManageReviews = () => {
 
         // Filter by status
         if (statusFilter === 'active') {
-            filtered = filtered.filter(review => review.active && !review.deleted);
+            filtered = filtered.filter(review => review.approved && !review.deleted);
         } else if (statusFilter === 'inactive') {
-            filtered = filtered.filter(review => !review.active && !review.deleted);
+            filtered = filtered.filter(review => !review.approved && !review.deleted);
         } else {
             filtered = filtered.filter(review => !review.deleted);
         }
@@ -212,21 +211,7 @@ const ManageReviews = () => {
         <div className="w-full max-w-[1100px] mx-auto rounded-[14px] shadow-md px-4 py-6 md:py-8">
             {/* Filter Row */}
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-6">
-            {/* Existing status filter */}
-            <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                    <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                        {statusOptions.map(option => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                
 
                 {/* New type filter */}
                 <div className="flex-1">
@@ -289,16 +274,6 @@ const ManageReviews = () => {
                                             checked={!!review.approved}
                                             onCheckedChange={() => handleToggleApproved(review)}
                                             className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-300"
-                                        />
-                                    </td>
-                                    {/* Active Status */}
-                                    <td className="align-middle px-5">
-                                        <Switch
-                                            checked={!review.deleted && review.active}
-                                            onCheckedChange={() => handleAction(review._id, review.active ? 'inactive' : 'active')}
-                                            className={`data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-300 ${review.deleted ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                            disabled={review.deleted}
-                                            title={review.deleted ? 'Cannot activate deleted review' : ''}
                                         />
                                     </td>
                                     {/* View */}

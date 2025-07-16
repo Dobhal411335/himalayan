@@ -38,13 +38,11 @@ export async function GET(req) {
   try {
     await connectDB();
     const { searchParams } = new URL(req.url);
-    const id = searchParams.get('id');
-    const name = searchParams.get('name');
-    // Support direct products filter for ProductProfile page
     const isDirectParam = searchParams.get('isDirect');
-    if (id) {
-      // Find by MongoDB _id
-      const packages = await Packages.findById(id)
+    // Only process if isDirect=true
+    if (isDirectParam === 'true') {
+      const filter = { isDirect: true, active: true };
+      const packages = await Packages.find(filter)
         .populate('price')
         .populate('gallery')
         .populate('video')
@@ -52,31 +50,14 @@ export async function GET(req) {
         .populate('info')
         .populate('reviews')
         .populate('packagePrice')
-        .populate('PackagePdf')
-      if (!packages || !packages.active) {
-        return new Response(JSON.stringify({ error: 'packages not found' }), { status: 404 });
-      }
+        .populate('pdfs');
       return new Response(JSON.stringify(packages), { status: 200 });
-    
     } else {
-      // Filter by isDirect if requested
-      let filter = {};
-      if (isDirectParam === 'true') filter.isDirect = true;
-      if (isDirectParam === 'false') filter.isDirect = false;
-      // Always filter for active products
-      filter.active = true;
-      let packages = await Packages.find(filter)
-        .populate('price')
-        .populate('gallery')
-        .populate('video')
-        .populate('description')
-        .populate('info')
-        .populate('reviews')
-        .populate('packagePrice')
-        .populate('PackagePdf')
-      return new Response(JSON.stringify(packages), { status: 200 });
+      // Optionally, handle other queries or return empty
+      return new Response(JSON.stringify([]), { status: 200 });
     }
   } catch (error) {
+    console.error(error);
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
