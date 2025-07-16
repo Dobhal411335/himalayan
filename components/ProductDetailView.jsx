@@ -114,8 +114,7 @@ export default function ProductDetailView({ product }) {
   const [districtInput, setDistrictInput] = React.useState("");
   const [statesList, setStatesList] = useState([]);
   const [pincodeInput, setPincodeInput] = React.useState("");
-  const [loadingShipping, setLoadingShipping] = useState(false);
-  const [shippingPerUnit, setShippingPerUnit] = useState(null);
+
 
   // Restore delivery location from localStorage on mount
   useEffect(() => {
@@ -129,11 +128,6 @@ export default function ProductDetailView({ product }) {
 
   // Extract variants
   const variants = Array.isArray(product?.quantity?.variants) ? product.quantity.variants : [];
-  // console.log(product?.quantity?.variants);
-
-  // Get all unique sizes and colors from variants
-  const availableSizes = [...new Set(variants.map(v => v.size))];
-  const allColors = [...new Set(variants.map(v => v.color))];
 
   // Find the selected variant
   const selectedVariant = variants.find(v => {
@@ -178,10 +172,6 @@ export default function ProductDetailView({ product }) {
     hasDiscount = true;
     couponText = `${coupon.couponCode || ''} (₹${coupon.amount} OFF)`;
   }
-  const price = selectedVariant ? formatNumeric(selectedVariant.price) : 0;
-  const total = hasDiscount ? (discountedPrice * quantity).toFixed(2) : (selectedVariant ? (selectedVariant.price * quantity).toFixed(2) : 0);
-
-  const { cart, addToCart, setCart, addToWishlist, removeFromWishlist, wishlist } = useCart();
   // Gather all images (main + sub) at the top-level
   // Gather all images, filter out empty/undefined/null, and fallback to placeholder if empty
   const allImagesRaw = [product.gallery?.mainImage?.url, ...(product.gallery?.subImages?.map(img => img.url) || [])];
@@ -201,48 +191,23 @@ export default function ProductDetailView({ product }) {
     setActiveImageIdx(carouselApi.selectedScrollSnap());
     return () => carouselApi.off('select', onSelect);
   }, [carouselApi]);
-
-  useEffect(() => {
-    // Fetch states/districts from API on mount
-    const fetchStates = async () => {
-      try {
-        const res = await fetch('/api/zipcode');
-        const data = await res.json();
-        if (data.success && Array.isArray(data.data)) {
-          setStatesList(data.data);
-        }
-      } catch (e) {
-        setStatesList([]);
-      }
-    };
-
-    fetchStates();
-  }, []);
-
-
   return (
     <div className="flex flex-col md:flex-row gap-4 max-w-[1500px] mx-auto">
       {/* LEFT: Product Images */}
       <div className="w-full md:w-2/3 flex flex-col items-center">
-
         {/* Main Image Carousel (QuickView style, embla-controlled) */}
         <div className="w-full flex justify-center mb-4">
-          <div className="relative w-full max-w-[700px] h-[420px] md:h-[500px] flex items-center justify-center overflow-hidden">
+          <div className="relative w-full max-w-[800px] h-[500px] md:h-[450px] flex items-center justify-center overflow-hidden border-2 border-black bg-gray-100 p-4 rounded-lg">
             <Carousel
-              className="w-full h-full pr-4"
-              opts={{ loop: true }} // <--- This is the correct place to enable looping
+              className="w-full h-full"
+              opts={{ loop: true }}
               plugins={[Autoplay({ delay: 4000 })]}
               setApi={setCarouselApi}
             >
-              <CarouselContent className="h-[420px] md:h-[450px]">
+              <CarouselContent className="h-[460px] md:h-[450px]">
                 {allImages.map((img, idx) => (
                   <CarouselItem key={idx} className="flex items-center justify-center h-full">
-                    <div className="relative w-full h-[420px] md:h-[450px] flex items-center justify-center"
-                      onMouseMove={handleMouseMove}
-                      onMouseEnter={handleMouseEnter}
-                      onMouseLeave={handleMouseLeave}
-                      style={{ cursor: isZoomed ? 'zoom-out' : 'zoom-in' }}
-                    >
+                    <div className="relative w-full h-[460px] md:h-[450px] flex items-center justify-center">
                       <Image
                         src={img}
                         alt={`Product image ${idx}`}
@@ -255,11 +220,6 @@ export default function ProductDetailView({ product }) {
                           width: '100%',
                           height: '100%',
                           transition: 'transform 0.3s',
-                          transform:
-                            isZoomed && activeImageIdx === idx
-                              ? `scale(1.5) translate(${-zoomPosition.x + 50}%, ${-zoomPosition.y + 50}%)`
-                              : 'scale(1) translate(0, 0)',
-                          pointerEvents: 'none',
                         }}
                       />
                     </div>
@@ -301,27 +261,6 @@ export default function ProductDetailView({ product }) {
                 </>
               )}
             </Carousel>
-          </div>
-        )}
-        {product.categoryTag && (
-          <div className="my-4 w-full md:w-[60%] mx-auto px-2">
-            <div className="text-sm mb-1">
-              <span className="block font-semibold text-lg mb-2">Category:</span>
-              <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto pr-1">
-                {Array.isArray(product.categoryTag?.tags) && product.categoryTag.tags.length > 0 ? (
-                  product.categoryTag.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800"
-                    >
-                      {tag}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-gray-500">No categories</span>
-                )}
-              </div>
-            </div>
           </div>
         )}
       </div>

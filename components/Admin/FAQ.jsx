@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 
 const FAQ = () => {
   const [groupedFaqs, setGroupedFaqs] = useState({});
-  const categories = ["General", "Returns", "Gift", "Refunds", "Payments", "Shipping"];
+  const categories = ["General", "Packages / Product", "Privacy FAQ", "Refunds & Cancellation", "Payments", "House Rules"];
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 const categories = [
   { label: "General", icon: "💬" },
   { label: "Packages / Product", icon: "↩️" },
-  { label: "Privacy FaQ", icon: "🎁" },
+  { label: "Privacy FAQ", icon: "🎁" },
   { label: "Refunds & Cancellation", icon: "💸" },
   { label: "Payments", icon: "💳" },
   { label: "House Rules", icon: "🏡" }
