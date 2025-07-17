@@ -15,11 +15,11 @@ import CategoryAds from "@/components/CategoryAds";
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 const BannerSection = () => (
-    <div className="relative h-64 md:h-96 flex items-center justify-center">
+    <div className="relative h-48 md:h-96 flex items-center justify-center">
         <img
             src="/accommodation.jpg"
             alt="Accommodation Image"
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full md:object-cover object-contain px-1 md:px-0"
         />
     </div>
 );
@@ -232,9 +232,11 @@ const ArtisanList = () => {
                                             {/* Details */}
                                             <div className="flex-1 p-5 flex flex-col gap-2 justify-between min-h-[260px] relative">
                                                 <div className="flex items-start justify-between">
-                                                    <h3 className="text-2xl font-bold text-gray-900">{item.title || "Room Name"}</h3>
+                                                    <Link href={`/room/${item.slug}`}>
+                                                        <h3 className="md:text-2xl text-xl hover:underline font-bold text-gray-900">{item.title || "Room Name"}</h3>
+                                                    </Link>
                                                     <button
-                                                        className="flex items-start justify-between cursor-pointer group bg-transparent border-0 p-0"
+                                                        className="flex flex-col items-center justify-between cursor-pointer group bg-transparent border-0 p-0"
                                                         onClick={() => {
                                                             setSelectedReviews(item.reviews || []);
                                                             setReviewModalOpen(true);
@@ -242,9 +244,12 @@ const ArtisanList = () => {
                                                         style={{ outline: 'none' }}
                                                         aria-label="Show reviews"
                                                     >
+                                                        <div className="flex items-center gap-1">
+
                                                         {[...Array(Math.round((item.reviews?.[0]?.rating || 5)))].map((_, i) => (
                                                             <Star key={i} size={16} color="#12b76a" fill="#12b76a" className="inline" />
                                                         ))}
+                                                        </div>
 
                                                         <span className="text-xs text-gray-700 ml-1 group-hover:underline">
                                                             Based On {item.reviews?.length || 0} Review{(item.reviews?.length || 0) !== 1 ? 's' : ''}
@@ -298,11 +303,11 @@ const ArtisanList = () => {
                                                     const mainPrice = priceList.find(p => p.type === '02 Pax') || priceList.find(p => p.type === '01 Pax');
                                                     return (
                                                         <div className="flex items-center gap-4">
-                                                            <span className="text-2xl font-bold text-black">Rs. {mainPrice ? mainPrice.amount : 'N/A'}</span>
-                                                            <span className="text-lg font-semibold text-gray-800 line-through">{mainPrice && mainPrice.oldPrice ? mainPrice.oldPrice : 'N/A'}</span>
+                                                            <span className="md:text-2xl text-xl font-bold text-black">Rs. {mainPrice ? mainPrice.amount : 'N/A'}</span>
+                                                            <span className="md:text-lg text-md font-semibold text-gray-800 line-through">{mainPrice && mainPrice.oldPrice ? mainPrice.oldPrice : 'N/A'}</span>
                                                             <span className="text-md text-gray-700">/ Per Night</span>
                                                             <button
-                                                                className="ml-auto bg-green-700 hover:bg-green-800 text-white font-semibold px-16 py-2 rounded-md"
+                                                                className="ml-auto bg-green-700 hover:bg-green-800 text-white font-semibold md:px-16 px-8 py-2 rounded-md"
                                                                 onClick={() => {
                                                                     if (status === 'loading') return;
                                                                     if (!session || !session.user) {
@@ -358,7 +363,7 @@ const ArtisanList = () => {
                     />
                 </div>
                 {/* {data.longPara && ( */}
-                <div className="my-4 mx-10 rounded-xl overflow-hidden border-2 border-black p-5">
+                <div className="my-4 md:mx-10 mx-2 rounded-xl overflow-hidden border-2 border-black p-5">
                     <div
                         className="my-4"
                     >

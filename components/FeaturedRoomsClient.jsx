@@ -5,6 +5,7 @@ import ReviewListModal from "./ReviewListModal";
 import BookingDetails from "./BookingDetails";
 
 export default function FeaturedRoomsClient({ rooms }) {
+  // console.log(rooms)
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showBookModal, setShowBookModal] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);

@@ -8,7 +8,6 @@ import Link from "next/link";
 import { Mail, Phone, Share2, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
-import QuickViewProductCard from "./QuickViewProductCard";
 import Autoplay from "embla-carousel-autoplay";
 import BlogQuickViewModal from "./BlogQuickViewModal";
 import { Star } from 'lucide-react';
@@ -70,49 +69,6 @@ const CertificateSectionCarousel = ({ certificates, onImageClick }) => {
 
 const ArtisanDetails = ({ artisan }) => {
   // console.log(artisan)
-  const { addToCart, addToWishlist, removeFromWishlist, wishlist } = useCart();
-  // --- Helper for Add to Cart with discount/coupon logic ---
-  const handleAddToCart = (item) => {
-    const price = item?.quantity?.variants[0]?.price;
-    const coupon = item.coupon || item.coupons?.coupon;
-    let discountedPrice = price;
-    let couponApplied = false;
-    let couponCode = "";
-    if (coupon && typeof coupon.percent === 'number' && coupon.percent > 0) {
-      discountedPrice = price - (price * coupon.percent) / 100;
-      couponApplied = true;
-      couponCode = coupon.couponCode;
-    } else if (coupon && typeof coupon.amount === 'number' && coupon.amount > 0) {
-      discountedPrice = price - coupon.amount;
-      couponApplied = true;
-      couponCode = coupon.couponCode;
-    }
-    addToCart({
-      id: item._id,
-      name: item.title,
-      image: item?.gallery?.mainImage || "/placeholder.jpeg",
-      price: Math.round(discountedPrice),
-      size: item?.quantity?.variants[0].size,
-      weight: item?.quantity?.variants[0].weight,
-      color:item?.quantity?.variants[0].color,
-      originalPrice: price,
-      qty: 1,
-      couponApplied,
-      couponCode: couponApplied ? couponCode : undefined,
-      productCode: item.code || item.productCode || '',
-      discountPercent: coupon && typeof coupon.percent === 'number' ? coupon.percent : undefined,
-      discountAmount: coupon && typeof coupon.amount === 'number' ? coupon.amount : undefined,
-      cgst: (item.taxes && item.taxes.cgst) || item.cgst || (item.tax && item.tax.cgst) || 0,
-      sgst: (item.taxes && item.taxes.sgst) || item.sgst || (item.tax && item.tax.sgst) || 0,
-      totalQuantity: item?.quantity?.variants[0]?.qty || 0,
-    });
-    toast.success("Added to cart!");
-  };
-  const formatNumeric = (num) => {
-    if (typeof num !== 'number') return num;
-    return num.toLocaleString('en-IN');
-  }
-
   // ...existing state
   const [otherArtisans, setOtherArtisans] = useState([]);
   const [showBlogModal, setShowBlogModal] = useState(false);
@@ -128,7 +84,6 @@ const ArtisanDetails = ({ artisan }) => {
       .catch(err => setOtherArtisans([]));
   }, [artisan._id]);
   // console.log(artisan)
-  const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [showShareBox, setShowShareBox] = useState(false);
   const [copied, setCopied] = useState(false);
   const shareBoxRef = useRef(null);
@@ -158,22 +113,7 @@ const ArtisanDetails = ({ artisan }) => {
     setCopied(true);
     setTimeout(() => setCopied(false), 1200);
   };
-  // Prevent background scroll when Quick View is open
-  useEffect(() => {
-    if (quickViewProduct) {
-      document.body.classList.add("overflow-hidden");
-    } else {
-      document.body.classList.remove("overflow-hidden");
-    }
-    return () => document.body.classList.remove("overflow-hidden");
-  }, [quickViewProduct]);
-  // Sample carousel data for products if not present
-  const products = artisan.products && artisan.products.length > 0 ? artisan.products : [
-    { _id: 1, title: 'Sample Product 1', image: 'https://via.placeholder.com/120x120?text=Product+1' },
-    { _id: 2, title: 'Sample Product 2', image: 'https://via.placeholder.com/120x120?text=Product+2' },
-    { _id: 3, title: 'Sample Product 3', image: 'https://via.placeholder.com/120x120?text=Product+3' },
-  ];
-  // console.log(products)
+
 
   const [showExpertModal, setShowExpertModal] = useState(false);
 
@@ -242,10 +182,10 @@ const ArtisanDetails = ({ artisan }) => {
           </div>
           {/* Details Card */}
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-8 md:mt-8 md:ml-0 bg-transparent">
-            <div className="flex flex-col gap-2 border-r-2 border-black px-2">
+            <div className="flex flex-col gap-2 md:border-r-2 md:border-black px-2">
               <div className="text-md font-bold leading-tight flex items-center">Name: <span className="text-md align-middle font-normal"> {artisan.title}{artisan.firstName} {artisan.lastName}</span></div>
-              <div className="font-bold text-md flex items-center">SHG Name: <span className="font-normal text-md">{artisan.shgName || 'No SHG Name Avaiable'}</span></div>
-              <div className="font-bold text-md flex items-center"> Artisan No: <span className="font-normal text-md">{artisan.artisanNumber || 'Artisan Number Not Available'}</span></div>
+              <div className="font-bold text-md flex items-center">Any Group Name: <span className="font-normal text-md">{artisan.shgName || 'No SHG Name Avaiable'}</span></div>
+              <div className="font-bold text-md flex items-center"> Team No: <span className="font-normal text-md">{artisan.artisanNumber || 'Artisan Number Not Available'}</span></div>
               <div className="text-md font-semibold text-black">{artisan.yearsOfExperience || '0'} Years of Experience</div>
               <div className="font-bold text-md mt-2">Specializations:</div>
               <div className="flex gap-3 flex-wrap mb-2">
@@ -255,7 +195,9 @@ const ArtisanDetails = ({ artisan }) => {
               </div>
               {/* Social Icons Row */}
               <div className="flex items-center gap-2">
-                <div className="font-bold text-md">Social:</div>
+                {artisan.socialPlugin?.facebook || artisan.socialPlugin?.instagram || artisan.socialPlugin?.youtube || artisan.socialPlugin?.google || artisan.socialPlugin?.website ? (
+                  <div className="font-bold text-md">Social:</div>
+                ) : null}
                 {artisan.socialPlugin?.facebook && (
                   <a href={artisan.socialPlugin.facebook} target="_blank" rel="noopener noreferrer" title="Facebook">
                     <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-facebook-icon lucide-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
@@ -289,7 +231,6 @@ const ArtisanDetails = ({ artisan }) => {
             <div className="flex flex-col gap-2">
               <div className="font-bold mt-2 text-md">City: <span className="font-normal text-md">{artisan.address?.city || 'No City'}</span></div>
               <div className="font-bold mt-2 text-md">State: <span className="font-normal text-md">{artisan.address?.state || 'No State'}</span></div>
-              {/* <div className="font-bold mt-2 text-md w-44">Address: <span className="font-normal text-md">{artisan.address?.fullAddress || 'No Address'}</span></div> */}
               <div className="flex flex-col items-center gap-4 mt-2 mb-2">
                 <div className="flex items-center gap-2">
                   <div className='flex items-center gap-2 mt-2 mb-2'>
@@ -554,178 +495,6 @@ const ArtisanDetails = ({ artisan }) => {
               </div>
             </div>
           </div>
-        </div>
-      )}
-      {/* Products Carousel */}
-      {Array.isArray(artisan.products) && artisan.products.length > 0 && (
-        <div className="w-full p-20 bg-blue-100">
-          <h3 className="text-3xl font-bold mb-5 text-gray-800">
-            <span className='border-t-4 border-black'>
-              Product We Develop
-            </span></h3>
-          <Carousel className={`w-full mx-auto my-4 ${products.length > 0 ? "block" : "hidden"}`} plugins={[Autoplay({ delay: 4000 })]}>
-            <CarouselContent className="w-full gap-2">
-              {products.length > 0 &&
-                products.map((item, index) => (
-                  <CarouselItem
-                    key={index}
-                    className="pl-5 basis-1/2 md:basis-1/2 lg:basis-1/4 min-w-0 snap-start"
-                  >
-                    <div className="flex flex-col w-full md:w-[290px]">
-                      {/* Image Section */}
-                      <div className="relative w-full h-80 md:h-96 rounded-3xl overflow-hidden flex items-center justify-center group/image">
-                        {/* --- Dynamic Coupon Tag --- */}
-                        {(() => {
-                          const coupon = item.coupon || item.coupons?.coupon;
-                          if (!coupon?.couponCode) return null;
-                          const { percent, amount, couponCode } = coupon;
-                          let offerText;
-                          if (typeof percent === 'number' && percent > 0) {
-                            offerText = <>GET {percent}% OFF</>;
-                          } else if (typeof amount === 'number' && amount > 0) {
-                            offerText = <>GET ₹{amount} OFF</>;
-                          } else {
-                            offerText = <>Special Offer</>;
-                          }
-                          return (
-                            <div className="absolute top-6 left-4 z-10 bg-white rounded-full px-4 py-1 text-sm font-bold shadow text-black tracking-tight" style={{ letterSpacing: 0 }}>
-                              {offerText}
-                            </div>
-                          );
-                        })()}
-                        {/* Heart/Wishlist & Cart Buttons - Top Right */}
-                        <div className="absolute top-6 right-6 z-10 flex flex-col gap-4 items-end">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className={`rounded-full transition-colors duration-300 h-12 w-12 shadow-none ${wishlist.some(i => i.id === item._id) ? "bg-pink-600 hover:bg-pink-700" : "bg-white hover:bg-[#b3a7a3]"}`}
-                            onClick={() => {
-                              if (wishlist.some(i => i.id === item._id)) {
-                                removeFromWishlist(item._id);
-                                toast.success("Removed from wishlist!");
-                              } else {
-                                const price = item?.quantity?.variants[0].price;
-                                const coupon = item.coupon || item.coupons?.coupon;
-                                let discountedPrice = price;
-                                let couponApplied = false;
-                                let couponCode = "";
-                                if (coupon && typeof coupon.percent === 'number' && coupon.percent > 0) {
-                                  discountedPrice = price - (price * coupon.percent) / 100;
-                                  couponApplied = true;
-                                  couponCode = coupon.couponCode;
-                                } else if (coupon && typeof coupon.amount === 'number' && coupon.amount > 0) {
-                                  discountedPrice = price - coupon.amount;
-                                  couponApplied = true;
-                                  couponCode = coupon.couponCode;
-                                }
-                                addToWishlist({
-                                  id: item._id,
-                                  name: item.title,
-                                  image: item?.gallery?.mainImage || "/placeholder.jpeg",
-                                  price: Math.round(discountedPrice),
-                                  size: item?.quantity?.variants[0].size,
-                                  weight: item?.quantity?.variants[0].weight,
-                                  color:item?.quantity?.variants[0].color,
-                                  originalPrice: price,
-                                  qty: 1,
-                                  couponApplied,
-                                  couponCode: couponApplied ? couponCode : undefined,
-                                  productCode: item.code || item.productCode || '',
-                                  discountPercent: coupon && typeof coupon.percent === 'number' ? coupon.percent : undefined,
-                                  discountAmount: coupon && typeof coupon.amount === 'number' ? coupon.amount : undefined,
-                                  cgst: (item.taxes && item.taxes.cgst) || item.cgst || (item.tax && item.tax.cgst) || 0,
-                                  sgst: (item.taxes && item.taxes.sgst) || item.sgst || (item.tax && item.tax.sgst) || 0,
-                                  totalQuantity: item?.quantity?.variants[0]?.qty || 0,
-                                });
-                                toast.success("Added to wishlist!");
-                              }
-                            }}
-                          >
-                            <Heart size={28} className={wishlist.some(i => i.id === item._id) ? "text-white" : "text-pink-600"} />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="rounded-full bg-[#b3a7a3]/80 hover:bg-[#b3a7a3] transition-colors duration-300 h-12 w-12 shadow-none"
-                            onClick={() => handleAddToCart(item)}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="28"
-                              height="28"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="white"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="text-white"
-                            >
-                              <circle cx="8" cy="21" r="1" />
-                              <circle cx="19" cy="21" r="1" />
-                              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-                            </svg>
-                          </Button>
-                        </div>
-                        <Image
-                          src={item?.gallery?.mainImage?.url || "/placeholder.jpeg"}
-                          alt={item?.title || "Product image"}
-                          width={400}
-                          height={500}
-                          quality={60}
-                          className="object-cover w-full h-full rounded-3xl transition-transform duration-300 group-hover/image:scale-105"
-                        />
-                        {/* Quick View Button - Slide Up from Bottom on Hover (image only) */}
-                        <div className="absolute left-0 right-0 bottom-0 flex items-center justify-center translate-y-10 opacity-0 group-hover/image:translate-y-0 group-hover/image:opacity-100 transition-all duration-300 py-4 ">
-                          <Button
-                            className="bg-black text-white hover:bg-gray-800 transition-colors duration-300 uppercase text-sm font-bold px-8 py-3 rounded-full shadow-lg border border-2 border-white"
-                            onClick={() => setQuickViewProduct(item.product ? item.product : item)}
-                          >
-                            QUICK VIEW
-                          </Button>
-                        </div>
-                      </div>
-                      {/* Name and Price Section */}
-                      <div className="flex flex-col items-start justify-between px-1 pt-4 pb-2 mt-0">
-                        <Link
-                          href={`/product/${item._id}`}
-                          className="font-bold hover:underline text-lg md:text-xl text-gray-900 leading-tight max-w-[200px] truncate cursor-pointer"
-                        >
-                          {item?.title}
-                        </Link>
-                        {(() => {
-                          const price = item?.quantity?.variants[0]?.price;
-                          const coupon = item.coupon || item.coupons?.coupon;
-                          let discountedPrice = price;
-                          let hasDiscount = false;
-                          if (coupon && typeof coupon.percent === 'number' && coupon.percent > 0) {
-                            discountedPrice = price - (price * coupon.percent) / 100;
-                            hasDiscount = true;
-                          } else if (coupon && typeof coupon.amount === 'number' && coupon.amount > 0) {
-                            discountedPrice = price - coupon.amount;
-                            hasDiscount = true;
-                          }
-                          if (hasDiscount && discountedPrice < price) {
-                            return (
-                              <span>
-                                <del className="text-black font-bold text-md md:text-xl mr-2">₹{formatNumeric(price)}</del>
-                                <span className="font-bold text-md md:text-xl text-black px-2">₹{formatNumeric(Math.round(discountedPrice))}</span>
-                              </span>
-                            );
-                          } else {
-                            return (
-                              <span className="font-bold text-md md:text-xl text-black">₹{formatNumeric(price)}</span>
-                            );
-                          }
-                        })()}
-                      </div>
-                    </div>
-                  </CarouselItem>
-                ))}
-            </CarouselContent>
-            <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 p-5" />
-            <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 p-5" />
-          </Carousel>
         </div>
       )}
       {/* Blogs Section */}
@@ -1322,22 +1091,6 @@ const ArtisanDetails = ({ artisan }) => {
                 <CarouselNext className="absolute top-[85%] left-[80%] bg-[#f7eedd] !rounded-full !w-12 !h-12 !flex !items-center !justify-center transition" />
               </div>
             </Carousel>
-          </div>
-        </div>
-      )}
-      {/* Quick View Modal */}
-      {quickViewProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setQuickViewProduct(null)}>
-          <div className="bg-white rounded-2xl shadow-xl mx-auto md:max-w-4xl w-full relative overflow-y-auto max-h-[90vh]" onClick={e => e.stopPropagation()}>
-            {/* Close Button */}
-            <button
-              className="absolute top-4 right-4 text-2xl font-bold text-gray-500 z-50 rounded-full w-8 h-8 border border-black bg-black text-white flex items-center justify-center hover:bg-gray-100 hover:text-black focus:outline-none"
-              onClick={() => setQuickViewProduct(null)}
-              aria-label="Close quick view"
-            >
-              &times;
-            </button>
-            <QuickViewProductCard product={quickViewProduct} onClose={() => setQuickViewProduct(null)} />
           </div>
         </div>
       )}

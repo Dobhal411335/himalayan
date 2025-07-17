@@ -5,14 +5,9 @@ import toast from "react-hot-toast";
 import { Switch } from "../ui/switch";
 
 
-// const statusOptions = [
-//     { label: "Active", value: "active" },
-//     { label: "Inactive", value: "inactive" },
-//     { label: "All", value: "all" },
-// ];
 const typeOptions = [
     { label: "All Types", value: "all" },
-    { label: "Product", value: "product" },
+    { label: "Packages", value: "packages" },
     { label: "Artisan", value: "artisan" }
 ];
 
@@ -43,7 +38,7 @@ const ManageReviews = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [reviewsPerPage] = useState(10);
     const [loading, setLoading] = useState(false);
-    // console.log(allReviews)
+    console.log(allReviews)
 
     useEffect(() => {
         fetchReviews();
@@ -98,9 +93,9 @@ const ManageReviews = () => {
         let filtered = [...allReviews];
 
         // Filter by status
-        if (statusFilter === 'active') {
+        if (statusFilter === 'approved') {
             filtered = filtered.filter(review => review.approved && !review.deleted);
-        } else if (statusFilter === 'inactive') {
+        } else if (statusFilter === 'disapproved') {
             filtered = filtered.filter(review => !review.approved && !review.deleted);
         } else {
             filtered = filtered.filter(review => !review.deleted);
@@ -129,12 +124,10 @@ const ManageReviews = () => {
             // Determine the updates based on the action
             switch (action) {
                 case 'active':
-                    updates.active = true;
                     updates.deleted = false;
                     break;
                 case 'inactive':
-                    updates.active = false;
-                    updates.deleted = false;
+                    updates.deleted = true;
                     break;
                 default:
                     throw new Error('Invalid action');
@@ -169,7 +162,6 @@ const ManageReviews = () => {
                 approved: isApproving,
                 // If approving, ensure the review is also active and not deleted
                 ...(isApproving && {
-                    active: true,
                     deleted: false
                 })
             };

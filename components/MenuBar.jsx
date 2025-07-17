@@ -175,7 +175,7 @@ const MenuBar = (props) => {
                 {allMenuItems.length > 0 && allMenuItems.map((cat, index) => (
                     <div key={index} className="border-b">
                         {cat.catTitle === "Contact Us" ? (
-                            <Link href="/contact-us" className="w-full block p-3 text-sm font-medium hover:bg-gray-100">
+                            <Link href="/contact" className="w-full block p-3 text-sm font-medium hover:bg-gray-100">
                                 {cat.catTitle}
                             </Link>
                         ) : cat.catTitle === "Accommodation" ? (

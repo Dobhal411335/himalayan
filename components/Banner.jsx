@@ -153,11 +153,30 @@ const Banner = () => {
                 </div>
             )}
             {rooms.length > 0 && (
-                <FeaturedRoomsSection
-                    rooms={rooms}
-                    onBook={handleBookNow}
-                    onShowReviews={handleShowReviews}
-                />
+                <>
+                    <div className="bg-[#ededed] flex flex-col md:items-center md:justify-between p-6 rounded-lg md:mb-8 mb-4">
+                        <div className="">
+                            <div className="flex flex-col md:flex-row justify-between gap-2">
+
+                                <h2 className="pacifico-h2 text-green-800 text-xl md:text-3xl text-center my-5 px-2">Comfort Meets Calm – Your Ideal Stay Awaits</h2>
+                                <div className="md:my-auto md:px-10 p-2 flex justify-end">
+                                    <Link href={"/accommodation"} className="p-3 bg-orange-500 hover:bg-orange-600 text-white font-bold px-7  text-md shadow-lg transition-all duration-200">
+                                        View All Room
+                                    </Link>
+                                </div>
+                            </div>
+                            <p className="text-base md:text-md leading-snug mt-2">
+                                Our accommodation offers the perfect blend of comfort, serenity, and functionality—making it an ideal stay for all kinds of travelers, whether solo, with family, or in a group. Each room is thoughtfully designed with elegant interiors, cozy bedding, and large windows that open to serene natural views. We provide all modern amenities including high-speed Wi-Fi, air conditioning, 24/7 hot water, in-room tea/coffee makers, spacious bathrooms, and secure locker facilities. Daily housekeeping ensures a clean and welcoming environment throughout your stay. With easy access to yoga halls, meditation spaces, and common lounges, our stay is more than just a room—it’s a peaceful retreat that truly feels like home.
+                            </p>
+                        </div>
+
+                        <FeaturedRoomsSection
+                            rooms={rooms}
+                            onBook={handleBookNow}
+                            onShowReviews={handleShowReviews}
+                        />
+                    </div>
+                </>
             )}
             {/* Render ReviewModal and BookingDetails for selected room */}
             {showReviewModal && selectedRoom && (

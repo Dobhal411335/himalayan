@@ -30,28 +30,12 @@ const amenityIcons = {
 };
 
 export default function FeaturedRoomsSection({ rooms = [], onBook, onShowReviews }) {
+    // console.log(rooms)
     if (!rooms.length) return null;
 
     return (
-        <div className="w-full px-2 bg-[#ededed]">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between p-6 rounded-lg md:mb-8 mb-4">
-                <div className="">
-                    <div className="flex flex-col md:flex-row justify-between gap-2">
-
-                        <h2 className="pacifico-h2 text-green-800 text-xl md:text-3xl text-center my-5 px-2">Comfort Meets Calm – Your Ideal Stay Awaits</h2>
-                        <div className="md:my-auto md:px-10 p-2 flex justify-end">
-                            <Link href={"/accommodation"} className="p-3 bg-orange-500 hover:bg-orange-600 text-white font-bold px-7  text-md shadow-lg transition-all duration-200">
-                                View All Room
-                            </Link>
-                        </div>
-                    </div>
-                    <p className="text-base md:text-md leading-snug mt-2">
-                        Our accommodation offers the perfect blend of comfort, serenity, and functionality—making it an ideal stay for all kinds of travelers, whether solo, with family, or in a group. Each room is thoughtfully designed with elegant interiors, cozy bedding, and large windows that open to serene natural views. We provide all modern amenities including high-speed Wi-Fi, air conditioning, 24/7 hot water, in-room tea/coffee makers, spacious bathrooms, and secure locker facilities. Daily housekeeping ensures a clean and welcoming environment throughout your stay. With easy access to yoga halls, meditation spaces, and common lounges, our stay is more than just a room—it’s a peaceful retreat that truly feels like home.
-                    </p>
-                </div>
-
-            </div>
-            <Carousel className="w-full md:px-10 gap-2 mx-auto">
+        <div className="w-full">
+            <Carousel className="w-full gap-2">
                 <CarouselContent>
                     {rooms.map((item, idx) => {
                         const imageUrls = [
@@ -74,7 +58,9 @@ export default function FeaturedRoomsSection({ rooms = [], onBook, onShowReviews
                                     {/* Card Details */}
                                     <div className="flex-1 p-5 flex flex-col gap-2 justify-between min-h-[210px] relative">
                                         <div className="flex items-center justify-between">
-                                            <h3 className="text-xl font-bold text-gray-900">{item.title || "Room Name"}</h3>
+                                            <Link href={`/room/${item.slug}`}>
+                                                <h3 className="text-lg font-bold text-gray-900 hover:underline">{item.title || "Room Name"}</h3>
+                                            </Link>
                                             <button
                                                 className="flex flex-col items-center justify-between cursor-pointer group bg-transparent border-0 p-0"
                                                 onClick={() => onShowReviews?.(item)}

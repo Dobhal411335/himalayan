@@ -17,11 +17,9 @@ import ResponsiveFeaturedCarousel from "@/components/ResponsiveFeaturedCarousel"
 import { CategoryCarousel } from "@/components/Category/category-card";
 import connectDB from "@/lib/connectDB";
 import Packages from "@/models/Packages";
-import RoomsAccommodation from "@/components/RoomsAccommodation";
 import ProductDetailView from "@/components/ProductDetailView";
 import ProductVideo from "@/components/ProductVideo";
 import ProductInfoTabs from "@/components/ProductInfoTabs";
-import StickyAddToCartBar from "@/components/StickyAddToCartBar";
 import Gallery from '@/models/Gallery';
 import Video from '@/models/Video';
 import Description from '@/models/Description';
@@ -101,7 +99,9 @@ const PackagePage = async ({ params }) => {
                 <div className="space-y-4">
                     <ProductInfoTabs product={product} />
                 </div>
-                <FeaturedRoomsClient rooms={rooms} />
+                <div className="space-y-4 px-10">
+                    <FeaturedRoomsClient rooms={rooms} />
+                </div>
 
                 {/* {frequentlyBoughtTogether.length > 0 && (
                     <div className="mt-8 px-4 py-10 bg-blue-100">

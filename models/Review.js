@@ -15,7 +15,7 @@ const ReviewSchema = new Schema({
 
   // NEW FIELDS:
   type: { type: String, enum: ["product", "artisan", "all"], required: true },
-  product: { type: Schema.Types.ObjectId, ref: "Product" }, // for product reviews
+  product: { type: Schema.Types.ObjectId, ref: "product" }, // for product reviews
   artisan: { type: Schema.Types.ObjectId, ref: "Artisan" }, // for artisan reviews
 
   createdAt: { type: Date, default: Date.now }

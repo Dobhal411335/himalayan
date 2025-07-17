@@ -102,7 +102,7 @@ const ContactUs = () => {
         <div className="bg-[#fdf7f2] min-h-screen w-full flex flex-col items-center justify-start pt-5">
             {/* Banner */}
             <div className="relative w-full h-[320px] flex items-center justify-center">
-                <Image src="/contactUs.jpg" alt="Banner" width={1920} height={1080} layout="fill" objectFit="cover" className="z-0 opacity-80" priority />
+                <Image src="/contactUs.jpg" alt="Banner" width={1920} height={1080}  objectFit="cover" className="z-0 opacity-80" priority />
             </div>
             <div className="container mx-auto p-10">
                 <div className="flex flex-col lg:flex-row gap-8 w-full justify-center mt-10 px-20">
@@ -213,7 +213,7 @@ const ContactUs = () => {
             {/* Google Maps */}
             <div className="w-full mt-10 flex justify-center">
                 <div className="w-full h-[400px]  overflow-hidden ">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d110486.44319936309!2d78.11853922973108!3d30.074093952521892!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39091779b4cdc119%3A0x687dc67a4b8a2153!2sHimalayan%20Wellness%20Retreats!5e0!3m2!1sen!2sin!4v1751524996887!5m2!1sen!2sin" width="100%" height="100%" style={{ border: 0 }} allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Himalayan Wellness Retreats "></iframe>
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d110486.44319936309!2d78.11853922973108!3d30.074093952521892!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39091779b4cdc119%3A0x687dc67a4b8a2153!2sHimalayan%20Wellness%20Retreats!5e0!3m2!1sen!2sin!4v1751524996887!5m2!1sen!2sin" width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Himalayan Wellness Retreats "></iframe>
                 </div>
             </div>
         </div>

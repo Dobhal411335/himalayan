@@ -127,17 +127,17 @@ export default function ProductDetailView({ product }) {
         <div className="w-full md:w-2/3 flex flex-col items-start px-10">
           {/* Main Image Carousel (QuickView style, embla-controlled) */}
           <div className="w-full flex justify-center mb-4">
-            <div className="relative w-full max-w-[700px] h-[320px] md:h-[350px] flex items-center justify-center overflow-hidden border-2 border-black bg-gray-100 p-4 rounded-lg">
+            <div className="relative w-full max-w-[800px] h-[320px] md:h-[400px] flex items-center justify-center overflow-hidden p-4 rounded-lg rounded-md">
               <Carousel
                 className="w-full h-full"
                 opts={{ loop: true }}
                 plugins={[Autoplay({ delay: 4000 })]}
                 setApi={setCarouselApi}
               >
-                <CarouselContent className="h-[270px] md:h-[320px]">
+                <CarouselContent className="h-[370px]">
                   {allImages.map((img, idx) => (
                     <CarouselItem key={idx} className="flex items-center justify-center h-full">
-                      <div className="relative w-full h-[270px] md:h-[400px] flex items-center justify-center">
+                      <div className="relative w-full h-[270px] md:h-[350px] flex items-center justify-center">
                         <Image
                           src={img}
                           alt={`Product image ${idx}`}
@@ -163,11 +163,11 @@ export default function ProductDetailView({ product }) {
           </div>
           {/* Sub-Images Carousel (5 per row) */}
           {allImages.length > 1 && (
-            <div className="w-full max-w-[500px] px-2">
+            <div className="w-full px-10">
               <Carousel opts={{ align: 'start', loop: allImages.length > 5 }} className="w-full">
                 <CarouselContent>
                   {allImages.map((img, idx) => (
-                    <CarouselItem key={idx} className="flex justify-center basis-1/2 max-w-[20%] min-w-0">
+                    <CarouselItem key={idx} className="flex justify-center basis-1/5 max-w-[20%] min-w-0">
                       <button
                         className={`rounded-lg border-2 ${activeImageIdx === idx ? 'border-black' : 'border-gray-200'} focus:outline-none `}
                         onClick={() => carouselApi && carouselApi.scrollTo(idx)}
