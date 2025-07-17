@@ -655,6 +655,7 @@ const ArtisanDetails = ({ artisan }) => {
             {(otherArtisans && otherArtisans.slice(0, 2).map((item, idx) => {
               const card = {
                 id: item._id || idx,
+                slug:item.slug,
                 name: `${item.title ? item.title + " " : ""}${item.firstName || ''} ${item.lastName || ''}`.trim() || "Unknown Artisan",
                 date: item.createdAt ? new Date(item.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase() : "N/A",
                 image: item.profileImage?.url || item.image || "/bg-custom-1.jpg",
@@ -711,7 +712,7 @@ const ArtisanDetails = ({ artisan }) => {
                   <div className="absolute left-0 bottom-0 w-full flex justify-between items-end p-6 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
                     <div>
                       <Link
-                        href={`/artisan/${card.id}`}
+                        href={`/artisan/${card.slug}`}
                         className="font-bold text-2xl text-white mb-3 leading-tight drop-shadow-md hover:underline hover:decoration-2 hover:underline-offset-4 transition cursor-pointer"
                         title={card.name}
                       >
@@ -764,6 +765,7 @@ const ArtisanDetails = ({ artisan }) => {
                 {otherArtisans.slice(2).map((item, idx) => {
                   const card = {
                     id: item._id || idx,
+                    slug:item.slug,
                     name: `${item.title ? item.title + " " : ""}${item.firstName || ''} ${item.lastName || ''}`.trim() || "Unknown Artisan",
                     date: item.createdAt ? new Date(item.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase() : "N/A",
                     image: item.profileImage?.url || item.image || "/bg-custom-1.jpg",
@@ -821,7 +823,7 @@ const ArtisanDetails = ({ artisan }) => {
                         <div className="absolute left-0 bottom-0 w-full flex justify-between items-end p-6 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
                           <div>
                             <Link
-                              href={`/artisan/${card.id}`}
+                              href={`/artisan/${card.slug}`}
                               className="font-bold text-2xl text-white mb-3 leading-tight drop-shadow-md hover:underline hover:decoration-2 hover:underline-offset-4 transition cursor-pointer"
                               title={card.name}
                             >
@@ -880,6 +882,7 @@ const ArtisanDetails = ({ artisan }) => {
                 {otherArtisans.map((item, idx) => {
                   const card = {
                     id: item._id || idx,
+                    slug:item.slug,
                     name: `${item.title ? item.title + " " : ""}${item.firstName || ''} ${item.lastName || ''}`.trim() || "Unknown Artisan",
                     date: item.createdAt ? new Date(item.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase() : "N/A",
                     image: item.profileImage?.url || item.image || "/bg-custom-1.jpg",
@@ -915,7 +918,7 @@ const ArtisanDetails = ({ artisan }) => {
                         <div className="absolute left-0 bottom-0 w-full flex justify-between items-end p-6 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
                           <div>
                             <Link
-                              href={`/artisan/${card.id}`}
+                              href={`/artisan/${card.slug}`}
                               className="font-bold text-2xl text-white mb-3 leading-tight drop-shadow-md hover:underline hover:decoration-2 hover:underline-offset-4 transition cursor-pointer"
                               title={card.name}
                             >

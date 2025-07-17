@@ -81,6 +81,12 @@ const data = {
     },
     { divider: true },
     {
+      name: "Add Team",
+      url: "/admin/add_team",
+      icon: Plus,
+    },
+    { divider: true },
+    {
       name: "Promotional Banner",
       url: "/admin/promotional_banner",
       icon: Image

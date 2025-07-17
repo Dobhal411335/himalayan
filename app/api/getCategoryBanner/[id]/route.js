@@ -30,7 +30,6 @@ export const GET = async (req, { params }) => {
             );
             // Populate the 'gallery' field for each product
             const productDocs = await Packages.find({ _id: { $in: productIds } })
-                .populate('price')
                 .populate('gallery')
                 .populate('video')
                 .populate('description')

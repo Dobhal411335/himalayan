@@ -92,6 +92,13 @@ const CreateArtisan = () => {
     "Lakshadweep",
     "Puducherry",
   ];
+  const slugify = (text) => {
+    return text
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/-{2,}/g, "-")
+      .replace(/^-+|-+$/g, "");
+  };
   const fileInputRef = useRef(null);
   // Remove image from Cloudinary and UI state
   const handleRemoveImage = async () => {
@@ -211,8 +218,10 @@ const CreateArtisan = () => {
       return;
     }
     // Always use selectedSpecs for specializations
+    const slug = slugify(data.firstName + " " + data.lastName);
     const payload = {
       title: data.title,
+      slug,
       firstName: data.firstName,
       lastName: data.lastName,
       fatherHusbandType: data.fatherHusbandType,

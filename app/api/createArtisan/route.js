@@ -7,14 +7,6 @@ import '@/models/ArtisanPlugin';
 import '@/models/ArtisanBanner';
 import '@/models/ArtisanBlog';
 import '@/models/Product';
-import '@/models/Gallery'; // For product gallery deletion
-import '@/models/Video';
-import '@/models/Description';
-import '@/models/Info';
-import '@/models/CategoryTag';
-import '@/models/Quantity';
-import '@/models/ProductCoupons';
-import '@/models/ProductReview';
 import '@/models/Promotion'
 
 // Ensures all subcomponent models are registered for cascading delete
@@ -27,7 +19,7 @@ export async function POST(req) {
     const data = await req.json();
 
     // Validate required fields
-    if (!data.title || !data.firstName || !data.lastName || !data.fatherHusbandType || !data.fatherHusbandTitle || !data.fatherHusbandName ||
+    if (!data.title || !data.slug || !data.firstName || !data.lastName || !data.fatherHusbandType || !data.fatherHusbandTitle || !data.fatherHusbandName ||
       !data.fatherHusbandLastName || !data.shgName || !data.artisanNumber || !data.yearsOfExperience ||
       !data.callNumber || !data.address || !data.city || !data.pincode || !data.state) {
       return new Response(JSON.stringify({ message: 'Missing required fields' }), { status: 400 });
@@ -40,6 +32,7 @@ export async function POST(req) {
 
     const artisan = new Artisan({
       title: data.title,
+      slug: data.slug,
       firstName: data.firstName,
       lastName: data.lastName,
       fatherHusbandType: data.fatherHusbandType,
@@ -190,7 +183,6 @@ export async function DELETE(req) {
       { name: 'ArtisanPlugin', field: 'artisan' },
       { name: 'ArtisanBanner', field: 'artisan', imageField: 'image' },
       { name: 'ArtisanBlog', field: 'artisan', imageField: 'images' },
-      { name: 'Product', field: 'artisan' },
     ];
 
     for (const modelDef of modelsToDelete) {
