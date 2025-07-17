@@ -69,6 +69,7 @@ const MenuBar = (props) => {
     const [menuItems, setMenuItems] = useState(props.menuItems || []);
     const [fixedMenuItems, setFixedMenuItems] = useState(props.fixedMenuItems || []);
     const allMenuItems = [...fixedMenuItems, ...staticMenuItems];
+    // console.log(menuItems)
     useEffect(() => {
         // Only fetch if menuItems not provided as prop
         if (!props.menuItems) {

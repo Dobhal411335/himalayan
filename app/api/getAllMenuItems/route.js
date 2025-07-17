@@ -16,7 +16,6 @@ export async function GET(req) {
         .populate({
             path: 'subMenu.packages',
             populate: [
-                { path: 'price' },
                 { path: 'gallery' },
                 { path: 'video' },
                 { path: 'description' },
