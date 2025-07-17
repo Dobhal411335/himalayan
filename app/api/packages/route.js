@@ -50,7 +50,8 @@ export async function GET(req) {
         .populate('info')
         .populate('reviews')
         .populate('packagePrice')
-        .populate('pdfs');
+        .populate('pdfs')
+        .populate('packageHighlight')
       return new Response(JSON.stringify(packages), { status: 200 });
     } else {
       // Optionally, handle other queries or return empty

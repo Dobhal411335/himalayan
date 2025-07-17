@@ -66,7 +66,7 @@ const CategoryPage = async ({ params }) => {
     mainCategoryTitle: mainCategory?.title
   };
   // products is now an array of full product objects
-  const products = Array.isArray(categoryData.products) ? categoryData.products : [];
+  const products = Array.isArray(categoryData.packages) ? categoryData.packages : [];
   const visibleProducts = products.filter(prod => prod.active !== false);
   // console.log(visibleProducts)
   const categoryInfo = await getCategoryInfo(categoryData);
@@ -91,14 +91,12 @@ const CategoryPage = async ({ params }) => {
         bannerImage={categoryInfo.bannerImage} 
         mainCategory={categoryData.mainCategoryTitle || categoryData.title} 
       />
-
         <div className="flex flex-col md:flex-row gap-6 w-full mt-4">
           {/* Left Image Section */}
           <div className="flex flex-col w-72 max-w-xs flex-shrink-0 justify-start items-center">
             {/* Category Advertisement Banner */}
             <CategoryAds categoryAdList={categoryAdList} />
           </div>
-
           {/* Middle Section: Category Cards + Package Cards */}
           <div className="flex-1 min-w-0 gap-4">
             {/* Category Cards Row */}
@@ -130,7 +128,5 @@ const CategoryPage = async ({ params }) => {
       </div>
     </SidebarInset>
   )
-
 }
-
 export default CategoryPage

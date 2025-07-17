@@ -15,6 +15,7 @@ const PackageSchema = new mongoose.Schema({
   reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ProductReview' }],
   packagePrice: { type: mongoose.Schema.Types.ObjectId, ref: 'PackagePrice' }, // Link to PackagePrice
   pdfs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'PackagePdf' }],
+  packageHighlight: { type: mongoose.Schema.Types.ObjectId, ref: 'PackageHighlight' },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

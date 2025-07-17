@@ -29,15 +29,6 @@ const Banner = () => {
         setSelectedRoom(room);
         setShowReviewModal(true);
     };
-    const { data: session } = useSession();
-    const handleBookNow = (room) => {
-        if (!session || !session.user) {
-            router.replace(`/sign-in?callbackUrl=${encodeURIComponent(pathname)}`);
-            return;
-        }
-        setSelectedRoom(room);
-        setShowBookModal(true);
-    };
     const handleCloseReviewModal = () => {
         setShowReviewModal(false);
         setSelectedRoom(null);
@@ -172,7 +163,6 @@ const Banner = () => {
 
                         <FeaturedRoomsSection
                             rooms={rooms}
-                            onBook={handleBookNow}
                             onShowReviews={handleShowReviews}
                         />
                     </div>
@@ -184,13 +174,6 @@ const Banner = () => {
                     open={showReviewModal}
                     onClose={handleCloseReviewModal}
                     reviews={selectedRoom.reviews || []}
-                />
-            )}
-            {showBookModal && selectedRoom && (
-                <BookingDetails
-                    room={selectedRoom}
-                    onClose={handleCloseBookModal}
-                    type="room"
                 />
             )}
         </div>

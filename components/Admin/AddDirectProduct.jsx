@@ -12,6 +12,7 @@ import { ArrowLeftIcon, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import PackagePdf from "./PackagePdf"
 import PackagePrice from './PackagePrice';
+import PackageHighlights from './PackageHighlights';
 const AddDirectProduct = ({ productId }) => {
   // console.log(productId)
   const router = useRouter();
@@ -44,7 +45,7 @@ const AddDirectProduct = ({ productId }) => {
     { key: 'info', label: 'Package Information', component: (props) => <ProductInfo {...props} productData={productData} packageId={productId} /> },
     { key: 'review', label: 'Create Review', component: (props) => <ProductReview {...props} productData={productData} packageId={productId} /> },
     { key: 'pdf', label: 'Upload Package PDF', component: (props) => <PackagePdf {...props} productData={productData} packageId={productId} /> },
-
+    { key: 'highlights', label: 'Package Highlights', component: (props) => <PackageHighlights {...props} productData={productData} packageId={productId} /> },
   ];
   const [activeSection, setActiveSection] = useState(sectionConfig[0].key);
 

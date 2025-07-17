@@ -30,7 +30,7 @@ export default function ProductDetailView({ product }) {
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null);
   const { data: session, status } = useSession();
   const pathname = usePathname();
-  console.log(product);
+  // console.log(product);
   // --- Ask An Expert Modal State ---
   const [showExpertModal, setShowExpertModal] = useState(false);
   // Artisan Modal State
@@ -441,14 +441,6 @@ export default function ProductDetailView({ product }) {
                   )}
                 </tbody>
               </table>
-            </div>
-            <div className="border rounded-lg p-3 my-2 flex items-center justify-between">
-              <span className="font-semibold">24/7 support</span>
-              <span className="text-gray-500 text-xs w-52">Service support is availble 24 hours a day. 7 days a week. You can reach them by phone,email, or chat</span>
-            </div>
-            <div className="border rounded-lg p-3 my-2 flex items-center justify-between gap-2">
-              <span className="font-semibold">Payment & Security</span>
-              <span className="text-gray-500 text-xs w-52">Your payment information is processed securly. We do not store credit card details nor have access to your credit card infomation</span>
             </div>
             <h2 className="font-bold text-md py-3 text-center">"Shop with Confidence - 100% Money-Back Guarantee!"</h2>
           </div>

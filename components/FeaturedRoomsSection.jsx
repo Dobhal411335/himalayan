@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import './fonts/fonts.css';
-import { Star, Eye, Globe, Loader2, Bed, Phone, ParkingCircle, ShowerHead, Wifi, Tv, Bath, Elevator, Luggage, Coffee, Snowflake, Utensils } from 'lucide-react';
+import { Star, Bed, Phone, ParkingCircle, ShowerHead, Wifi, Tv, Bath, Luggage, Coffee, Snowflake, Utensils } from 'lucide-react';
 const amenityIcons = {
     'Restaurant': <Utensils size={24} />,
     'Bed': <Bed size={24} />,
@@ -29,7 +29,7 @@ const amenityIcons = {
     'Room AC': <Snowflake size={24} />,
 };
 
-export default function FeaturedRoomsSection({ rooms = [], onBook, onShowReviews }) {
+export default function FeaturedRoomsSection({ rooms = [], onShowReviews }) {
     // console.log(rooms)
     if (!rooms.length) return null;
 
@@ -139,10 +139,11 @@ export default function FeaturedRoomsSection({ rooms = [], onBook, onShowReviews
                                                     <span className="text-2xl font-bold text-black">Rs. {mainPrice ? mainPrice.amount : 'N/A'}</span>
                                                     <span className="text-lg font-semibold text-gray-800 line-through">{mainPrice && mainPrice.oldPrice ? mainPrice.oldPrice : 'N/A'}</span>
                                                     <span className="text-md text-gray-700">/ Per Night</span>
-                                                    <button
-                                                        className="ml-auto bg-green-700 hover:bg-green-800 text-white font-semibold px-8 py-2 rounded-md"
-                                                        onClick={() => onBook?.(item)}
-                                                    >Book Now</button>
+                                                    
+                                                        <Link href={`/room/${item.slug}`} className="ml-auto bg-green-700 hover:bg-green-800 text-white font-semibold px-8 py-2 rounded-md">
+                                                        View More
+                                                        </Link>
+                                                        
                                                 </div>
                                             );
                                         })()}

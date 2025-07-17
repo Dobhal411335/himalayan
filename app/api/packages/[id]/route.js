@@ -17,6 +17,7 @@ import Color from '@/models/Color';
 import ProductTagLine from '@/models/ProductTagLine';
 import ArtisanStory from '@/models/ArtisanStory';
 import PackagePdf from '@/models/PackagePdf';
+import PackageHighlight from '@/models/PackageHighlight';
 // import Tax from '@/models/ProductTax';
 
 import { deleteFileFromCloudinary } from '@/utils/cloudinary';
@@ -43,6 +44,7 @@ export async function GET(req, { params }) {
     .populate('reviews')
     .populate('packagePrice')
     .populate('pdfs')
+    .populate('packageHighlight')
     if (!packages || !packages.active) {
       return new Response(JSON.stringify({ error: 'packages not found' }), { status: 404 });
     }
@@ -106,7 +108,10 @@ export async function DELETE(req, { params }) {
         await PackagePdf.findByIdAndDelete(pdfId);
       }
     }
-  
+    // Delete packageHighlight
+    if (packages.packageHighlight) {
+      await PackageHighlight.findByIdAndDelete(packages.packageHighlight);
+    }  
     // Now delete the product
     await Packages.findByIdAndDelete(id);
     return new Response(JSON.stringify({ message: 'packages and all related data deleted successfully' }), { status: 200 });

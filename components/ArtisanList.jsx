@@ -11,9 +11,6 @@ import {
 } from "@/components/ui/carousel";
 import Image from "next/image";
 import { X } from "lucide-react";
-import CategoryAds from "@/components/CategoryAds";
-import { useSession } from 'next-auth/react';
-import { useRouter, usePathname } from 'next/navigation';
 const BannerSection = () => (
     <div className="relative h-48 md:h-96 flex items-center justify-center">
         <img
@@ -122,13 +119,9 @@ const ReviewModal = ({ open, onClose, reviews }) => {
     );
 };
 
-import BookingDetails from './BookingDetails';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 const ArtisanList = () => {
-    const { data: session, status } = useSession();
-    const router = useRouter();
-    const pathname = usePathname();
     const [rooms, setRooms] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [page, setPage] = useState(1);
@@ -167,9 +160,6 @@ const ArtisanList = () => {
 
     const [reviewModalOpen, setReviewModalOpen] = useState(false);
     const [selectedReviews, setSelectedReviews] = useState([]);
-    // Booking modal state
-    const [bookingModalOpen, setBookingModalOpen] = useState(false);
-    const [selectedRoom, setSelectedRoom] = useState(null);
 
     const paginatedArtisans = rooms.slice(0 + (page - 1) * pageSize, 6 + page * pageSize);
     const totalPaginated = rooms.length > 5 ? rooms.length - 5 : 0;
@@ -208,10 +198,8 @@ const ArtisanList = () => {
                                         <div key={item._id || idx} className="relative flex flex-col md:flex-row bg-[#f8f5ef] rounded-2xl my-2 md:items-center gap-6 shadow-lg px-5 mx-auto border border-gray-200">
                                             {/* Image Carousel */}
                                             <div className="relative w-[420px] h-[280px] flex-shrink-0 flex items-center justify-center bg-white rounded-xl overflow-hidden border border-gray-100">
-
                                                 <Carousel className="w-full h-full" opts={{ loop: true }}>
                                                     <CarouselContent>
-
                                                         {imageUrls.map((img, i) => (
                                                             <CarouselItem key={i} className="w-full h-full flex items-center justify-center">
                                                                 <Image
@@ -232,9 +220,7 @@ const ArtisanList = () => {
                                             {/* Details */}
                                             <div className="flex-1 p-5 flex flex-col gap-2 justify-between min-h-[260px] relative">
                                                 <div className="flex items-start justify-between">
-                                                    <Link href={`/room/${item.slug}`}>
-                                                        <h3 className="md:text-2xl text-xl hover:underline font-bold text-gray-900">{item.title || "Room Name"}</h3>
-                                                    </Link>
+                                                        <h3 className="md:text-2xl text-xl font-bold text-gray-900">{item.title || "Room Name"}</h3>
                                                     <button
                                                         className="flex flex-col items-center justify-between cursor-pointer group bg-transparent border-0 p-0"
                                                         onClick={() => {
@@ -306,18 +292,10 @@ const ArtisanList = () => {
                                                             <span className="md:text-2xl text-xl font-bold text-black">Rs. {mainPrice ? mainPrice.amount : 'N/A'}</span>
                                                             <span className="md:text-lg text-md font-semibold text-gray-800 line-through">{mainPrice && mainPrice.oldPrice ? mainPrice.oldPrice : 'N/A'}</span>
                                                             <span className="text-md text-gray-700">/ Per Night</span>
-                                                            <button
+                                                            <Link
                                                                 className="ml-auto bg-green-700 hover:bg-green-800 text-white font-semibold md:px-16 px-8 py-2 rounded-md"
-                                                                onClick={() => {
-                                                                    if (status === 'loading') return;
-                                                                    if (!session || !session.user) {
-                                                                        router.replace(`/sign-in?callbackUrl=${encodeURIComponent(pathname)}`);
-                                                                        return;
-                                                                    }
-                                                                    setSelectedRoom({ ...item, type: 'room' });
-                                                                    setBookingModalOpen(true);
-                                                                }}
-                                                            >Book Now</button>
+                                                                href={`/room/${item.slug}`}
+                                                            >View More</Link>
                                                         </div>
                                                     );
                                                 })()}
@@ -367,21 +345,11 @@ const ArtisanList = () => {
                     <div
                         className="my-4"
                     >
-                        <h2 className="text-xl font-bold text-gray-900 pb-2">Our Accommodation – Comfort, Serenity & the Best Stay Experience</h2>
-                        At our retreat, your stay is more than just a place to rest—it's a part of your healing and rejuvenation journey. Nestled amidst the serene beauty of city, our accommodations are thoughtfully designed to provide a perfect balance of natural simplicity and modern comfort. Choose from elegant view rooms, peaceful rooms, or mountain-facing deluxe accommodation each infused with earthy aesthetics, soft lighting, and calming ambiance.
-
-                        Enjoy spacious interiors, premium bedding, fresh linen, and attached bathrooms with modern amenities. Step out onto private balconies to sip herbal tea while soaking in the Himalayan breeze or unwind in quiet reading corners with the sound of the Ganga in the distance or mountain's. We ensure round-the-clock cleanliness, warm hospitality, and a peaceful environment so you can truly disconnect from the chaos and reconnect with yourself.
-
-                        Whether you're here for spiritual renewal, yoga, or pure relaxation, our accommodation offers a sanctuary where every detail is crafted to support your peace, comfort, and well-being.
+                        <h2 className="text-xl font-bold text-gray-900 pb-2">Our Hospitality & Stay</h2>
+                        At our hotel, we are committed to offering a warm and welcoming experience that makes every guest feel at home. With comfortable accommodations and restaurant-style amenities, we ensure that your stay is both relaxing and fulfilling. Whether you're here for a peaceful getaway or an adventurous escape, our team strives to provide the best in service, comfort, and care—creating a stay that’s truly memorable.
                     </div>
                 </div>
             </div>
-            {bookingModalOpen && (
-                <BookingDetails
-                    room={selectedRoom}
-                    onClose={() => setBookingModalOpen(false)}
-                />
-            )}
         </div>
     );
 };

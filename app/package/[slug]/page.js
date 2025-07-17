@@ -31,13 +31,14 @@ import ReviewListModal from "@/components/ReviewListModal";
 import BookingDetails from "@/components/BookingDetails";
 import FeaturedRoomsClient from "@/components/FeaturedRoomsClient";
 import PackagePdf from '@/models/PackagePdf';
+import PackageHighlight from '@/models/PackageHighlight';
 const PackagePage = async ({ params }) => {
     await connectDB();
 
     const { slug } = await params;
     const decodedSlug = decodeURIComponent(slug);
     const rawProduct = await Packages.findOne({ slug: decodedSlug })
-        .populate('gallery video description info reviews packagePrice pdfs')
+        .populate('gallery video description info reviews packagePrice pdfs packageHighlight')
         .lean();
 
     // ✅ Convert to plain JSON
