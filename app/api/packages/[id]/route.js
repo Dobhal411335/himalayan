@@ -1,21 +1,13 @@
 // API Route for fetching, updating, and deleting a product by ID
 import connectDB from "@/lib/connectDB";
 import Packages from '@/models/Packages';
-import Artisan from '@/models/Artisan';
-import Price from '@/models/Price';
 import Gallery from '@/models/Gallery';
 import Video from '@/models/Video';
 import Description from '@/models/Description';
 import Info from '@/models/Info';
-import Size from '@/models/Size';
-import CategoryTag from '@/models/CategoryTag';
 import ProductReview from '@/models/ProductReview';
-import ProductTax from '@/models/ProductTax';
-import ProductCoupons from '@/models/ProductCoupons';
 import PackagePrice from '@/models/PackagePrice';
-import Color from '@/models/Color';
-import ProductTagLine from '@/models/ProductTagLine';
-import ArtisanStory from '@/models/ArtisanStory';
+
 import PackagePdf from '@/models/PackagePdf';
 import PackageHighlight from '@/models/PackageHighlight';
 // import Tax from '@/models/ProductTax';

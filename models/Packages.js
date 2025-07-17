@@ -7,7 +7,6 @@ const PackageSchema = new mongoose.Schema({
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'MenuBar' },
   isDirect: { type: Boolean, default: false },
   active: { type: Boolean, default: true },
-  price: { type: mongoose.Schema.Types.ObjectId, ref: 'Price' },
   gallery: { type: mongoose.Schema.Types.ObjectId, ref: 'Gallery' },
   video: { type: mongoose.Schema.Types.ObjectId, ref: 'Video' },
   description: { type: mongoose.Schema.Types.ObjectId, ref: 'Description' },
