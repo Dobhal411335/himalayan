@@ -151,7 +151,7 @@ const PackageCard = ({
           </button>
         </div>
         <hr className="h-[2px] w-full bg-black" />
-        <div className="text-gray-800 text-sm mb-4" dangerouslySetInnerHTML={{ __html: pkg?.description?.overview }} />
+        <div className="text-gray-800 text-sm mb-4 w-24" dangerouslySetInnerHTML={{ __html: pkg?.description?.overview }} />
         {/* Package Highlight Section */}
         {pkg.packageHighlight && Array.isArray(pkg.packageHighlight.highlights) && pkg.packageHighlight.highlights.length > 0 && (
           <div className="mt-2">

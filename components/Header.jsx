@@ -198,7 +198,7 @@ const Header = () => {
 
           <div className="relative">
             {status === "loading" ? (
-              <Loader2 className="animate-spin text-blue-600" size={36} />
+              <Loader2 className="animate-spin text-blue-600" size={26} />
             ) : isUser ? (
               <>
                 {/* Profile Picture Button */}
@@ -209,8 +209,8 @@ const Header = () => {
                   <Image
                     src={session.user.image || "/user.png"}
                     alt="Profile"
-                    width={36}
-                    height={36}
+                    width={26}
+                    height={26}
                     className="rounded-full cursor-pointer"
                   />
                 </button>
