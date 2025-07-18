@@ -101,45 +101,45 @@ const ContactUs = () => {
     return (
         <div className="bg-[#fdf7f2] min-h-screen w-full flex flex-col items-center justify-start pt-5">
             {/* Banner */}
-            <div className="relative w-full h-[320px] flex items-center justify-center">
-                <Image src="/contactUs.jpg" alt="Banner" width={1920} height={1080}  objectFit="cover" className="z-0 opacity-80" priority />
+            <div className="relative w-full md:h-[320px] flex items-center justify-center">
+                <Image src="/contactUs.jpg" alt="Banner" width={1920} height={1080} objectFit="cover" className="z-0 opacity-80" priority />
             </div>
-            <div className="container mx-auto p-10">
-                <div className="flex flex-col lg:flex-row gap-8 w-full justify-center mt-10 px-20">
+            <div className="container mx-auto md:p-10">
+                <div className="flex flex-col lg:flex-row gap-8 w-full justify-center mt-10 md:px-20 px-10">
                     {/* Contact Info */}
                     <div className="lg:w-1/2 w-full flex flex-col justify-center text-black">
-                        <h2 className="pacifico-h2 text-5xl text-green-800 mb-4">DISCOVER US</h2>
+                        <h2 className="pacifico-h2 text-2xl md:text-5xl text-green-800 mb-4">DISCOVER US</h2>
                         <p className="mb-6 text-base">
-                            <span className="underline text-3xl">Himalayan Wellness Retreats is here to help you.</span>
+                            <span className="underline text-xl md:text-3xl">Himalayan Wellness Retreats is here to help you.</span>
                             <br />
-                            <span className='text-3xl'>
-                                Our experts are available to answer any questions you might have. We’ve got the answers.</span>
+                            <span className='text-xl md:text-3xl'>
+                                Our experts are available to answer any questions you might have. We’ve got the answers.</span>
                         </p>
                         <div className="mb-4">
-                            <h3 className="font-bold text-2xl mb-2">Call Us</h3>
+                            <h3 className="font-bold text-xl md:text-2xl mb-2">Call Us</h3>
                             <ul className="mb-2">
                                 <li className='flex flex-row gap-2'>
-                                    <a href="tel:+917351009107" className="hover:underline text-xl">+91 9897515305</a>
-                                    <a href="tel:+919411571947" className="hover:underline text-xl">+91 7060340176</a>
+                                    <a href="tel:+917351009107" className="hover:underline text-md md:text-xl">+91 9897515305</a>
+                                    <a href="tel:+919411571947" className="hover:underline text-md md:text-xl">+91 7060340176</a>
                                 </li>
                             </ul>
                         </div>
                         <div className=''>
-                            <h3 className="font-bold text-2xl mb-2 ">E-mail</h3>
+                            <h3 className="font-bold text-xl md:text-2xl mb-2 ">E-mail</h3>
                             <ul className="mb-2">
-                                <li className='text-xl'>
+                                <li className='text-md md:text-xl'>
                                     For Official:
-                                    <a href="mailto:himalayanwellnessretreats@gmail.com" className="hover:underline text-xl"> himalayanwellnessretreats@gmail.com</a>
+                                    <a href="mailto:himalayanwellnessretreats@gmail.com" className="hover:underline text-sm md:text-xl"> himalayanwellnessretreats@gmail.com</a>
                                 </li>
                             </ul>
                         </div>
                         <div className='my-2'>
-                                    <a href="https://maps.app.goo.gl/ZGJ9ivjmABr6rzkt9" className="hover:underline text-xl"><h3 className="font-bold text-2xl mb-2 ">Google</h3></a>
+                            <a href="https://maps.app.goo.gl/ZGJ9ivjmABr6rzkt9" className="hover:underline text-xl"><h3 className="font-bold text-md md:text-2xl mb-2 ">Google</h3></a>
                         </div>
                     </div>
                     {/* Contact Form */}
                     <div className="lg:w-1/2 w-full flex justify-center items-center">
-                        <div className="bg-white/95 rounded-xl shadow-lg p-8 w-full max-w-md flex flex-col gap-4">
+                        <div className="bg-white/95 rounded-xl shadow-lg md:p-8 p-4 w-full max-w-md flex flex-col gap-4">
                             <form className="space-y-6 font-barlow" onSubmit={handleSubmit}>
                                 <div className="space-y-2">
                                     <Label htmlFor="name" className="flex items-center gap-2 text-blue-600"><span><House className="h-5 w-5" /></span>Full Name</Label>
@@ -212,7 +212,7 @@ const ContactUs = () => {
             </div>
             {/* Google Maps */}
             <div className="w-full mt-10 flex justify-center">
-                <div className="w-full h-[400px]  overflow-hidden ">
+                <div className="w-full md:h-[400px] h-[250px] w-full overflow-hidden ">
                     <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d110486.44319936309!2d78.11853922973108!3d30.074093952521892!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39091779b4cdc119%3A0x687dc67a4b8a2153!2sHimalayan%20Wellness%20Retreats!5e0!3m2!1sen!2sin!4v1751524996887!5m2!1sen!2sin" width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Himalayan Wellness Retreats "></iframe>
                 </div>
             </div>

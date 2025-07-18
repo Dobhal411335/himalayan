@@ -12,36 +12,39 @@ import {
 import Image from "next/image";
 import { X } from "lucide-react";
 const BannerSection = () => (
-    <div className="relative h-48 md:h-96 flex items-center justify-center">
-        <img
+    <div className="relative w-full h-[120px] md:h-[350px]">
+       <Image
             src="/accommodation.jpg"
-            alt="Accommodation Image"
-            className="absolute inset-0 w-full h-full md:object-cover object-contain px-1 md:px-0"
-        />
+             alt="Accommodation Image"
+             fill
+             className="md:object-cover md:object-center object-contain w-full h-full"
+             quality={100}
+             priority
+         /> 
     </div>
 );
 const amenityIcons = {
-    'Restaurant': <Utensils size={24} />,
-    'Bed': <Bed size={24} />,
-    'Room Phone': <Phone size={24} />,
-    'Parking': <ParkingCircle size={24} />,
-    'Shower': <ShowerHead size={24} />,
+    'Restaurant': <Utensils size={20} />,
+    'Bed': <Bed size={20} />,
+    'Room Phone': <Phone size={20} />,
+    'Parking': <ParkingCircle size={20} />,
+    'Shower': <ShowerHead size={20} />,
     'Towel In Room': (
-        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M8 16V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v10M4 20h16M4 20a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2M4 20h16" /></svg>
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M8 16V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v10M4 20h16M4 20a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2M4 20h16" /></svg>
     ),
-    'Wi-Fi': <Wifi size={24} />,
-    'Television': <Tv size={24} />,
-    'Bath Tub': <Bath size={24} />,
+    'Wi-Fi': <Wifi size={20} />,
+    'Television': <Tv size={20} />,
+    'Bath Tub': <Bath size={20} />,
     'Elevator': (
-        <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <rect x="6" y="3" width="12" height="18" rx="2" strokeWidth="2" />
             <path d="M9 9h6M9 13h6M12 16v2" strokeWidth="2" />
             <path d="M10.5 6l1.5-2 1.5 2" strokeWidth="2" />
         </svg>
     ),
-    'Laggage': <Luggage size={24} />,
-    'Tea Maker': <Coffee size={24} />,
-    'Room AC': <Snowflake size={24} />,
+    'Laggage': <Luggage size={20} />,
+    'Tea Maker': <Coffee size={20} />,
+    'Room AC': <Snowflake size={20} />,
 };
 
 
@@ -84,10 +87,12 @@ const ReviewModal = ({ open, onClose, reviews }) => {
                                     </div>
 
                                     {/* Stars and Verified */}
-                                    <div className="flex items-center gap-2 mb-3">
+                                    <div className="flex flex-col md:flex-row  items-center gap-2 md:mb-3">
+                                        <div className="flex">
                                         {[...Array(review.rating)].map((_, i) => (
                                             <Star key={i} size={20} color="#12b76a" fill="#12b76a" />
                                         ))}
+                                        </div>
                                         <span className="text-green-600 font-medium flex items-center gap-1 text-sm ml-2">
                                             <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
                                                 <path fill="#12b76a" d="M9.5 17.5l-5-5 1.4-1.4 3.6 3.6 7.6-7.6 1.4 1.4-9 9z" />
@@ -99,7 +104,7 @@ const ReviewModal = ({ open, onClose, reviews }) => {
                                 </div>
 
                                 {/* Title */}
-                                <div className="text-[16px] font-bold text-gray-800 mb-1">
+                                <div className="text-[16px] font-bold text-gray-800 my-2">
                                     {review.title}
                                 </div>
 
@@ -127,11 +132,11 @@ const ArtisanList = () => {
     const [page, setPage] = useState(1);
     const pageSize = 6; // for second row pagination
     const gridRef = useRef(null);
-    useEffect(() => {
-        if (gridRef.current) {
-            gridRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-    }, [page]);
+    // useEffect(() => {
+    //     if (gridRef.current) {
+    //         gridRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    //     }
+    // }, [page]);
     // console.log(rooms)
 
 
@@ -178,13 +183,11 @@ const ArtisanList = () => {
         <div className="w-full min-h-screen bg-white " ref={gridRef}>
             <BannerSection />
             {/* Below banner: left text, right carousel */}
-            <div className="w-full max-w-[1500px] mx-auto ">
-                {/* Row 1: First 6 artisans */}
+            <div className="w-full md:max-w-[1500px] mx-auto ">
                 <div className="flex flex-col md:flex-row w-full">
-                    {/* Row 2: Feature Table (full width) */}
                     {rooms.length > 0 && (
                         <div className="w-full flex flex-row gap-2 md:w-[90%] mx-auto">
-                            <div className="right w-[100%] p-2">
+                            <div className="right w-[100%] md:p-2 p-1">
                                 {(page === 1
                                     ? rooms.slice(0)
                                     : paginatedArtisans
@@ -195,9 +198,9 @@ const ArtisanList = () => {
                                     ];
                                     if (imageUrls.length === 0) imageUrls.push('/placeholder.jpeg');
                                     return (
-                                        <div key={item._id || idx} className="relative flex flex-col md:flex-row bg-[#f8f5ef] rounded-2xl my-2 md:items-center gap-6 shadow-lg px-5 mx-auto border border-gray-200">
+                                        <div key={item._id || idx} className="relative flex flex-col md:flex-row bg-[#f8f5ef] rounded-2xl p-5 my-2 md:items-center gap-6 shadow-lg md:px-5 mx-auto border border-gray-200">
                                             {/* Image Carousel */}
-                                            <div className="relative w-[420px] h-[280px] flex-shrink-0 flex items-center justify-center bg-white rounded-xl overflow-hidden border border-gray-100">
+                                            <div className="relative md:w-[420px] md:h-[290px] h-[250px] py-2 md:px-0 flex-shrink-0 flex items-center justify-center rounded-xl overflow-hidden">
                                                 <Carousel className="w-full h-full" opts={{ loop: true }}>
                                                     <CarouselContent>
                                                         {imageUrls.map((img, i) => (
@@ -207,7 +210,7 @@ const ArtisanList = () => {
                                                                     alt={item.title || 'Room'}
                                                                     width={420}
                                                                     height={420}
-                                                                    className="object-contain object-top w-[420px] h-[420px] rounded-xl border border-gray-200"
+                                                                    className="object-contain object-top w-[420px] h-[500px] rounded-xl"
                                                                     priority={i === 0}
                                                                 />
                                                             </CarouselItem>
@@ -218,9 +221,9 @@ const ArtisanList = () => {
                                                 </Carousel>
                                             </div>
                                             {/* Details */}
-                                            <div className="flex-1 p-5 flex flex-col gap-2 justify-between min-h-[260px] relative">
+                                            <div className="flex-1 md:p-5 p-2 flex flex-col gap-2 justify-between min-h-[260px] relative">
                                                 <div className="flex items-start justify-between">
-                                                        <h3 className="md:text-2xl text-xl font-bold text-gray-900">{item.title || "Room Name"}</h3>
+                                                        <h3 className="md:text-2xl text-md font-bold text-gray-900">{item.title || "Room Name"}</h3>
                                                     <button
                                                         className="flex flex-col items-center justify-between cursor-pointer group bg-transparent border-0 p-0"
                                                         onClick={() => {
@@ -233,18 +236,18 @@ const ArtisanList = () => {
                                                         <div className="flex items-center gap-1">
 
                                                         {[...Array(Math.round((item.reviews?.[0]?.rating || 5)))].map((_, i) => (
-                                                            <Star key={i} size={16} color="#12b76a" fill="#12b76a" className="inline" />
+                                                            <Star key={i} size={15} color="#12b76a" fill="#12b76a" className="inline" />
                                                         ))}
                                                         </div>
 
-                                                        <span className="text-xs text-gray-700 ml-1 group-hover:underline">
+                                                        <span className="text-xs md:text-sm text-gray-700 ml-1 group-hover:underline">
                                                             Based On {item.reviews?.length || 0} Review{(item.reviews?.length || 0) !== 1 ? 's' : ''}
                                                         </span>
                                                     </button>
                                                 </div>
-                                                <div className="text-gray-800 text-sm mb-1" dangerouslySetInnerHTML={{ __html: item.paragraph }} />
-                                                <div className="font-semibold text-gray-800 text-sm mt-1">Room Amenities</div>
-                                                <div className="flex gap-2 mb-1 text-lg">
+                                                <div className="text-gray-800 text-xs md:text-sm mb-1" dangerouslySetInnerHTML={{ __html: item.paragraph }} />
+                                                <div className="font-semibold text-gray-800 text-xs md:text-sm mt-1">Room Amenities</div>
+                                                <div className="flex gap-2 mb-1 text-xs md:text-sm">
                                                     <TooltipProvider>
                                                         <div className="flex gap-2 mb-1 text-lg flex-wrap">
                                                             {(item.amenities || []).map((am, i) => (
@@ -265,7 +268,7 @@ const ArtisanList = () => {
                                                 {(() => {
                                                     const priceList = (item.prices && item.prices[0] && item.prices[0].prices) || [];
                                                     return (
-                                                        <div className="flex gap-8 text-sm">
+                                                        <div className="flex gap-8 text-xs md:text-sm py-2">
                                                             <span>
                                                                 Max occupancy: {
                                                                     priceList.some(p => p.type === '02 Pax')
@@ -289,11 +292,11 @@ const ArtisanList = () => {
                                                     const mainPrice = priceList.find(p => p.type === '02 Pax') || priceList.find(p => p.type === '01 Pax');
                                                     return (
                                                         <div className="flex items-center gap-4">
-                                                            <span className="md:text-2xl text-xl font-bold text-black">Rs. {mainPrice ? mainPrice.amount : 'N/A'}</span>
-                                                            <span className="md:text-lg text-md font-semibold text-gray-800 line-through">{mainPrice && mainPrice.oldPrice ? mainPrice.oldPrice : 'N/A'}</span>
+                                                            <span className="md:text-2xl text-md font-bold text-black">Rs. {mainPrice ? mainPrice.amount : 'N/A'}</span>
+                                                            <span className="md:text-lg text-sm font-semibold text-gray-800 line-through">{mainPrice && mainPrice.oldPrice ? mainPrice.oldPrice : 'N/A'}</span>
                                                             <span className="text-md text-gray-700">/ Per Night</span>
                                                             <Link
-                                                                className="ml-auto bg-green-700 hover:bg-green-800 text-white font-semibold md:px-16 px-8 py-2 rounded-md"
+                                                                className="ml-auto bg-green-700 hover:bg-green-800 text-white font-semibold md:px-16 md:px-8 px-3 md:py-2 py-1 rounded-md"
                                                                 href={`/room/${item.slug}`}
                                                             >View More</Link>
                                                         </div>

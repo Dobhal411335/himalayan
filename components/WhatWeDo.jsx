@@ -37,19 +37,22 @@ const WhatWeDo = () => {
   return (
     <div className="w-full min-h-screen bg-[#fcf7f1]">
       {/* Banner */}
-      <div className="relative w-full h-[320px] flex items-center justify-center">
-        <Image src="/bg7.jpg" alt="Banner" layout="fill" objectFit="cover" className="z-0 opacity-80" priority />
-        <div className="absolute left-[10%] top-10 z-10 container w-fit mx-auto px-4 flex flex-col justify-center h-full bg-[#fcf7f1] rounded-xl">
+      <div className="relative w-full md:h-[320px] h-[100px] flex items-center justify-center">
+        <Image src="/bg7.jpg" alt="Banner" layout="fill" className="z-0 md:object-cover object-contain" priority />
+        <div className="hidden md:flex absolute left-[10%] top-10 z-10 container w-fit mx-auto px-4 flex-col justify-center h-full bg-[#fcf7f1] rounded-xl">
           <div className="max-w-2xl flex flex-col items-center justify-center px-10">
             <h1 className="text-3xl  font-semibold text-black mb-2 drop-shadow-lg">The Impact of What We Do How <br /> We Make a Difference</h1>
-            {/* <nav aria-label="breadcrumb" className="mb-4">
-              <ul className="flex gap-2 text-lg text-white">
-                <li><Link href="/" className="hover:underline">Home</Link></li>
-                <li>/</li>
-                <li className="text-amber-300">What We Do</li>
-              </ul>
-            </nav> */}
             <div className="w-96 rounded-lg overflow-hidden">
+              <Image src="/pic7.png" alt="Intro" width={300} height={300} className="object-cover w-full h-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div className="md:hidden flex container w-full mx-auto p-5 flex-col justify-center h-full bg-[#fcf7f1] rounded-xl">
+          <div className="w-full flex flex-col items-center justify-center">
+            <h1 className="text-xl font-semibold text-black text-center mb-2 drop-shadow-lg">The Impact of What We Do How <br /> We Make a Difference</h1>
+            <div className="w-full rounded-lg overflow-hidden">
               <Image src="/pic7.png" alt="Intro" width={300} height={300} className="object-cover w-full h-full" />
             </div>
           </div>
@@ -57,20 +60,20 @@ const WhatWeDo = () => {
       </div>
 
       {/* Main Content */}
-      <section className="content-inner about-style3 p-10">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row gap-10">
+      <section className="md:p-10">
+        <div className="container mx-auto">
+          <div className="flex flex-col lg:flex-row md:gap-10">
             {/* Left Side */}
             <div className="lg:w-7/12 w-full">
-              <div className=" p-8  mb-8">
-                <h4 className="pacifico-h2 text-green-800 text-2xl md:text-3xl mb-4">Wellness Retreats – A Sanctuary in Nature.</h4>
-                <p className="text-base text-gray-700 mb-4">
+              <div className=" p-8 md:mb-8">
+                <h4 className="pacifico-h2 text-green-800 text-xl md:text-2xl md:text-3xl mb-4">Wellness Retreats – A Sanctuary in Nature.</h4>
+                <p className="md:text-base text-gray-700 mb-4">
                   At our Wellness Retreats in Tapovan, Rishikesh, we offer a complete and immersive wellness experience that nurtures the body, mind, and soul. Whether you're a beginner or an advanced practitioner, our programs are designed to guide you on a journey of inner healing and mindful living—amidst the spiritual energy of the Himalayas. <br /><br />
 
                 </p>
                 <div className="max-w-xl mx-auto px-6 py-4 border border-gray-300 rounded-2xl relative">
                   <blockquote className="relative">
-                    <h2 className="text-3xl font-bold mb-4 text-gray-900">Why Choose Us?</h2>
+                    <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">Why Choose Us?</h2>
 
                     <ul className="space-y-3 text-gray-800 font-medium list-none">
                       <li>• Located in the spiritual hub of Rishikesh, near the sacred Ganga</li>
@@ -87,7 +90,7 @@ const WhatWeDo = () => {
 
                       </div>
 
-                      <span className="text-7xl text-black font-serif">”</span>
+                      <span className="md:text-7xl text-5xl text-black font-serif">”</span>
                     </div>
                   </blockquote>
                 </div>
@@ -138,7 +141,7 @@ const WhatWeDo = () => {
               </div>
             </div>
             {/* Right Side - keep width fixed and separated */}
-            <div className="lg:w-5/12 w-full flex items-center justify-center sticky top-20 self-start">
+            <div className="lg:w-5/12 w-full flex items-center justify-center sticky top-20  self-start p-10 md:p-0">
               <div className="w-full max-w-md rounded-xl overflow-hidden bg-white shadow-lg">
                 <Image
                   src="/image.png"
@@ -158,14 +161,17 @@ const WhatWeDo = () => {
 
 
       {/* Get in Touch Section */}
-      <section className="w-full bg-black py-5 text-white flex flex-col md:flex-row items-center justify-between md:px-24 gap-6">
-        <div className="mb-6 md:mb-0 px-3">
-          <h3 className="text-2xl md:text-3xl font-bold gap-2">Questions?
-            <span className="text-lg font-normal px-2">Our experts will help find the gear that’s right for you</span>
-          </h3>
+      <div className="">
+        <section className="w-full bg-black py-5 text-white flex flex-col md:flex-row items-center justify-between md:px-24 md:gap-6 gap-2">
+          <div className="md:mb-6 mb-2 md:mb-0">
+            <h3 className="text-xl text-center md:text-start md:text-2xl md:text-3xl font-bold gap-2">Questions?
+              <br className="md:hidden"/>
+              <span className="md:text-lg text-base font-normal px-2">Our experts will help find the gear that’s right for you</span>
+            </h3>
         </div>
         <Link href="/contact" className="btn bg-white text-black font-bold px-8 py-3 rounded-lg shadow transition">Get In Touch</Link>
       </section>
+      </div>
     </div>
   );
 };

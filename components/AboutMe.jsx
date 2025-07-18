@@ -27,41 +27,30 @@ const accordionData = [
 We sincerely thank you for being part of our journey to preserve Himalayan heritage and empower both seasoned practitioners and those just beginning their wellness path. Your support helps us sustain ancient traditions, uplift local communities, and create an inclusive space where everyone can heal, grow, and thrive — rooted in authenticity, guided by purpose.`
   }
 ];
-const teamMembers = [
-  { name: "John Doe", role: "CEO & Founder" },
-  { name: "Ivan Mathews", role: "iOS Developer" },
-  { name: "Macauley Herring", role: "Customer Success" },
-  { name: "Alya Levine", role: "CTO" },
-  { name: "Rose Hernandez", role: "Backend Developer" },
-  { name: "Elen Benitez", role: "Designer" },
-];
 const AboutMe = () => {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
     <div className="w-full min-h-screen bg-[#fcf7f1]">
       {/* Banner */}
-      <div className="relative w-full h-[350px] flex items-center justify-center bg-secondary overlay-black-light">
+      <div className="relative w-full md:h-[350px] h-[100px] flex items-center justify-center bg-secondary">
         <Image
           src="/bg1.jpg"
           alt="About Banner"
           layout="fill"
-          objectFit="cover"
-          className="z-0 opacity-80"
+          className="z-0 md:object-cover object-contain"
           priority
         />
-
       </div>
-
       {/* Main Content */}
-      <section className="content-inner p-10 overflow-hidden">
-        <div className="container mx-auto px-20">
-          <div className="flex flex-col lg:flex-row gap-10 items-stretch">
+      <section className="content-inner md:p-10 p-4 overflow-hidden">
+        <div className="container mx-auto md:px-20 px-5">
+          <div className="flex flex-col md:flex-row gap-5 md:gap-10 items-stretch">
             {/* Left: Text and Accordion */}
-            <div className="lg:w-1/2 flex flex-col justify-center overflow-y-auto">
+            <div className="lg:w-1/2 w-full flex flex-col justify-center overflow-y-auto">
               <div className="mb-8">
-                <h2 className="pacifico-h2 text-green-800 text-3xl md:text-4xl mb-6">"Breathe. Stretch. Transform. Find Your Flow, Feel Your Peace."</h2>
-                <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                <h2 className="pacifico-h2 text-green-800 text-xl md:text-4xl md:mb-6 mb-4">"Breathe. Stretch. Transform. Find Your Flow, Feel Your Peace."</h2>
+                <p className="md:text-lg text-md text-gray-700 leading-relaxed mb-6">
                   Himalayan Wellness Retreats invites you to a transformative journey nestled in the spiritual heartland of Tapovan, Rishikesh — where the charm of the sacred city meets the serene rhythm of the Ganges. Known as the Yoga Capital of the World, Rishikesh offers the perfect backdrop for inner healing, mindful living, and soulful exploration. Our thoughtfully curated retreats are designed to rejuvenate your body, mind, and spirit amidst the majestic Himalayan landscape. Each day begins with revitalizing yoga and meditation sessions led by experienced instructors, followed by nourishing yogic meals prepared from fresh, organic ingredients.<br /><br />
                   Immerse yourself in the local lifestyle as you explore ancient temples, vibrant artisan markets, and the awe-inspiring Ganga Aarti — all just steps away from our peaceful retreat in Tapovan. Guests enjoy serene accommodations with stunning views, nature walks, and spiritual excursions that connect you deeply with the essence of the region. Whether you seek inner peace, spiritual growth, or simply a conscious escape, Himalayan Wellness Retreats in Rishikesh offers a sacred space to reconnect—with yourself, with nature, and with the divine flow of life.<br /><br />
                   Explore the Spirit of Rishikesh — Where Every Breath is a Step Toward Wholeness.<br /><br />
@@ -69,7 +58,7 @@ const AboutMe = () => {
               </div>
 
               {/* Accordion */}
-              <div className="w-full max-w-2xl mx-auto mb-8">
+              <div className="w-full md:max-w-2xl mx-auto mb-8">
                 {accordionData.map((item, idx) => {
                   // Create a ref for each accordion item
                   const contentRef = React.useRef(null);
@@ -134,126 +123,6 @@ const AboutMe = () => {
           </div>
         </div>
       </section>
-
-      {/* <section className="content-inner py-16">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row gap-8 mb-10 items-center">
-          
-            <div className="w-full lg:w-[57%]">
-              <h2 className="text-3xl md:text-5xl font-bold mb-4 text-black leading-tight">Our Team of Experts</h2>
-              <p className="text-md text-gray-700 mb-4">
-                Behind Rishikesh Handmade Craft is a dedicated team of experienced professionals and industry veterans who share a deep passion for traditional Indian craftsmanship. Our core team includes expert artisans, designers, curators, and community leaders — many of whom have over 20 years of hands-on experience in the handicraft and cottage industry.
-                <br />
-                <br />
-                These individuals have not only mastered their craft but have also played a pivotal role in shaping the future of local artisans. Through years of dedication, they have created opportunities, launched training initiatives, and set new benchmarks in quality and innovation. Their deep understanding of cultural artistry, sustainable practices, and market trends ensures that every product we offer meets the highest standards while staying true to its roots.
-              </p>
-            </div>
-            
-            <div className="w-full lg:w-[57%] flex flex-row gap-8 justify-center">
-             
-              <div className="flex flex-col items-center">
-                <div className="relative w-72 h-72 rounded-2xl overflow-hidden shadow-lg flex items-center justify-center">
-                  <Image src="/pic1_1.jpg" alt="John Doe" width={224} height={224} className="object-cover w-full h-full" />
-                
-                 
-                </div>
-                <div className="mt-3 text-center">
-                  <div className="font-bold text-lg">John Doe</div>
-                  <div className="text-xs text-gray-600">CEO & Founder</div>
-                </div>
-              </div>
-             
-              <div className="flex flex-col items-center">
-                <div className="w-72 h-72 rounded-2xl overflow-hidden shadow-lg flex items-center justify-center">
-                  <Image src="/pic1_1.jpg" alt="Ivan Mathews" width={224} height={224} className="object-cover w-full h-full" />
-                </div>
-                <div className="mt-3 text-center">
-                  <div className="font-bold text-lg">Ivan Mathews</div>
-                  <div className="text-xs text-gray-600">iOS Developer</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-4 gap-8 mb-10">
-            {teamMembers.slice(2).map((member, idx) => (
-              <div key={idx} className="flex flex-col items-center">
-                <div className="flex flex-col items-center">
-                  <div className="w-72 h-72 rounded-2xl overflow-hidden shadow-lg bg-[#d6f0fa] flex items-center justify-center">
-                    <Image src="/pic1_1.jpg" alt="Ivan Mathews" width={224} height={224} className="object-cover w-full h-full" />
-                  </div>
-                  <div className="mt-3 text-center">
-                    <div className="font-bold text-lg">Ivan Mathews</div>
-                    <div className="text-xs text-gray-600">iOS Developer</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mb-10 text-base text-gray-700">
-            These individuals have not only mastered their craft but have also played a pivotal role in shaping the future of local artisans. Through years of dedication, they have created opportunities, launched training initiatives, and set new benchmarks in quality and innovation. Their deep understanding of cultural artistry, sustainable practices, and market trends ensures that every product we offer meets the highest standards while staying true to its roots.
-          </div>
-
-
-         
-          <section className="w-full py-16 flex flex-col md:flex-row items-center justify-center gap-8 relative overflow-hidden">
-          
-            <div className="relative flex-1 flex items-center justify-center min-h-[400px]">
-              <img
-                src="/pic1_1.jpg" // Place your image in public folder or update the path
-                alt="Happy Client"
-                className="object-contain h-[420px] z-10 relative"
-              />
-              
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-lg flex items-center gap-3 px-4 py-2 z-20">
-                <div className="flex -space-x-2">
-                  <img src="/pic1_1.jpg" alt="user1" className="w-8 h-8 rounded-full border-2 border-white" />
-                  <img src="/pic1_1.jpg" alt="user2" className="w-8 h-8 rounded-full border-2 border-white" />
-                </div>
-                <div className="flex flex-col text-xs">
-                  <span className="font-semibold">Our Satisfied User</span>
-                  <span className="text-gray-500">+12K</span>
-                </div>
-              </div>
-         
-            </div>
-
-           
-            <div className="flex-1 flex items-center justify-center">
-              <div className="bg-white rounded-2xl shadow-lg p-8 max-w-xl w-full relative">
-                <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
-                  What Our Clients Say<br />About Us
-                </h2>
-                <p className="text-gray-600 mb-8">
-                  It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.
-                </p>
-                <div className="flex items-center gap-4">
-                  <img src="/pic1_1.jpg" alt="Kenneth Fong" className="w-12 h-12 rounded-full object-cover" />
-                  <div>
-                    <div className="font-semibold text-gray-800">Kenneth Fong</div>
-                    <div className="text-xs text-gray-500">Postgraduate Student</div>
-                  </div>
-                  <div className="ml-auto flex gap-2">
-                    <button className="w-8 h-8 rounded-full bg-[#FEEAD3] flex items-center justify-center text-gray-700 hover:bg-[#FDD7A2]">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                      </svg>
-                    </button>
-                    <button className="w-8 h-8 rounded-full bg-[#FEEAD3] flex items-center justify-center text-gray-700 hover:bg-[#FDD7A2]">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-         
-        </div>
-      </section> */}
     </div>
   );
 };

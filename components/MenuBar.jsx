@@ -63,7 +63,23 @@ const staticMenuItems = [
     }
 ];
 const MenuBar = (props) => {
+    const menuRef = React.useRef(null);
     const [isOpen, setIsOpen] = useState(false);
+    // Close menu when clicking outside (mobile)
+    useEffect(() => {
+        if (!isOpen) return;
+        const handleClick = (e) => {
+            if (menuRef.current && !menuRef.current.contains(e.target)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClick);
+        document.addEventListener('touchstart', handleClick);
+        return () => {
+            document.removeEventListener('mousedown', handleClick);
+            document.removeEventListener('touchstart', handleClick);
+        };
+    }, [isOpen]);
     const [openMenu, setOpenMenu] = useState(null);
     const [openFixedMenu, setOpenFixedMenu] = useState(null);
     const [menuItems, setMenuItems] = useState(props.menuItems || []);
@@ -132,16 +148,16 @@ const MenuBar = (props) => {
             {/* Mobile Menu */}
             <div className="lg:hidden">
                 <button onClick={() => setIsOpen(!isOpen)}>
-                    {isOpen ? <X className="text-blue-600" size={24} /> : <Menu className="text-blue-600" size={24} />}
+                    {isOpen ? <X className="text-blue-600" size={20} /> : <Menu className="text-blue-600" size={20} />}
                 </button>
             </div>
 
             <div className={clsx(
                 "absolute top-8  md:top-12 mt-4 rounded-xl left-0 w-[90vw] text-black bg-white shadow-md lg:hidden transition-all duration-300 overflow-hidden",
                 isOpen ? "max-h-[500px]" : "max-h-0"
-            )}>
+            )} ref={menuRef}>
                 {/* Home button always first, no dropdown */}
-                <Link href="/" className="w-full block p-3 text-sm font-medium hover:bg-gray-100">
+                <Link href="/" className="w-full block p-3 text-sm font-medium hover:bg-gray-100" onClick={() => setIsOpen(false)}>
                     Home
                 </Link>
                 {/* Render the rest of the menu, excluding Home */}
@@ -163,7 +179,7 @@ const MenuBar = (props) => {
                                     .sort((a, b) => a.order - b.order)
                                     .map((subItem, subIndex) => (
                                         <li key={subIndex} className="py-1">
-                                            <Link href={`/category/${subItem.url}`} className="text-sm text-gray-700 ">
+                                            <Link href={`/category/${subItem.url}`} className="text-sm text-gray-700 " onClick={() => setIsOpen(false)}>
                                                 {subItem.title}
                                             </Link>
                                         </li>
@@ -176,11 +192,11 @@ const MenuBar = (props) => {
                 {allMenuItems.length > 0 && allMenuItems.map((cat, index) => (
                     <div key={index} className="border-b">
                         {cat.catTitle === "Contact Us" ? (
-                            <Link href="/contact" className="w-full block p-3 text-sm font-medium hover:bg-gray-100">
+                            <Link href="/contact" className="w-full block p-3 text-sm font-medium hover:bg-gray-100" onClick={() => setIsOpen(false)}>
                                 {cat.catTitle}
                             </Link>
                         ) : cat.catTitle === "Accommodation" ? (
-                            <Link href="/accommodation" className="w-full block p-3 text-sm font-medium hover:bg-gray-100">
+                            <Link href="/accommodation" className="w-full block p-3 text-sm font-medium hover:bg-gray-100" onClick={() => setIsOpen(false)}>
                                 {cat.catTitle}
                             </Link>
                         ) : (

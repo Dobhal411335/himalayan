@@ -6,30 +6,30 @@ const VisionMission = () => {
   return (
     <section className="w-full  bg-[#fcf7f1] min-h-screen">
       <div className="w-full">
-        <div className="relative w-full h-[280px] flex items-center justify-center bg-[#fcf7f1] overlay-black-light">
+        <div className="relative w-full md:h-[280px] h-[100px] flex items-center justify-center bg-[#fcf7f1] overlay-black-light">
           <Image
             src="/bg3.jpg"
             alt="Vision Mission Banner"
             layout="fill"
-            objectFit="cover"
-            className="z-0 opacity-80"
+                   
+          className="z-0 md:object-cover object-contain"
             priority
           />
         </div>
-        <div className="w-full container mx-auto flex gap-10 items-center mt-10 px-20">
+        <div className="w-full container mx-auto flex gap-5 md:gap-10 items-center mt-10 px-5 md:px-20">
           {/* Left: Intro & Image */}
           <div className="w-full flex flex-col items-start">
-            <h2 className="pacifico-h2 text-green-800 text-3xl md:text-4xl mb-6 text-start lg:text-start">“Wellness Retreats – A Sanctuary in Nature.”</h2>
-            <p className="text-lg text-gray-700 leading-relaxed mb-6 text-center lg:text-justify">
+            <h2 className="pacifico-h2 text-green-800 text-xl md:text-4xl mb-6 text-start lg:text-start">“Wellness Retreats – A Sanctuary in Nature.”</h2>
+            <p className="md:text-lg text-gray-700 leading-relaxed mb-6 lg:text-justify">
               Nestled in the heart of Tapovan, Rishikesh, our Wellness Retreats Programme offers a serene space for individuals seeking balance, renewal, and transformation. Surrounded by the tranquil beauty of the Himalayas and the sacred Ganga, we invite you to disconnect from the chaos and reconnect with your true self.<br /><br />
               Our retreats are thoughtfully designed to harmonize body, mind, and spirit—blending traditional yoga and meditation, Ayurvedic therapies, nature walks, and mindful nutrition. Whether you're a beginner or a seasoned practitioner, our experienced wellness guides and yoga teachers ensure a nurturing, personalized journey toward healing and self-discovery.
             </p>
           </div>
 
         </div> {/* Right: Vision & Mission */}
-        <div className="container mx-auto w-full flex md:flex-row flex-col w-full gap-8 px-20">
+        <div className="container mx-auto w-full flex md:flex-row flex-col w-full gap-8 px-10 md:px-20">
           <div className="md:w-2/3 w-full flex justify-center mb-6 ">
-            <Image src="/Vision.png" alt="Vision Mission Banner" width={500} height={500} className="rounded-xl shadow-lg object-cover w-fit h-auto " />
+            <Image src="/Vision.png" alt="Vision Mission Banner" width={500} height={500} className="rounded-xl object-cover w-fit h-auto " />
           </div>
           {/* Vision */}
           <div className="md:w-1/2 w-full flex-col mb-4">

@@ -4,7 +4,7 @@ const ShippingPolicy = () => {
   return (
     <section className="bg-[#fffaf3] py-10 px-4 md:px-12 w-full mx-auto rounded-lg shadow-sm">
       <div className="border border-black p-4 rounded-xl shadow-sm">
-        <h2 className="text-3xl font-bold mb-6 text-start">Himalayan Wellness Retreats House/Accommodation Policy</h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-start">Himalayan Wellness Retreats House/Accommodation Policy</h2>
         <p className="mb-4">
           "We reserve the right to amend, modify, change, cancel, vary, or add to the Himalayan Wellness Retreats reservation policies or the content featured on our Himalayan Wellness Retreats website (www.himalayanwellnessretreats.com) at any time without prior notice. Please check our website regularly for updates to the Himalayan Wellness Retreats Policy & Rules. Any modification to these policies or rules that occurs before your departure will be considered a part of your reservation agreement with us. A copy of the Himalayan Wellness Retreats Policy & Rules is available on our website (www.himalayanwellnessretreats.com), in the Guest Room Notebook, and can be obtained from Front Desk staff upon request."
         </p>

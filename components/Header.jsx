@@ -18,10 +18,26 @@ import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
 const Header = () => {
+  const authDropdownRef = React.useRef(null);
   const pathName = usePathname();
   const [isMounted, setIsMounted] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAuthDropdownOpen, setIsAuthDropdownOpen] = useState(false);
+  // Close auth dropdown when clicking outside
+  useEffect(() => {
+    if (!isAuthDropdownOpen) return;
+    const handleClick = (e) => {
+      if (authDropdownRef.current && !authDropdownRef.current.contains(e.target)) {
+        setIsAuthDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    document.addEventListener('touchstart', handleClick);
+    return () => {
+      document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('touchstart', handleClick);
+    };
+  }, [isAuthDropdownOpen]);
   const [menuItems, setMenuItems] = useState([]);
   const { data: session, status } = useSession();
   const [showHeader, setShowHeader] = useState(true);
@@ -154,7 +170,7 @@ const Header = () => {
                       <User className="" size={26} />
                     </button>
                     {isAuthDropdownOpen && (
-                      <div className="absolute top-12 right-0 mt-2 w-48 text-black bg-white shadow-lg rounded-lg border">
+                      <div ref={authDropdownRef} className="absolute top-12 right-0 mt-2 w-48 text-black bg-white shadow-lg rounded-lg border">
                         <Link href="/sign-in" onClick={() => setIsAuthDropdownOpen(false)} className="block px-4 py-2 hover:bg-blue-100">Sign In</Link>
                         <Link href="/sign-up" onClick={() => setIsAuthDropdownOpen(false)} className="block px-4 py-2 hover:bg-blue-100">Create Account</Link>
                       </div>

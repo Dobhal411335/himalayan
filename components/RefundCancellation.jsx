@@ -4,7 +4,7 @@ const RefundCancellation = () => {
   return (
     <section className="bg-[#fffaf3] py-10 px-4 md:px-12 w-full mx-auto rounded-lg shadow-sm">
       <div className="border border-black p-4 rounded-xl shadow-sm">
-        <h2 className="text-3xl font-bold mb-6 text-start">Our Refund and Cancellation Policy</h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-start">Our Refund and Cancellation Policy</h2>
         <p className="mb-4">
           <span className="font-semibold">www.himalayanwellnessretreats.com (Website)</span> (“we”, “our”, “us”) A refund policy of an E-commerce platform states that if a consumer is unhappy with a product or service, they will return it and receive a refund for the amount paid at the time of purchase. In certain situations, the consumer has a time period beyond which they cannot return the product, such as 14 days or 40 days from the date of refund request.
         </p>
