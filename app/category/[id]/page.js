@@ -84,7 +84,7 @@ const CategoryPage = async ({ params }) => {
 
   return (
     <SidebarInset>
-      <div className="min-h-screen p-2 bg-[#fcf7f1]">
+      <div className="min-h-screen md:p-2 bg-[#fcf7f1]">
         {/* Category Banner at the top */}
         <CategoryBanner 
         title={categoryData.title} 
@@ -102,8 +102,8 @@ const CategoryPage = async ({ params }) => {
             {/* Category Cards Row */}
             <div>
               <h2 className="text-2xl font-bold px-4">Category</h2>
-              <Carousel className="w-full mx-auto my-4">
-                <CarouselContent className="w-full gap-5">
+              <Carousel className="w-full mx-auto md:my-4 my-2">
+                <CarouselContent className="w-full gap-4 px-2">
                   {Array.isArray(allCategories) && allCategories.flatMap(cat =>
                     Array.isArray(cat.subMenu) ? cat.subMenu.map((sub, idx) => (
                       <CarouselItem key={`${cat._id || cat.title || idx}-${sub._id || sub.url || idx}`} className="basis-1/2 md:basis-1/6 lg:basis-1/6 min-w-0 snap-start">

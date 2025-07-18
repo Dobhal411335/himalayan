@@ -160,11 +160,11 @@ const Banner = () => {
                                 Our accommodation offers the perfect blend of comfort, serenity, and functionality—making it an ideal stay for all kinds of travelers, whether solo, with family, or in a group. Each room is thoughtfully designed with elegant interiors, cozy bedding, and large windows that open to serene natural views. We provide all modern amenities including high-speed Wi-Fi, air conditioning, 24/7 hot water, in-room tea/coffee makers, spacious bathrooms, and secure locker facilities. Daily housekeeping ensures a clean and welcoming environment throughout your stay. With easy access to yoga halls, meditation spaces, and common lounges, our stay is more than just a room—it’s a peaceful retreat that truly feels like home.
                             </p>
                         </div>
-
                         <FeaturedRoomsSection
                             rooms={rooms}
                             onShowReviews={handleShowReviews}
                         />
+
                     </div>
                 </>
             )}

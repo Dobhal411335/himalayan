@@ -193,23 +193,23 @@ export default function RoomDetailView({ data }) {
         return () => carouselApi.off('select', onSelect);
     }, [carouselApi]);
     return (
-        <div className="w-full flex flex-col items-center justify-center py-10">
-            <div className="w-full max-w-[1600px] flex flex-col md:flex-row gap-4" style={{ width: '80%' }}>
+        <div className="w-full flex flex-col items-center justify-center md:py-10">
+            <div className="w-full md:max-w-[80%] flex flex-col md:flex-row gap-4" >
                 {/* LEFT: Product Images */}
-                <div className="w-full md:w-2/3 flex flex-col items-start px-10">
+                <div className="w-full md:w-2/3 flex flex-col items-center md:px-10 px-2">
                     {/* Main Image Carousel (QuickView style, embla-controlled) */}
-                    <div className="w-full flex justify-center mb-4">
-                        <div className="relative w-full max-w-[800px] h-[320px] md:h-[400px] flex items-center justify-center overflow-hidden p-4 rounded-lg">
+                    <div className="w-full flex justify-center md:mb-4">
+                        <div className="relative w-full md:max-w-[800px] h-[300px] md:h-[400px] flex items-center justify-center overflow-hidden md:p-4 rounded-lg">
                             <Carousel
                                 className="w-full h-full"
                                 opts={{ loop: true }}
                                 plugins={[Autoplay({ delay: 4000 })]}
                                 setApi={setCarouselApi}
                             >
-                                <CarouselContent className="h-[370px]">
+                                <CarouselContent className="h-[300px]">
                                     {allImages.map((img, idx) => (
                                         <CarouselItem key={idx} className="flex items-center justify-center h-full">
-                                            <div className="relative w-full h-[270px] md:h-[350px] flex items-center justify-center">
+                                          <div className="relative w-full h-[270px] md:h-[350px] flex items-center justify-center">
                                                 <Image
                                                     src={img}
                                                     alt={`Room image ${idx}`}
@@ -235,11 +235,11 @@ export default function RoomDetailView({ data }) {
                     </div>
                     {/* Sub-Images Carousel (5 per row) */}
                     {allImages.length > 1 && (
-                        <div className="w-full px-10">
+                        <div className="w-full md:px-10 px-2">
                             <Carousel opts={{ align: 'start', loop: allImages.length > 5 }} className="w-full">
                                 <CarouselContent>
                                     {allImages.map((img, idx) => (
-                                        <CarouselItem key={idx} className="flex justify-center md:basis-1/8 basis-1/2 max-w-[15%] min-w-0">
+                                        <CarouselItem key={idx} className="flex justify-center md:basis-1/8 basis-1/4 md:max-w-[15%] min-w-0">
                                             <button
                                                 className={`rounded-lg border-2 ${activeImageIdx === idx ? 'border-black' : 'border-gray-200'} focus:outline-none `}
                                                 onClick={() => carouselApi && carouselApi.scrollTo(idx)}
@@ -258,25 +258,25 @@ export default function RoomDetailView({ data }) {
                                 </CarouselContent>
                                 {allImages.length > 5 && (
                                     <>
-                                        <CarouselPrevious />
-                                        <CarouselNext />
+                                        <CarouselNext className="!right-1 !top-1/2 !-translate-y-1/2 z-10 " />
+                                        <CarouselPrevious className="!left-1 !top-1/2 !-translate-y-1/2 z-10" />
                                     </>
                                 )}
                             </Carousel>
                         </div>
                     )}
                 </div>
-                <div className="w-full lg:w-1/3 flex flex-col">
+                <div className="w-full lg:w-1/3 flex flex-col px-5 md:px-2">
                     <div className="">
                         <div className="w-full flex flex-col">
                             <div className="flex items-center gap-4 mb-1 justify-between">
-                                <h1 className="md:text-2xl text-xl font-bold">{data.title}</h1>
+                                <h1 className="md:text-2xl text-md font-bold">{data.title}</h1>
                                 {data.code && (
                                     <span className="text-sm text-black my-2 md:my-0 w-fit font-mono bg-gray-100 px-2 py-1 rounded border border-gray-200">Code: {data.code}</span>
                                 )}
                             </div>
-                            <div className="flex items-center gap-2 mb-3 md:mb-0">
-                                <span className="font-semibold flex items-center">
+                            <div className="flex items-center gap-2 md:mb-3">
+                                <span className="font-semibold flex items-center text-sm md:text-md">
                                     {(() => {
                                         if (Array.isArray(data?.reviews) && data.reviews.length > 0) {
                                             const avg = data.reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / data.reviews.length;
@@ -312,7 +312,7 @@ export default function RoomDetailView({ data }) {
                             })()}
                         </div>
                         <button
-                            className="text-black hover:underline w-fit text-base flex items-center gap-2"
+                            className="text-black hover:underline w-fit text-base flex items-center gap-2 py-2"
                             onClick={() => setShowExpertModal(true)}
                         >
                             <Mail />
@@ -321,7 +321,7 @@ export default function RoomDetailView({ data }) {
 
                         {showExpertModal && (
                             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                                <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative animate-fade-in">
+                                <div className="bg-white rounded-lg shadow-lg p-6 h-[80%] overflow-y-auto md:max-w-md relative animate-fade-in">
                                     <button
                                         className="absolute top-2 right-2 text-gray-500 hover:text-black text-4xl font-bold"
                                         onClick={() => setShowExpertModal(false)}
@@ -451,7 +451,7 @@ export default function RoomDetailView({ data }) {
 
 
                         <div className="mb-4">
-                            <div className="text-green-800 font-bold text-lg mb-1 text-right">
+                            <div className="text-green-800 font-bold md:text-lg mb-1 text-center">
                                 {(() => {
                                     const prices = data?.prices?.[0]?.prices || [];
                                     const paxOption = prices.find(p => p.type === "01 Pax") || prices.find(p => p.type === "02 Pax");
@@ -464,8 +464,8 @@ export default function RoomDetailView({ data }) {
                             <table className="w-full border-separate border-spacing-0">
                                 <thead>
                                     <tr className="bg-orange-100">
-                                        <th className="text-green-800 text-lg font-semibold px-3 py-2 text-left rounded-tl-lg">Person</th>
-                                        <th className="text-green-800 text-lg font-semibold px-3 py-2 text-left rounded-tr-lg">Price For Night</th>
+                                        <th className="text-green-800 md:text-lg font-semibold px-3 py-2 text-left rounded-tl-lg">Person</th>
+                                        <th className="text-green-800 md:text-lg font-semibold px-3 py-2 text-left rounded-tr-lg">Price For Night</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -474,7 +474,7 @@ export default function RoomDetailView({ data }) {
                                         if (!row) return null;
                                         return (
                                             <tr key={type} className="bg-blue-100">
-                                                <td className="px-3 py-2">{type}</td>
+                                                <td className="font-bold px-3 py-2">{type}</td>
                                                 <td className="px-3 py-2">{row.amount}</td>
                                             </tr>
                                         );
@@ -482,7 +482,7 @@ export default function RoomDetailView({ data }) {
                                 </tbody>
                             </table>
                         </div>
-                        <div className="font-semibold text-gray-800 text-md my-2">Room Amenities</div>
+                        <div className="font-semibold text-gray-800 md:text-md my-2">Room Amenities</div>
                         <div className="flex gap-2 my-2 text-lg flex-wrap">
                             <TooltipProvider>
                                 {(data.amenities || []).map((am, i) => (
@@ -497,7 +497,7 @@ export default function RoomDetailView({ data }) {
                                 ))}
                             </TooltipProvider>
                         </div>
-                        <div className="flex gap-8 text-md my-2">
+                        <div className="flex gap-8 md:text-md text-sm my-4">
                             <span>
                                 Max occupancy: {
                                     data?.prices?.[0]?.prices?.some(p => p.type === '02 Pax')
@@ -513,7 +513,7 @@ export default function RoomDetailView({ data }) {
                                 }
                             </span>
                         </div>
-                        <h2 className="font-bold text-md py-3 text-center">"Shop with Confidence - 100% Money-Back Guarantee!"</h2>
+                        <h2 className="font-bold md:text-md py-3 text-center">"Shop with Confidence - 100% Money-Back Guarantee!"</h2>
                     </div>
 
                     <div className="flex gap-4 items-center">
@@ -604,7 +604,7 @@ export default function RoomDetailView({ data }) {
                 </div>
             </div>
 
-            <div className="container mx-auto w-[80%] my-8 flex flex-col md:flex-row gap-8">
+            <div className="container mx-auto md:w-[80%] px-5 my-8 flex flex-col md:flex-row gap-8">
                 {/* Left column */}
                 <div className="flex-1 border rounded-lg p-6 bg-white">
                     <div className="mb-4">
@@ -645,8 +645,8 @@ export default function RoomDetailView({ data }) {
                     </div>
                 </div>
             </div>
-            <div className="mt-8">
-                <h2 className="text-2xl font-bold text-start my-5">Our Accommodation</h2>
+            <div className="bg-[#ededed] flex flex-col items-center justify-center w-full rounded-lg md:mb-8 mb-4 px-2">
+                <h2 className="text-xl md:text-2xl font-bold text-center md:my-5 my-2 w-full">Our Accommodation</h2>
                 <FeaturedRoomsClient rooms={rooms} />
             </div>
         </div >

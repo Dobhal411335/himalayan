@@ -51,10 +51,13 @@ const ReviewModal = ({ open, onClose, reviews }) => {
                   </div>
 
                   {/* Stars and Verified */}
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex flex-col md:flex-row items-center gap-2 mb-2">
+                    <div className="flex">
+
                     {[...Array(review.rating)].map((_, i) => (
                       <Star key={i} size={20} color="#12b76a" fill="#12b76a" />
                     ))}
+                    </div>
                     <span className="text-green-600 font-medium flex items-center gap-1 text-sm ml-2">
                       <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
                         <path fill="#12b76a" d="M9.5 17.5l-5-5 1.4-1.4 3.6 3.6 7.6-7.6 1.4 1.4-9 9z" />
@@ -88,7 +91,7 @@ const ReviewModal = ({ open, onClose, reviews }) => {
 const PackageCard = ({
   pkg = {},
 }) => {
-  console.log(pkg)
+  // console.log(pkg)
   // Images array logic (adapt to your data)
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null);
@@ -102,9 +105,9 @@ const PackageCard = ({
   ];
 
   return (
-    <div key={pkg._id} className="relative flex flex-col md:flex-row w-[90%] mx-auto bg-[#f8f5ef] rounded-2xl my-2 md:items-center gap-6 px-5 mx-auto border border-gray-200">
+    <div key={pkg._id} className="relative flex flex-col md:flex-row w-full md:w-[90%] mx-auto bg-[#f8f5ef] rounded-2xl md:p-2 p-5 md:items-center gap-6 mx-auto border border-gray-200">
       {/* Image Carousel */}
-      <div className="relative w-[420px] h-[280px] flex-shrink-0 flex items-center justify-center bg-white rounded-xl overflow-hidden border border-gray-100">
+      <div className="relative w-full md:w-[420px] md:h-[280px] h-[250px] flex-shrink-0 flex items-center justify-center rounded-xl overflow-hidden">
         <Carousel className="w-full h-full" opts={{ loop: true }}>
           <CarouselContent>
             {imageUrls.map((img, i) => (
@@ -114,7 +117,7 @@ const PackageCard = ({
                   alt={pkg.title || 'Package'}
                   width={420}
                   height={420}
-                  className="object-contain object-top w-[420px] h-[420px] rounded-xl border border-gray-200"
+                  className="object-contain object-top w-[420px] h-[420px] rounded-xl"
                   priority={i === 0}
                 />
               </CarouselItem>
@@ -125,9 +128,9 @@ const PackageCard = ({
         </Carousel>
       </div>
       {/* Details */}
-      <div className="flex-1 p-5 flex flex-col gap-2 justify-between min-h-[260px] relative">
+      <div className="flex-1 md:p-5 p-2 flex flex-col gap-2 justify-between min-h-[260px] relative">
         <div className="flex items-start justify-between mb-2">
-          <h3 className="md:text-2xl text-xl font-bold text-gray-900">{pkg.title || "Package Name"}</h3>
+          <h3 className="md:text-2xl text-md font-bold text-gray-900">{pkg.title || "Package Name"}</h3>
 
           <button
             className="flex flex-col items-center justify-between cursor-pointer group bg-transparent border-0 p-0"
@@ -155,10 +158,10 @@ const PackageCard = ({
         {/* Package Highlight Section */}
         {pkg.packageHighlight && Array.isArray(pkg.packageHighlight.highlights) && pkg.packageHighlight.highlights.length > 0 && (
           <div className="mt-2">
-            <div className="font-bold text-base text-black mb-1">Package Highlight</div>
+            <div className="font-bold text-sm md:text-base text-black mb-1">Package Highlight</div>
             <ul className="ml-2 flex flex-col gap-1 h-24 overflow-y-auto">
               {pkg.packageHighlight.highlights.map((h, i) => (
-                <li key={i} className="flex items-start gap-2 text-green-700 text-[15px]">
+                <li key={i} className="flex items-start gap-2 text-green-700 md:text-[15px] text-sm">
                   <span className="mt-1">{/* Green check icon */}
                     <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <circle cx="10" cy="10" r="10" fill="#22c55e" />
@@ -171,10 +174,10 @@ const PackageCard = ({
             </ul>
           </div>
         )}
-        <div className="flex justify-between items-center mt-4">
+        <div className="flex justify-between items-center gap-4 mt-4">
           {/* PDF Modal Trigger */}
           <button
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-2 w-48 rounded-md"
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-2 md:w-48 w-1/2 rounded-md"
             onClick={() => setShowPdfModal(true)}
           >
             Get Package PDF
@@ -201,10 +204,11 @@ const PackageCard = ({
 
                   {/* PDF Preview Modal */}
                   <Dialog open={!!pdfPreviewUrl} onOpenChange={() => setPdfPreviewUrl(null)}>
-                    <DialogContent className="max-w-2xl">
+                    <DialogContent className="md:max-w-2xl">
                       <DialogTitle>PDF Preview</DialogTitle>
                       {pdfPreviewUrl && (
                         <iframe
+                        className="h-[500px]"
                           src={pdfPreviewUrl}
                           width="100%"
                           height="600px"
@@ -214,7 +218,7 @@ const PackageCard = ({
                       )}
                       <DialogFooter>
                         <DialogClose asChild>
-                          <button className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded">Close</button>
+                          <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded">Close</button>
                         </DialogClose>
                       </DialogFooter>
                     </DialogContent>
@@ -231,7 +235,7 @@ const PackageCard = ({
             </DialogContent>
           </Dialog>
 
-          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-10 w-48 rounded-md"
+          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 md:px-10 md:w-48 w-1/2 rounded-md"
           >
             <Link href={`/package/${pkg.slug}`}>
               View More

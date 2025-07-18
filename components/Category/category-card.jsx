@@ -38,8 +38,8 @@ const CategoryCard = ({ category }) => {
   // console.log(category)
   return (
     
-      <div className="group w-44 h-72 transition-transform mx-2 my-2 flex flex-col">
-        <div className="relative w-full h-60 overflow-hidden rounded-xl mb-2">
+      <div className="group md:w-44 w-full md:h-72 h-full transition-transform my-2 flex flex-col">
+        <div className="relative w-full h-48 overflow-hidden rounded-xl mb-2">
           <Image
             src={category.profileImage?.url || "/placeholder.jpeg"}
             alt={category.title}
@@ -49,7 +49,7 @@ const CategoryCard = ({ category }) => {
           />
         </div>
         <Link href={category.url || `/category/${category.url || category._id}` }>
-        <span className="font-semibold text-start text-gray-800 text-base hover:underline truncate w-full mt-5 px-2">
+        <span className=" text-sm md:text-md font-semibold text-start text-gray-800 text-base hover:underline truncate w-full mt-5 px-2">
           {category.title}
         </span>
         </Link>

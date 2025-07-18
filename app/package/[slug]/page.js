@@ -1,14 +1,3 @@
-// import Packages from "@/components/Packages";
-
-// export default async function PackagePage({ params }) {
-//     const { slug } = await params;
-//     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/add_package/by_slug/${encodeURIComponent(slug)}`);
-//     const packageData = await res.json();
-//     if (!packageData || packageData.error) return <div>Page Not found</div>;
-//     return <Packages data={packageData} />;
-// }
-
-// 👇 Add this at the top to force server-side rendering
 export const dynamic = "force-dynamic";
 
 import { SidebarInset } from "@/components/ui/sidebar";
@@ -89,7 +78,7 @@ const PackagePage = async ({ params }) => {
     // ✅ Render Product Detail Page
     return (
         <SidebarInset>
-            <div className="w-full py-8 flex flex-col">
+            <div className="w-full md:py-8 py-4 flex flex-col">
                 <div className="space-y-4 px-4">
                     {/* ✅ Force rerender when navigating between products */}
                     <ProductDetailView key={product._id} product={product} />
@@ -100,19 +89,9 @@ const PackagePage = async ({ params }) => {
                 <div className="space-y-4">
                     <ProductInfoTabs product={product} />
                 </div>
-                <div className="space-y-4 px-10">
+                <div className="space-y-4 px-2">
                     <FeaturedRoomsClient rooms={rooms} />
                 </div>
-
-                {/* {frequentlyBoughtTogether.length > 0 && (
-                    <div className="mt-8 px-4 py-10 bg-blue-100">
-                        <h2 className="text-2xl md:text-3xl font-semibold px-10">Frequently Bought Together</h2>
-                        <ResponsiveFeaturedCarousel products={frequentlyBoughtTogether} />
-                    </div>
-                )} */}
-                {/* 
-
-                {/* <StickyAddToCartBar product={product} /> */}
             </div>
         </SidebarInset>
     );

@@ -12,7 +12,7 @@ export default function CategoryProductsGrid({ visibleProducts }) {
 // console.log(paginatedProducts)
   return (
     <>
-      <div className="grid grid-cols-1 gap-6 my-4">
+      <div className="grid grid-cols-1 md:gap-6 gap-4 my-2 md:my-4">
         {paginatedProducts.length === 0 ? (
           <div className="col-span-full text-center py-8">
             <h3 className="text-xl font-medium text-gray-600">No Packages found for this category</h3>

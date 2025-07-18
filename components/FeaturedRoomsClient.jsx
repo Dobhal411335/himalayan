@@ -32,13 +32,16 @@ export default function FeaturedRoomsClient({ rooms }) {
 
   return (
     <>
+    <div className="w-full">
+
       {rooms.length > 0 && (
         <FeaturedRoomsSection
-          rooms={rooms}
-          onBook={handleBookNow}
-          onShowReviews={handleShowReviews}
+        rooms={rooms}
+        onBook={handleBookNow}
+        onShowReviews={handleShowReviews}
         />
       )}
+      </div>
       {showReviewModal && selectedRoom && (
         <ReviewListModal
           open={showReviewModal}

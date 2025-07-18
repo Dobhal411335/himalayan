@@ -3,13 +3,13 @@ import Link from "next/link"
 
 const CategoryBanner = ({ title, bannerImage, mainCategory, subCategory }) => {
   return (
-    <div className="relative w-full h-[200px] md:h-[300px]">
+    <div className="relative w-full h-[180px] md:h-[300px]">
       {/* Background image */}
       <Image
         src={bannerImage}
         alt={title || mainCategory}
         fill
-        className="object-cover w-full h-full"
+        className="md:object-cover object-contain w-full h-full"
         quality={100}
         priority
       />

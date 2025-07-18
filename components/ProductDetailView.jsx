@@ -142,19 +142,19 @@ export default function ProductDetailView({ product }) {
   const packagePrice = product?.packagePrice || {};
   return (
     <div className="w-full flex justify-center">
-      <div className="w-full max-w-[1500px] flex flex-col md:flex-row gap-4" style={{ width: '80%' }}>
+      <div className="w-full md:max-w-[80%] flex flex-col md:flex-row gap-4">
         {/* LEFT: Product Images */}
-        <div className="w-full md:w-2/3 flex flex-col items-start px-10">
+        <div className="w-full md:w-2/3 flex flex-col items-start md:px-10">
           {/* Main Image Carousel (QuickView style, embla-controlled) */}
-          <div className="w-full flex justify-center mb-4">
-            <div className="relative w-full max-w-[800px] h-[320px] md:h-[400px] flex items-center justify-center overflow-hidden p-4 rounded-lg rounded-md">
+          <div className="w-full flex justify-center md:mb-4">
+            <div className="relative w-full md:max-w-[800px] h-[300px] md:h-[400px] flex items-center justify-center overflow-hidden md:p-4 rounded">
               <Carousel
                 className="w-full h-full"
                 opts={{ loop: true }}
                 plugins={[Autoplay({ delay: 4000 })]}
                 setApi={setCarouselApi}
               >
-                <CarouselContent className="h-[370px]">
+                <CarouselContent className="h-[300px]">
                   {allImages.map((img, idx) => (
                     <CarouselItem key={idx} className="flex items-center justify-center h-full">
                       <div className="relative w-full h-[270px] md:h-[350px] flex items-center justify-center">
@@ -183,11 +183,11 @@ export default function ProductDetailView({ product }) {
           </div>
           {/* Sub-Images Carousel (5 per row) */}
           {allImages.length > 1 && (
-            <div className="w-full px-10">
-              <Carousel opts={{ align: 'start', loop: allImages.length > 5 }} className="w-full">
+            <div className="w-full md:px-10 py-2">
+              <Carousel opts={{ align: 'center', loop: allImages.length > 5 }} className="w-full">
                 <CarouselContent>
                   {allImages.map((img, idx) => (
-                    <CarouselItem key={idx} className="flex justify-center basis-1/5 max-w-[20%] min-w-0">
+                    <CarouselItem key={idx} className="flex justify-center md:basis-1/5 basis-1/4 md:max-w-[15%] min-w-0">
                       <button
                         className={`rounded-lg border-2 ${activeImageIdx === idx ? 'border-black' : 'border-gray-200'} focus:outline-none `}
                         onClick={() => carouselApi && carouselApi.scrollTo(idx)}
@@ -206,8 +206,8 @@ export default function ProductDetailView({ product }) {
                 </CarouselContent>
                 {allImages.length > 5 && (
                   <>
-                    <CarouselPrevious />
-                    <CarouselNext />
+                    <CarouselNext className="!right-2 !top-1/2 !-translate-y-1/2 z-10 " />
+                    <CarouselPrevious className="!left-1 !top-1/2 !-translate-y-1/2 z-10" />
                   </>
                 )}
               </Carousel>
@@ -218,13 +218,13 @@ export default function ProductDetailView({ product }) {
           <div className="">
             <div className="w-full flex flex-col">
               <div className="flex items-center gap-4 mb-1 justify-between">
-                <h1 className="md:text-3xl text-xl font-bold">{product.title}</h1>
+                <h1 className="md:text-2xl text-md font-bold">{product.title}</h1>
                 {product.code && (
                   <span className="text-sm text-black my-2 md:my-0 w-fit font-mono bg-gray-100 px-2 py-1 rounded border border-gray-200">Code: {product.code}</span>
                 )}
               </div>
               <div className="flex items-center gap-2 mb-3 md:mb-0">
-                <span className="font-semibold flex items-center">
+                <span className="font-semibold flex items-center text-sm md:text-md">
                   {(() => {
                     if (Array.isArray(product?.reviews) && product.reviews.length > 0) {
                       const avg = product.reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / product.reviews.length;
@@ -252,7 +252,7 @@ export default function ProductDetailView({ product }) {
                   );
                 }
                 return (
-                  <div className="text-gray-700 my-4 text-md max-w-lg">
+                  <div className="text-gray-700 my-2 text-md max-w-lg">
                     <div dangerouslySetInnerHTML={{ __html: words.slice(0, 20).join(' ') + '...' }} />
                     <button className="text-blue-600 underline" onClick={() => setShowFullDesc(true)}>Read more</button>
                   </div>
@@ -269,7 +269,7 @@ export default function ProductDetailView({ product }) {
 
             {showExpertModal && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative animate-fade-in">
+             <div className="bg-white rounded-lg shadow-lg p-6 h-[80%] overflow-y-auto md:max-w-md relative animate-fade-in">
                   <button
                     className="absolute top-2 right-2 text-gray-500 hover:text-black text-4xl font-bold"
                     onClick={() => setShowExpertModal(false)}
@@ -395,17 +395,15 @@ export default function ProductDetailView({ product }) {
                 </div>
               </div>
             )}
-
-
-            <div className="mb-6">
+            <div className="my-4">
               {/* Package Price Table */}
-              <div className="text-green-800 font-bold text-lg mb-1 text-right">Package Price: Base Rate</div>
+              <div className="text-green-800 font-bold md:text-md mb-1 text-center">Package Price: Base Rate</div>
               <table className="w-full border-separate border-spacing-0">
                 <thead>
                   <tr className="bg-orange-100">
-                    <th className="text-green-800 text-lg font-semibold px-3 py-2 text-left rounded-tl-lg">Accommodation Type</th>
-                    <th className="text-green-800 text-lg font-semibold px-3 py-2 text-left">In INR</th>
-                    <th className="text-green-800 text-lg font-semibold px-3 py-2 text-left rounded-tr-lg">US Dollar</th>
+                    <th className="text-green-800 md:text-lg font-semibold px-3 py-2 text-left rounded-tl-lg">Accommodation Type</th>
+                    <th className="text-green-800 md:text-lg font-semibold px-3 py-2 text-left">In INR</th>
+                    <th className="text-green-800 md:text-lg font-semibold px-3 py-2 text-left rounded-tr-lg">US Dollar</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -414,15 +412,15 @@ export default function ProductDetailView({ product }) {
                   {Array.isArray(packagePrice?.onePerson) && packagePrice.onePerson.length > 0 && (
                     <>
                       <tr>
-                        <td colSpan={3} className="font-semibold text-black text-start px-2 py-2">
+                        <td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md">
                           Base Price : 01 Person
                         </td>
                       </tr>
                       {packagePrice.onePerson.map((item, idx) => (
                         <tr key={`onePerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
-                          <td className="px-3 py-2">{item.type || "1 Person"}</td>
-                          <td className="px-3 py-2 border-l-2 border-red-500">{item.inr}</td>
-                          <td className="px-3 py-2 border-l-2 border-red-500">{item.usd}</td>
+                          <td className="px-3 py-2 font-bold">{item.type || "1 Person"}</td>
+                          <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
+                          <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
                         </tr>
                       ))}
                     </>
@@ -430,15 +428,15 @@ export default function ProductDetailView({ product }) {
                   {/* Two Person */}
                   {Array.isArray(packagePrice?.twoPerson) && packagePrice.twoPerson.length > 0 && (
                     <>
-                      <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-2">
+                      <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md">
                         Base Price : 02 Person
                       </td>
                       </tr>
                       {packagePrice.twoPerson.map((item, idx) => (
                         <tr key={`twoPerson-${idx}`} className="bg-blue-100 border-y-2 border-white">
-                          <td className="px-3 py-2">{item.type || "2 Person"}</td>
-                          <td className="px-3 py-2 border-l-2 border-red-500">{item.inr}</td>
-                          <td className="px-3 py-2 border-l-2 border-red-500">{item.usd}</td>
+                          <td className="px-3 py-2 font-bold">{item.type || "2 Person"}</td>
+                          <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
+                          <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
                         </tr>
                       ))}
                     </>
@@ -446,15 +444,15 @@ export default function ProductDetailView({ product }) {
                   {/* Eight Person */}
                   {Array.isArray(packagePrice?.eightPerson) && packagePrice.eightPerson.length > 0 && (
                     <>
-                      <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-2">
+                      <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md">
                         Base Price : 08 Person
                       </td>
                       </tr>
                       {packagePrice.eightPerson.map((item, idx) => (
                         <tr key={`eightPerson-${idx}`} className="bg-blue-50 border-y-2 border-white">
-                          <td className="px-3 py-2">{item.type || "8 Person"}</td>
-                          <td className="px-3 py-2 border-l-2 border-red-500">{item.inr}</td>
-                          <td className="px-3 py-2 border-l-2 border-red-500">{item.usd}</td>
+                          <td className="px-3 py-2 font-bold">{item.type || "8 Person"}</td>
+                          <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
+                          <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
                         </tr>
                       ))}
                     </>
@@ -462,7 +460,7 @@ export default function ProductDetailView({ product }) {
                 </tbody>
               </table>
             </div>
-            <h2 className="font-bold text-md py-3 text-center">"Shop with Confidence - 100% Money-Back Guarantee!"</h2>
+            <h2 className="font-bold md:text-md py-3 text-center">"Shop with Confidence - 100% Money-Back Guarantee!"</h2>
           </div>
 
           <div className="flex gap-4 mb-6 items-center">
@@ -495,10 +493,11 @@ export default function ProductDetailView({ product }) {
 
                     {/* PDF Preview Modal */}
                     <Dialog open={!!pdfPreviewUrl} onOpenChange={() => setPdfPreviewUrl(null)}>
-                      <DialogContent className="max-w-2xl">
+                      <DialogContent className="md:max-w-2xl">
                         <DialogTitle>PDF Preview</DialogTitle>
                         {pdfPreviewUrl && (
                           <iframe
+                          className="h-[500px]"
                             src={pdfPreviewUrl}
                             width="100%"
                             height="600px"
@@ -508,7 +507,7 @@ export default function ProductDetailView({ product }) {
                         )}
                         <DialogFooter>
                           <DialogClose asChild>
-                            <button className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded">Close</button>
+                            <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded">Close</button>
                           </DialogClose>
                         </DialogFooter>
                       </DialogContent>
