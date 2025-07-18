@@ -8,7 +8,7 @@ import { Switch } from "../ui/switch";
 const typeOptions = [
     { label: "All Types", value: "all" },
     { label: "Packages", value: "packages" },
-    { label: "Artisan", value: "artisan" }
+    { label: "Instructor", value: "artisan" }
 ];
 
 const columns = [
@@ -38,7 +38,7 @@ const ManageReviews = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [reviewsPerPage] = useState(10);
     const [loading, setLoading] = useState(false);
-    console.log(allReviews)
+    // console.log(allReviews)
 
     useEffect(() => {
         fetchReviews();
@@ -59,14 +59,22 @@ const ManageReviews = () => {
                     ...review,
                     // Ensure all object IDs are strings
                     _id: review._id?.toString(),
-                    product: review.product?._id ? {
-                        _id: review.product._id.toString(),
-                        title: review.product.title
-                    } : null,
-                    artisan: review.artisan?._id ? {
-                        _id: review.artisan._id.toString(),
-                        name: review.artisan.name
-                    } : null,
+                    packages: review.packages
+                        ? typeof review.packages === 'object' && review.packages._id
+                            ? {
+                                _id: review.packages._id.toString(),
+                                title: review.packages.title
+                            }
+                            : review.packages.toString()
+                        : null,
+                    artisan: review.artisan
+                        ? typeof review.artisan === 'object' && review.artisan._id
+                            ? {
+                                _id: review.artisan._id.toString(),
+                                name: review.artisan.name
+                            }
+                            : review.artisan.toString()
+                        : null,
                     // Ensure thumb is properly formatted
                     thumb: review.thumb?.url ? {
                         url: review.thumb.url,
@@ -106,15 +114,6 @@ const ManageReviews = () => {
             filtered = filtered.filter(review => review.type === typeFilter);
         }
         setFilteredReviews(filtered);
-        setCurrentPage(1);
-    };
-
-    const handleStatusChange = (e) => {
-        setStatusFilter(e.target.value);
-    };
-
-    const handleTypeChange = (e) => {
-        setTypeFilter(e.target.value);
     };
 
     const handleAction = async (id, action) => {
@@ -203,7 +202,7 @@ const ManageReviews = () => {
         <div className="w-full max-w-[1100px] mx-auto rounded-[14px] shadow-md px-4 py-6 md:py-8">
             {/* Filter Row */}
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-6">
-                
+
 
                 {/* New type filter */}
                 <div className="flex-1">
@@ -221,7 +220,7 @@ const ManageReviews = () => {
                     </select>
                 </div>
             </div>
-      
+
             {/* Table */}
             <div className="overflow-x-auto bg-white rounded-xl">
                 <table className="min-w-full border-separate border-spacing-0">

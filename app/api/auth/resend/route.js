@@ -66,8 +66,8 @@ export async function POST(req) {
                     <!-- Header -->
                     <tr>
                         <td style="padding: 30px 0; text-align: center; background-color: #4F46E5; border-top-left-radius: 8px; border-top-right-radius: 8px;">
-                            <a href="https://rishikeshhandmade.com/" class="header">
-            <img src="https://rishikeshhandmade.com/logo.png" alt="Rishikesh HandMade Logo">
+                            <a href="https://himalayanwellnessretreats.com/" class="header">
+            <img src="https://himalayanwellnessretreats.com/logo.png" alt="Himalayan Wellness Retreats Logo">
         </a>
                             <h1 style="color: #ffffff; margin: 0; margin-top:12px; font-size: 24px;">Verification Code</h1>
                         </td>
@@ -87,8 +87,8 @@ export async function POST(req) {
                     <tr>
                         <td style="padding: 20px 30px; text-align: center; background-color: #f8f9fa; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
                             <div class="footer">
-            <p>If you have any questions, feel free to <a href="https://www.yatrazone.com/contact">contact us</a>.</p>
-            <p>&copy; ${new Date().getFullYear()} YatraZone. All rights reserved.</p>
+            <p>If you have any questions, feel free to <a href="https://www.himalayanwellnessretreats.com/contact">contact us</a>.</p>
+            <p>&copy; ${new Date().getFullYear()} Himalayan Wellness Retreats. All rights reserved.</p>
         </div>
                         </td>
                     </tr>

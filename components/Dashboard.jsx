@@ -20,17 +20,17 @@ const settings = [
 
 import ChatOrder from "./ChatOrder";
 function SectionContent({ section, orderId, onViewOrder, onBackHome, showOrderDetail, selectedOrder, orderChatMode, onChatOrder,onBack }) {
-   const { data: session } = useSession()
+  const { data: session } = useSession()
+  const userId = session?.user?.id || session?.user?._id;
   if (section === "profile") return <Profile />;
   if (section === "orders" && selectedOrder && orderChatMode) return <ChatOrder order={selectedOrder} onBack={onBack} onViewOrder={onViewOrder} />;
   if (section === "orders" && selectedOrder) return <OrderDetail order={selectedOrder} onBack={onBack} />;
   if (section === "chatbot") {
     // Pass userId from session to Chat
-    const userId = session?.user?.id || session?.user?._id;
     // console.log("Rendering Chat with userId:", userId);
     return <Chat userId={userId} />;
   }
-  if (section === "orders") return <AllOrders onViewOrder={onViewOrder} onChatOrder={onChatOrder} />;
+  if (section === "orders") return <AllOrders userId={userId} onViewOrder={onViewOrder} onChatOrder={onChatOrder} />;
   if (section === "dashboard" && orderId && !showOrderDetail) {
     return <OrderConfirm orderId={orderId} onViewOrder={onViewOrder} onBackHome={onBackHome} />;
   }

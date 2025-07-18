@@ -37,9 +37,9 @@ const Faq = () => {
   );
 
   return (
-    <div className="flex w-full max-w-[90%] mx-auto min-h-screen">
+    <div className="flex w-full md:max-w-[90%] flex-col md:flex-row mx-auto min-h-screen relative">
       {/* Left Side */}
-      <div className="w-[50%] min-w-[320px] flex flex-col px-10 pt-8 bg-[#fcf7f2]">
+      <div className="md:w-[50%] md:min-w-[320px] flex flex-col md:flex-col px-5 md:px-10 pt-8 bg-[#fcf7f2] md:sticky md:top-0 md:h-screen">
         <h2 className="text-2xl md:text-3xl font-bold mb-2">Have any questions?</h2>
         <nav className="text-md text-gray-500 mb-6 flex items-center gap-2">
           <Link href="/">
@@ -53,16 +53,16 @@ const Faq = () => {
             <button
               key={s.label}
               onClick={() => { setSelectedSection(s.label); setOpenIdx(null); }}
-              className={`flex items-center gap-2 border rounded-lg px-6 py-4 font-medium text-left transition-all duration-150 ${selectedSection === s.label ? 'border-[#e6b17a] bg-[#fdf4e7]' : 'border-gray-200 bg-white hover:bg-gray-50'}`}
+              className={`flex items-center gap-2 border rounded-lg md:px-6 md:py-4 px-4 py-2 font-medium text-left transition-all duration-150 ${selectedSection === s.label ? 'border-[#e6b17a] bg-[#fdf4e7]' : 'border-gray-200 bg-white hover:bg-gray-50'}`}
             >
-              <span className="text-lg mr-2">{s.icon}</span> {s.label}
+              <span className="md:text-lg mr-2">{s.icon}</span> {s.label}
             </button>
           ))}
         </div>
-        <img src={leftImage} alt="Delivery person" className="rounded-xl w-full h-56 object-cover mb-4" />
+        <img src={leftImage} alt="FAQ Banner" className="hidden md:flex rounded-xl w-full h-56 object-cover mb-4" />
       </div>
       {/* Right Side */}
-      <div className="flex-1 px-10 py-8">
+      <div className="flex-1 md:px-10 px-5 py-8 md:overflow-y-auto md:h-screen">
         <div className="flex flex-col gap-6 max-w-2xl mx-auto">
           {/* Search */}
           <div className="relative mb-2">
@@ -83,16 +83,16 @@ const Faq = () => {
             {filteredFaqs.map((faq, idx) => (
               <div key={idx} className="border border-gray-300 rounded-xl bg-white overflow-hidden">
                 <div
-                  className="flex items-center justify-between px-8 py-2 cursor-pointer select-none"
+                  className="flex items-center justify-between md:px-8 px-4 py-2 cursor-pointer select-none"
                   onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
                   aria-label={openIdx === idx ? 'Collapse' : 'Expand'}
                 >
-                  <span className="text-xl font-bold text-gray-900 text-left">
+                  <span className="md:text-xl text-sm font-bold text-gray-900 text-left">
                     {faq.question}
                   </span>
                   <button
                     tabIndex={-1}
-                    className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 bg-black text-white text-xl focus:outline-none transition-colors duration-200"
+                    className="flex items-center justify-center md:w-10 md:h-10 w-6 h-6 md:rounded-full rounded border border-gray-300 bg-black text-white text-xl focus:outline-none transition-colors duration-200"
                     aria-label={openIdx === idx ? 'Collapse' : 'Expand'}
                   >
                     <span className="text-xl">{openIdx === idx ? '−' : '+'}</span>
@@ -107,7 +107,7 @@ const Faq = () => {
                   style={{ pointerEvents: openIdx === idx ? 'auto' : 'none' }}
                 >
                   <div
-                    className="custom-desc-list text-gray-700 mb-2 text-lg py-2"
+                    className="custom-desc-list text-gray-700 mb-2 md:text-lg py-2"
                     dangerouslySetInnerHTML={{ __html: faq.answer }}
                   />
                 </div>
@@ -118,6 +118,6 @@ const Faq = () => {
       </div>
     </div>
   );
-};
+};  
 
 export default Faq;

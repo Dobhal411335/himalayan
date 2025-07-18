@@ -74,6 +74,7 @@ const ArtisanDetails = ({ artisan }) => {
   const [showBlogModal, setShowBlogModal] = useState(false);
   const [modalBlog, setModalBlog] = useState(null);
   const [modalCertificate, setModalCertificate] = useState(null);
+  const [artisanReviews, setArtisanReviews] = useState([]);
 
   // Fetch other artisans (excluding current one)
   useEffect(() => {
@@ -174,6 +175,29 @@ const ArtisanDetails = ({ artisan }) => {
     if (words.length <= wordLimit) return text;
     return words.slice(0, wordLimit).join(" ") + "...";
   };
+  const fetchArtisanReviews = async () => {
+    try {
+        const response = await fetch(`/api/saveReviews?type=artisan&artisanId=${artisan._id}&approved=true`);
+        const data = await response.json();
+        if (response.ok) {
+            // Only show approved and active reviews (optional)
+            const filtered = data.reviews.filter(review =>
+                review.approved !== false &&
+                review.deleted !== true
+            );
+            setArtisanReviews(filtered || []);
+        }
+    } catch (error) {
+        toast.error('Failed to load artisan reviews');
+    }
+};
+useEffect(() => {
+    if (artisan?._id) {
+        fetchArtisanReviews();
+    }
+}, [artisan?._id]);
+const mixReviews=[...artisan.promotions,...artisanReviews];
+console.log(mixReviews)
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-amber-50 to-white flex flex-col items-center px-2 md:px-0">

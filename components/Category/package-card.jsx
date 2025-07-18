@@ -234,7 +234,7 @@ const PackageCard = ({
               </DialogFooter>
             </DialogContent>
           </Dialog>
-            <Link href={`/package/${pkg.slug}`} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 md:px-10 md:w-48 w-1/2 rounded-md">
+            <Link href={`/package/${pkg.slug}`} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 text-center md:w-36 w-1/2 rounded-md">
               View More
             </Link>
         </div>

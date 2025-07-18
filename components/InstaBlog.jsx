@@ -158,15 +158,14 @@ const InstaBlog = () => {
     const fetchArtisanReviews = async () => {
         try {
             setIsLoadingReviews(true);
-            const response = await fetch('/api/saveReviews?type=all');
+            const response = await fetch('/api/saveReviews?approved=true&type=all');
             const data = await response.json();
             // console.log('Fetched artisan reviews:', data);
             if (response.ok) {
                 // Only show approved and active reviews
                 const approvedReviews = data.reviews.filter(review =>
                     review.approved !== false &&
-                    review.deleted !== true &&
-                    (review.active !== false && review.active !== undefined)
+                    review.deleted !== true
                 );
                 setArtisanReviews(approvedReviews || []);
             }

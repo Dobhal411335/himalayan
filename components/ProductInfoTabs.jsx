@@ -38,14 +38,19 @@ export default function ProductInfoTabs({ product }) {
     const [description, setDescription] = useState("");
     const [review, setReview] = useState("");
 
+    // console.log(localReviews)
+
     // Fetch reviews from API
     const fetchReviews = async () => {
         try {
             const response = await fetch(`/api/productReviews?packageId=${product._id}`);
             const data = await response.json();
-            if (response.ok) {
-                setLocalReviews(data.reviews || []);
-            }
+            const productReviews = response.ok ? (data.reviews || []) : [];
+            // Fetch "packages" reviews (type=packages)
+            const packageResponse = await fetch(`/api/saveReviews?type=packages&packageId=${product._id}&approved=true`);
+            const packageData = await packageResponse.json();
+            const packagesReviews = packageResponse.ok ? (packageData.reviews || []) : [];
+            setLocalReviews([...productReviews, ...packagesReviews]);
         } catch (error) {
             // console.error('Error fetching reviews:', error);
             toast.error('Failed to fetch reviews');
@@ -85,7 +90,7 @@ export default function ProductInfoTabs({ product }) {
     };
     const handleSubmitReview = async (e) => {
         e.preventDefault();
-        if (!rating || !title || !name || !date || !description) {
+        if (!rating || !title || !name || !date || !description || !imageObj.url) {
             setFormError('Please fill all required fields and rating.');
             return;
         }
@@ -107,8 +112,8 @@ export default function ProductInfoTabs({ product }) {
                 rating,
                 title,
                 description, // must be non-empty string
-                type: "product",
-                product: product._id,
+                type: "packages",
+                packages: product._id,
             };
             // console.log('Submitting review:', payload);
             if (!name || !date || !title || !description || !rating) {
@@ -164,7 +169,7 @@ export default function ProductInfoTabs({ product }) {
         setImageFile(file);
         if (file) {
             setUploading(true);
-            toast.loading('Uploading image to Cloudinary...', { id: 'review-image-upload' });
+            toast.loading('Uploading image...', { id: 'review-image-upload' });
 
             // Preview
             const reader = new FileReader();
@@ -348,9 +353,9 @@ export default function ProductInfoTabs({ product }) {
                                     </div>
                                     <div className="flex items-center gap-4">
                                         <div className="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
-                                            {review?.image?.url ? (
+                                            {review?.image?.url || review?.thumb?.url ? (
                                                 <img
-                                                    src={review.image.url}
+                                                    src={review.image?.url || review?.thumb?.url}
                                                     alt="Reviewer"
                                                     className="h-full w-full rounded-full object-cover"
                                                 />
@@ -361,10 +366,10 @@ export default function ProductInfoTabs({ product }) {
                                             )}
                                         </div>
 
-                                        <span className="font-bold text-base">{review.createdBy || 'Anonymous'}</span>
+                                        <span className="font-bold text-base">{review.createdBy || review.name || 'Anonymous'}</span>
                                         <div className="flex items-center gap-2 text-gray-700 text-sm">
 
-                                            <span className="text-xs">{review.createdAt ? `${Math.round((Date.now() - new Date(review.createdAt)) / (1000 * 60 * 60 * 24))} days ago` : ''}</span>
+                                            <span className="text-xs">{review.createdAt || review.date ? `${Math.round((Date.now() - new Date(review.createdAt || review.date)) / (1000 * 60 * 60 * 24))} days ago` : ''}</span>
                                         </div>
                                     </div>
                                     {/* Review content with Read more */}
@@ -374,9 +379,9 @@ export default function ProductInfoTabs({ product }) {
                                             className={`text-gray-900 transition-all duration-300 mb-2 ${isExpanded ? '' : 'max-h-[65px] overflow-hidden'}`}
                                             style={!isExpanded ? { WebkitMaskImage: 'linear-gradient(180deg, #000 65%, transparent 100%)' } : {}}
                                         >
-                                            {review.review}
+                                            {review.description || review.review}
                                         </div>
-                                        {!isExpanded && review.review && review.review.length > 150 && (
+                                        {!isExpanded && (review.review || review.description) && ((review.review || review.description).length > 150) && (
                                             <div className="absolute bottom-0 left-0 w-full flex justify-center bg-gradient-to-t from-[#fafbfc] to-transparent pt-6">
                                                 <button
                                                     className="text-[#00b67a] font-semibold text-base px-2 py-1 focus:outline-none hover:underline"

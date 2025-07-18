@@ -9,27 +9,32 @@ import { getServerSession } from "next-auth/next";
 export async function GET(req) {
   await connectDB();
   const session = await getServerSession();
-  console.log('SESSION:', session);
-  if (!session || !session.user || !session.user.email) {
+  const { searchParams } = new URL(req.url);
+  const userIdFromQuery = searchParams.get('userId');
+  // console.log('SESSION:', session);
+  if (!userIdFromQuery && (!session || !session.user || (!session.user.email && !session.user.id))) {
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
   }
   try {
     let type = 'room';
     if (req?.url) {
-      const { searchParams } = new URL(req.url);
       if (searchParams.get('type')) type = searchParams.get('type');
     }
-    // Only fetch bookings for the logged-in user
-    // Prefer userId if available, fallback to email for backward compatibility
-    const userFilter = session.user.id
-      ? { userId: session.user.id }
-      : { email: session.user.email };
-    console.log('USER FILTER:', userFilter);
+    // Prefer userId from query, fallback to session
+    let userFilter = {};
+    if (userIdFromQuery) {
+      userFilter.userId = userIdFromQuery;
+    } else if (session?.user?.id) {
+      userFilter.userId = session.user.id;
+    } else if (session?.user?.email) {
+      userFilter.email = session.user.email;
+    }
+    // console.log('USER FILTER:', userFilter);
     const bookings = await BookingDetails.find({
       type,
       ...userFilter
     }).sort({ createdAt: -1 });
-    console.log('BOOKINGS FOUND:', bookings.length);
+    // console.log('BOOKINGS FOUND:', bookings.length);
     return NextResponse.json({ bookings, success: true }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

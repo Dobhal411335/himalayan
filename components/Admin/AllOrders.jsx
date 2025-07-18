@@ -33,7 +33,7 @@ const AllOrders = () => {
   const [page, setPage] = useState(1);
   const [viewOrder, setViewOrder] = useState(null); // For modal
   const rowsPerPage = 8;
-  console.log(orders)
+  // console.log(orders)
   // Filtering logic
   const filteredOrders = orders.filter(order => {
     // Search filter
@@ -180,7 +180,7 @@ const AllOrders = () => {
             </button>
 
             {/* Header */}
-            <h2 className="text-2xl font-bold mb-1 text-[#7a5b2b] text-center">Room Booking Details</h2>
+            <h2 className="text-2xl font-bold mb-1 text-[#7a5b2b] text-center">Package Booking Details</h2>
             <p className="text-sm text-center text-gray-600 mb-5">Booking overview and invoice breakdown</p>
 
             {/* Booking Info */}
@@ -197,7 +197,7 @@ const AllOrders = () => {
             {/* Room Info */}
             <div className="border-t border-b py-4 mb-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 text-md">
-                <div><span className="font-bold text-black">Room:</span> {viewOrder.roomName}</div>
+                <div><span className="font-bold text-black">Package Name:</span> {viewOrder.packageName}</div>
                 <div><span className="font-bold text-black">Arrival:</span> {formatDate(viewOrder.arrival)}</div>
                 <div><span className="font-bold text-black">Persons:</span> {viewOrder.adult} Adult{viewOrder.child ? `, ${viewOrder.child} Child` : ''}{viewOrder.infant ? `, ${viewOrder.infant} Infant` : ''}</div>
               </div>
@@ -210,18 +210,13 @@ const AllOrders = () => {
             </div>
 
             {/* Price Breakdown */}
-            <div className="bg-gray-50 rounded-md p-4 text-md">
+            {/* <div className="bg-gray-50 rounded-md p-4 text-md">
               <div className="text-base font-semibold mb-2 text-black">Price Breakdown</div>
-              <div className="flex justify-between py-1 font-bold text-black"><span>Room Price</span> <span>₹{viewOrder.priceBreakdown?.main?.amount || 0}</span></div>
-              {viewOrder.priceBreakdown?.extraBed?.amount > 0 && (
-                <div className="flex justify-between py-1 font-bold text-black"><span>Extra Bed</span> <span>₹{viewOrder.priceBreakdown.extraBed.amount}</span></div>
+              <div className="flex justify-between py-1 font-bold text-black"><span>Room Price</span> <span>₹{viewOrder.packagePrices?.main?.amount || 0}</span></div>
+              {viewOrder.packagePrices?.extraBed?.amount > 0 && (
+                <div className="flex justify-between py-1 font-bold text-black"><span>Extra Bed</span> <span>₹{viewOrder.packagePrices.extraBed.amount}</span></div>
               )}
-              <div className="flex justify-between py-1 border-t mt-2 pt-2 font-bold text-black"><span>Subtotal</span> <span>₹{viewOrder.subtotal || 0}</span></div>
-              <div className="flex justify-between py-1 font-bold text-black"><span>CGST</span> <span>₹{viewOrder.totalCgst || 0}</span></div>
-              <div className="flex justify-between py-1 font-bold text-black"><span>SGST</span> <span>₹{viewOrder.totalSgst || 0}</span></div>
-              <div className="flex justify-between py-1 font-semibold text-black"><span>Total Tax</span> <span>₹{viewOrder.totalTaxAmount || 0}</span></div>
-              <div className="flex justify-between py-2 font-bold text-lg border-t mt-3 pt-2"><span>Total</span> <span>₹{viewOrder.finalAmount || 0}</span></div>
-            </div>
+            </div> */}
           </div>
         </div>
       )}

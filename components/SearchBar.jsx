@@ -15,11 +15,10 @@ export default function SearchBar({ placeholder }) {
     const [packages, setPackages] = useState([]);
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("all");
-    const [quickCategories, setQuickCategories] = useState([]);
-    const [recentSearches, setRecentSearches] = useState([]);
+
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const router = useRouter();
-    // console.log(categories)
+    console.log(relatedProducts)
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -54,9 +53,6 @@ export default function SearchBar({ placeholder }) {
 
         fetchCategories();
         // fetchPackages();
-
-        const storedSearches = JSON.parse(localStorage.getItem("recentSearches")) || [];
-        setRecentSearches(storedSearches);
     }, []);
 
     useEffect(() => {
@@ -80,12 +76,12 @@ export default function SearchBar({ placeholder }) {
         }
 
         try {
-            let url = `/api/product/search?q=${encodeURIComponent(value)}`;
+            let url = `/api/packages/search?q=${encodeURIComponent(value)}`;
             // Always send category param, even if 'all' (backend can handle 'all')
             url += `&category=${encodeURIComponent(selectedCategory)}`;
             const res = await fetch(url);
             const data = await res.json();
-            setRelatedProducts(data.products || []);
+            setRelatedProducts(data.packages || []);
         } catch (error) {
             setRelatedProducts([]);
         }
@@ -104,27 +100,11 @@ export default function SearchBar({ placeholder }) {
             handleSearch({ target: { value: query } });
         }
     };
-
-    // const handlePackageClick = (id, name) => {
-    //     const updatedSearches = [{ id, name }, ...recentSearches.filter((item) => item.id !== id)].slice(0, 5);
-    //     setRecentSearches(updatedSearches);
-    //     localStorage.setItem("recentSearches", JSON.stringify(updatedSearches));
-
-    //     router.push(`/package/${encodeURIComponent(id)}`);
+    // const handleSubmit = () => {
+    //     if (!query.trim()) return;
+    //     router.push(`/search?q=${encodeURIComponent(query)}`);
     //     setIsSearchOpen(false);
     // };
-
-    const handleSubmit = () => {
-        if (!query.trim()) return;
-        router.push(`/search?q=${encodeURIComponent(query)}`);
-        setIsSearchOpen(false);
-    };
-
-    // const clearRecentSearches = () => {
-    //     localStorage.removeItem("recentSearches");
-    //     setRecentSearches([]);
-    // };
-
     return (
         <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
             <DialogTrigger asChild>
@@ -133,12 +113,12 @@ export default function SearchBar({ placeholder }) {
                 </button>
             </DialogTrigger>
             <DialogContent
-                className={`fixed top-[30%] w-full max-w-none rounded-none shadow-lg border-none p-0 bg-[#fefaf4] z-[1000] transition-all duration-200 overflow-y-visible ${query && relatedProducts.length > 0 ? 'min-h-[50vh] max-h-[100vh]' : 'h-auto'}`}
+                className={`fixed top-[25%] md:w-[80%] w-full mx-auto max-w-none rounded-none shadow-lg border-none p-0 bg-[#fefaf4] z-[1000] transition-all duration-200 overflow-y-visible ${query && relatedProducts.length > 0 ? 'min-h-[50vh] max-h-[100vh]' : 'h-auto'}`}
                 style={{ margin: 0 }}
             >
 
                 <DialogTitle>
-                    <span className="sr-only">Product Search</span>
+                    <span className="sr-only">Package Search</span>
                 </DialogTitle>
                 <div className="flex items-center gap-2 px-10 h-6 min-h-[48px] bg-white sticky top-0 z-10 w-full">
                     <select
@@ -156,13 +136,13 @@ export default function SearchBar({ placeholder }) {
                         type="text"
                         value={query}
                         onChange={handleSearch}
-                        placeholder={placeholder || "Search Product"}
+                        placeholder={placeholder || "Search Packages"}
                         className="flex-1 border-0 outline-none px-4 py-2 text-lg bg-transparent w-full"
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") handleSubmit();
-                        }}
+                        // onKeyDown={(e) => {
+                        //     if (e.key === "Enter") handleSubmit();
+                        // }}
                     />
-                    <button onClick={handleSubmit} className="p-2">
+                    <button className="p-2">
                         <Search className="h-5 w-5" />
                     </button>
                     <button onClick={() => setIsSearchOpen(false)} className="p-2">
@@ -182,7 +162,7 @@ export default function SearchBar({ placeholder }) {
 
                 {query && relatedProducts.length > 0 && (
                     <div className="w-full px-8 pb-2 mt-2">
-                        <h2 className="text-lg font-bold mb-2">Your Search Products</h2>
+                        <h2 className="text-lg font-bold mb-2">Your Search Packages</h2>
                         <div className="flex gap-6 overflow-x-auto pb-2">
                             {relatedProducts.map((prod, i) => (
                                 <div
@@ -192,7 +172,7 @@ export default function SearchBar({ placeholder }) {
                                     <button
                                         type="button"
                                         onClick={() => {
-                                            router.push(`/product/${prod._id}`);
+                                            router.push(`/package/${prod.slug}`);
                                             setIsSearchOpen(false);
                                         }}
                                         className="focus:outline-none"
@@ -200,7 +180,7 @@ export default function SearchBar({ placeholder }) {
                                         tabIndex={0}
                                     >
                                         <img
-                                            src={prod.image?.url || "/placeholder.jpeg"}
+                                            src={prod.image || "/placeholder.jpeg"}
                                             alt={prod.title}
                                             className="w-40 h-42 object-cover rounded-lg mb-3 hover:opacity-90 transition-opacity"
                                         />
@@ -209,17 +189,16 @@ export default function SearchBar({ placeholder }) {
                                         <button
                                             type="button"
                                             onClick={() => {
-                                                router.push(`/product/${prod._id}`);
+                                                router.push(`/package/${prod.slug}`);
                                                 setIsSearchOpen(false);
                                             }}
-                                            className="font-semibold text-black truncate max-w-[70%] text-left hover:underline focus:outline-none"
+                                            className="font-semibold text-black truncate text-left hover:underline focus:outline-none"
                                             style={{ background: 'none', border: 'none', padding: 0, margin: 0, cursor: 'pointer' }}
                                             tabIndex={0}
                                             title={prod.title}
                                         >
-                                            {prod.title || "Product"}
+                                            {prod.title || "Packages"}
                                         </button>
-                                        <span className="font-bold text-black whitespace-nowrap">₹{prod.price ? prod.price.toLocaleString("en-IN") : "—"}</span>
                                     </div>
                                 </div>
                             ))}

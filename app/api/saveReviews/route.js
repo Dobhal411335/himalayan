@@ -8,40 +8,37 @@ export const GET = async (req) => {
         const { searchParams } = new URL(req.url);
         const status = searchParams.get('status');
         const productId = searchParams.get('productId');
+        const packageId = searchParams.get('packageId') || productId;
         const type = searchParams.get('type');
         const artisanId = searchParams.get('artisanId');
         const approved = searchParams.get('approved');
 
         let filter = { deleted: false };
 
-        // Handle status filters
-        if (searchParams.has('approved')) {
-            filter.approved = searchParams.get('approved') === 'true';
+        // Handle approved filter robustly (only set once)
+        if (approved !== null && approved !== undefined) {
+            filter.approved = approved === 'true';
         }
 
-        // Filter by product ID if provided
-        if (productId) {
-            filter.product = productId;
+        // Filter by package ID if provided
+        if (packageId) {
+            filter.packages = packageId;
         }
 
         // Filter by artisan ID if provided
         if (artisanId) {
             filter.artisan = artisanId;
         }
-        // Handle type filtering
-        if (type === 'all') {
-            filter.type = type;
-        }
 
-        // Filter by approved status if provided
-        if (approved !== null) {
-            filter.approved = approved === 'true';
+        // Handle type filtering (set type if provided and not 'all')
+        if (type && type !== 'all') {
+            filter.type = type;
         }
 
         const reviews = await Review.find(filter)
             .sort({ createdAt: -1 })
             .populate('artisan', 'name')
-            .populate('product', 'title')
+            .populate('packages', 'title')
             .lean();
 
         // Convert MongoDB documents to plain objects
@@ -49,9 +46,9 @@ export const GET = async (req) => {
             const serialized = {
                 ...review,
                 _id: review._id?.toString(),
-                product: review.product ? {
-                    _id: review.product._id?.toString(),
-                    title: review.product.title
+                packages: review.packages ? {
+                    _id: review.packages._id?.toString(),
+                    title: review.packages.title
                 } : null,
                 artisan: review.artisan ? {
                     _id: review.artisan._id?.toString(),
@@ -100,7 +97,7 @@ export const POST = async (req) => {
         // Remove artisan/product references for 'all' type reviews
         if (reviewData.type === 'all') {
             delete reviewData.artisan;
-            delete reviewData.product;
+            delete reviewData.packages;
         }
         // All new reviews require admin approval
         reviewData.approved = false;
@@ -122,7 +119,7 @@ export const POST = async (req) => {
             title: reviewData.title,
             description: reviewData.description,
             type: reviewData.type,
-            product: reviewData.product,
+            packages: reviewData.packages,
             artisan: reviewData.artisan,
             approved: reviewData.approved,
             deleted: false

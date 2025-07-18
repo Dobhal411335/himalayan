@@ -29,7 +29,7 @@ function formatDate(dateStr) {
  * @param {Object} props
  * @param {function} props.onViewOrder - Called with order object when 'View' is clicked. Optional.
  */
-const AllOrders = ({ onViewOrder, onChatOrder, onBack }) => {
+const AllOrders = ({ onViewOrder,userId, onChatOrder, onBack }) => {
     const [orders, setOrders] = useState([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(true);
@@ -39,7 +39,7 @@ const AllOrders = ({ onViewOrder, onChatOrder, onBack }) => {
     console.log(orders)
     useEffect(() => {
         setLoading(true);
-        fetch("/api/bookingDetails")
+        fetch(`/api/bookingDetails?userId=${encodeURIComponent(userId)}`)
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
@@ -85,8 +85,8 @@ const AllOrders = ({ onViewOrder, onChatOrder, onBack }) => {
                                             (idx % 2 === 1 ? "bg-[#fcf7f1]" : "bg-white")
                                         }
                                     >
-                                        <td className="py-3 px-2 font-mono text-[15px] text-[#222]">#{order.orderId || order.transactionId}</td>
-                                        <td className="py-3 px-2 text-[15px] text-gray-700">{formatDate(order.datePurchased || order.date)}</td>
+                                        <td className="py-3 px-2 font-mono text-[15px] text-[#222]">#{order.bookingId}</td>
+                                        <td className="py-3 px-2 text-[15px] text-gray-700">{formatDate(order.createdAt)}</td>
                                         <td className="py-3 px-2 text-sm">
                                             <button
                                                 className="text-blue-600 hover:underline"

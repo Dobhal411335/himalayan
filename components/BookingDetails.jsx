@@ -501,7 +501,7 @@ const BookingDetails = ({ room, onClose, type }) => {
                                     });
                                     const data = await res.json();
                                     if (data.success) {
-                                        toast.success('Booking successful!');
+                                        toast.success('Booking Submitted Successful!');
                                         setBookingId(bookingIdVal);
                                         setShowConfirmation(true);
                                         setInvoiceData(payload);
