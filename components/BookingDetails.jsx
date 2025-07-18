@@ -52,7 +52,6 @@ const BookingDetails = ({ room, onClose, type }) => {
     // Form data state
     const [form, setForm] = useState({
         arrival: '',
-        departure: '',
         roomNo: '',
         days: 1,
         firstName: '',
@@ -99,7 +98,6 @@ const BookingDetails = ({ room, onClose, type }) => {
         let stepErrors = {};
         if (step === 1) {
             if (!form.arrival) stepErrors.arrival = 'Arrival date is required';
-            if (!form.departure) stepErrors.departure = 'Departure date is required';
             if (!form.roomNo) stepErrors.roomNo = 'Number of room is required';
             if (!form.days || form.days < 1) stepErrors.days = 'Number of days must be at least 1';
         } else if (step === 2) {
@@ -151,17 +149,7 @@ const BookingDetails = ({ room, onClose, type }) => {
                             onChange={e => handleChange('arrival', e.target.value)}
                         />
                         {errors.arrival && <div className="text-red-600 text-xs mt-1">{errors.arrival}</div>}
-                    </div>
-                    <div className="font-bold text-md text-[#8a6a2f] mb-4">Departure Date</div>
-                    <div className="flex flex-col items-center mb-8">
-                        <input
-                            type="date"
-                            className="w-full bg-gray-200 rounded-full px-5 py-2 text-md focus:outline-none appearance-none"
-                            value={form.departure}
-                            onChange={e => handleChange('departure', e.target.value)}
-                        />
-                        {errors.departure && <div className="text-red-600 text-xs mt-1">{errors.departure}</div>}
-                    </div>
+                    </div>                  
                     <div className="font-bold text-md text-[#8a6a2f] mb-4">Total Number Of Room</div>
                     <div className="flex flex-col items-center mb-8">
                         <input
@@ -375,11 +363,6 @@ const BookingDetails = ({ room, onClose, type }) => {
                 value: form.arrival || 'Not set',
             },
             {
-                key: 'departure',
-                label: 'Departure Date',
-                value: form.departure || 'Not set',
-            },
-            {
                 key: 'roomNo',
                 label: 'Number of Room',
                 value: form.roomNo || 'Not set',
@@ -477,23 +460,12 @@ const BookingDetails = ({ room, onClose, type }) => {
                                     const priceList = (room.prices && room.prices[0] && room.prices[0].prices) || [];
                                     const mainPrice = priceList.find(p => p.type === '02 Pax') || priceList.find(p => p.type === '01 Pax') || priceList[0] || {};
                                     const baseAmount = mainPrice?.amount || 0;
-                                    const cgst = mainPrice?.cgst || 0;
-                                    const sgst = mainPrice?.sgst || 0;
-                                    const oldPrice = mainPrice?.oldPrice || 0;
-
                                     const extrabed = priceList.find(p => p.type === 'Extra Bed') || {};
                                     const extrabedAmount = extrabed?.amount || 0;
-                                    const extrabedOldPrice = extrabed?.oldPrice || 0;
-                                    const extrabedCgst = extrabed?.cgst || 0;
-                                    const extrabedSgst = extrabed?.sgst || 0;
                                     const hasExtraBed = extrabedAmount > 0;
 
-                                    const totalCgst = cgst + (hasExtraBed ? extrabedCgst : 0);
-                                    const totalSgst = sgst + (hasExtraBed ? extrabedSgst : 0);
-                                    const totalTaxAmount = totalCgst + totalSgst;
                                     const subtotal = baseAmount + (hasExtraBed ? extrabedAmount : 0);
-                                    const totalTaxPercent = subtotal > 0 ? ((totalTaxAmount / subtotal) * 100).toFixed(2) : 0;
-                                    const finalAmount = subtotal + totalTaxAmount;
+                                    const finalAmount = subtotal;
 
                                     const invoiceNumber = `INV${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
@@ -511,23 +483,15 @@ const BookingDetails = ({ room, onClose, type }) => {
                                             main: {
                                                 type: mainPrice?.type || '',
                                                 amount: baseAmount,
-                                                oldPrice: oldPrice,
-                                                cgst: cgst,
-                                                sgst: sgst,
+                                               
                                             },
                                             extraBed: hasExtraBed ? {
                                                 type: extrabed?.type || '',
                                                 amount: extrabedAmount,
-                                                oldPrice: extrabedOldPrice,
-                                                cgst: extrabedCgst,
-                                                sgst: extrabedSgst,
+                                                
                                             } : null,
                                         },
                                         subtotal,
-                                        totalCgst,
-                                        totalSgst,
-                                        totalTaxPercent,
-                                        totalTaxAmount,
                                         finalAmount,
                                     };
                                     const res = await fetch('/api/bookingDetails', {
@@ -643,16 +607,14 @@ const BookingDetails = ({ room, onClose, type }) => {
                     <button className="w-full bg-black text-white rounded-md py-3 font-semibold text-lg mb-3 hover:bg-gray-900" onClick={() => setShowInvoice(true)}>
                         Invoice Booking Voucheri
                     </button>
+                    <h2 className="text-center text-md font-semibold w-full my-2">OR</h2>
 
                     {/* Dashboard Link */}
-                    <div className="w-full">
-                        <span
-                            className="text-red-600 font-semibold text-base italic cursor-pointer"
-                            onClick={onClose}
-                        >
-                            Or Go To Dashboard &gt;&gt;
-                        </span>
-                    </div>
+                    <button className="w-full bg-red-400 text-white rounded-md py-3 font-semibold text-lg mb-3 hover:bg-gray-900 text-red-600 font-semibold text-base italic cursor-pointer"
+                        onClick={() => router.push(`/dashboard?orderId=${bookingId}`)}
+                    >
+                         Go To Dashboard &gt;&gt;
+                    </button>
                 </div>
             </div>
         );

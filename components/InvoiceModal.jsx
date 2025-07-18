@@ -118,17 +118,7 @@ const InvoiceModal = ({ open, onClose, booking, bookingId, bookingDate }) => {
             </React.Fragment>
           )}
         </div>
-        {/* Price breakdown */}
-        <div className="flex justify-end mt-6 mb-2">
-          <div className="text-right w-64">
-            {/* Room price */}
-            <div className="flex justify-between mb-1"><span className="font-bold">Room Price</span> <span>Rs {baseAmount.toLocaleString()}</span></div>
-            {/* Total Tax */}
-            <div className="flex justify-between mb-1"><span className="font-bold">Total Tax ({totalTaxPercent}%)</span> <span>Rs {totalTaxAmount.toLocaleString()}</span></div>
-            <div className="border-t border-gray-400 my-2"></div>
-            <div className="flex justify-between text-lg font-bold"><span>Total Amount</span> <span>Rs {finalAmount.toLocaleString()}</span></div>
-          </div>
-        </div>
+       
         {/* Notice */}
         <div className="text-xs text-gray-800 mt-4 mb-2">
           Dear Guest,<br />We kindly request you to consider this invoice copy as your official booking voucher. Please keep it for your reference and present it at check-in, if required. Should you have any questions or need further assistance, feel free to reach out to our team.<br /><br />
@@ -171,9 +161,9 @@ const InvoiceModal = ({ open, onClose, booking, bookingId, bookingDate }) => {
         {isExportingPdf && (
           <div
             ref={exportRef}
-            style={{ position: 'fixed', left: '-9999px', top: 0, width: '800px', background: '#fff', zIndex: -1 }}
+            style={{ position: 'fixed', left: '-9999px', top: 0, width: '700px', background: '#fff', zIndex: -1 }}
           >
-            <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full p-8 relative text-black print:shadow-none print:p-0 print:bg-white" style={{ fontFamily: 'Barlow, Arial, sans-serif', minWidth: '700px' }}>
+            <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full p-6 relative text-black print:shadow-none print:p-0 print:bg-white" style={{ fontFamily: 'Barlow, Arial, sans-serif', minWidth: '700px' }}>
               {/* Header */}
               <div className="flex justify-between items-start mb-2">
                 <div>
@@ -226,22 +216,6 @@ const InvoiceModal = ({ open, onClose, booking, bookingId, bookingDate }) => {
                     <div className="py-2 px-3">Rs {extrabedAmount.toLocaleString()}</div>
                   </React.Fragment>
                 )}
-              </div>
-              {/* Price Breakdown */}
-              <div className="flex justify-end mt-6 mb-2">
-                <div className="text-right w-64">
-                  <div className="flex justify-between mb-1"><span className="font-bold">Room Price</span> <span>Rs {baseAmount.toLocaleString()}</span></div>
-                  {hasExtraBed && (
-                    <div className="flex justify-between mb-1"><span className="font-bold">Extra Bed Price</span> <span>Rs {extrabedAmount.toLocaleString()}</span></div>
-                  )}
-                  <div className="flex justify-between mb-1"><span className="font-bold">Subtotal ({hasExtraBed ? 'Room + Extra Bed' : 'Room'})</span> <span>Rs {subtotal.toLocaleString()}</span></div>
-                  {coupon && <div className="text-xs text-gray-600 mb-1">Applied Coupon Code</div>}
-                  <div className="flex justify-between mb-1"><span className="font-bold">CGST ({hasExtraBed ? 'Room + Extra Bed' : 'Room'})</span> <span>Rs {totalCgst.toLocaleString()}</span></div>
-                  <div className="flex justify-between mb-1"><span className="font-bold">SGST ({hasExtraBed ? 'Room + Extra Bed' : 'Room'})</span> <span>Rs {totalSgst.toLocaleString()}</span></div>
-                  <div className="flex justify-between mb-1"><span className="font-bold">Total Tax ({totalTaxPercent}%)</span> <span>Rs {totalTaxAmount.toLocaleString()}</span></div>
-                  <div className="border-t border-gray-400 my-2"></div>
-                  <div className="flex justify-between text-lg font-bold"><span>Total Amount</span> <span>Rs {finalAmount.toLocaleString()}</span></div>
-                </div>
               </div>
               {/* Notice */}
               <div className="text-xs text-gray-800 mt-4 mb-2">

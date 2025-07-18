@@ -42,7 +42,7 @@ const Footer = () => {
             });
             const data = await res.json();
             if (res.ok) {
-                toast.success("Thank you for Subscribing!", { style: { borderRadius: "10px", border: "2px solid green" } });
+                toast.success("Thank you for Subscibing!", { style: { borderRadius: "10px", border: "2px solid green" } });
                 e.target.reset();
             } else {
                 toast.error(data.message || "Subscription failed.", { style: { borderRadius: "10px", border: "2px solid red" } });
@@ -58,7 +58,7 @@ const Footer = () => {
             {/* <div className="w-full flex justify-center pb-8">
                 <div className="h-[3px] bg-black w-full mx-auto px-4" />
             </div> */}
-            <div className="hidden md:flex flex-wrap lg:justify-between px-10 justify-start md:gap-20 lg:gap-0 gap-12 max-w-[22rem] md:maxw-[45rem] lg:max-w-[60rem] xl:max-w-6xl mx-auto">
+            <div className="hidden md:flex flex-wrap lg:justify-between px-10 justify-start md:gap-20 lg:gap-0 gap-10 max-w-[22rem] md:maxw-[45rem] lg:max-w-[60rem] xl:max-w-6xl mx-auto">
                 <div className="flex flex-col gap-2 px-5">
                     <h1 className="font-semibold text-xl my-4">Main Menu</h1>
                     {pages.filter(page => !page?.link?.includes('policy')).map(page => (
@@ -102,8 +102,8 @@ const Footer = () => {
                     </p>
                 </div>
             </div>
-            <div className="md:hidden block grid grid-cols-2 md:grid-cols-3 gap-4 lg:justify-between px-10 justify-start md:gap-20 lg:gap-0 md:gap-12 md:max-w-[45rem] lg:max-w-[60rem] xl:max-w-6xl mx-auto">
-                <div className="flex flex-col gap-2 px-5">
+            <div className="md:hidden block grid grid-cols-2 md:grid-cols-3 gap-2 lg:justify-between px-2 justify-start md:gap-20 lg:gap-0 max-w-[30rem] lg:max-w-[60rem] xl:max-w-6xl mx-auto">
+                <div className="flex flex-col gap-2 px-2">
                     <h1 className="font-semibold text-xl my-4">Main Menu</h1>
                     {pages.filter(page => !page?.link?.includes('policy')).map(page => (
                         <Link key={page._id} href={page.url} className="block text-white font-barlow ">
@@ -113,7 +113,7 @@ const Footer = () => {
                     <Link href={'/contact'} className="block text-white font-barlow ">Contact</Link>
                 </div>
 
-                <div className="flex flex-col gap-2 px-5">
+                <div className="flex flex-col gap-2 px-2">
                     <h1 className="font-semibold text-xl my-4">Our Policy</h1>
                     {pages.filter(page => page?.link?.includes('policy')).map(page => (
                         <Link key={page._id} href={page.url} className="block text-white font-barlow">
@@ -123,7 +123,7 @@ const Footer = () => {
                     <Link href={'/faq'} className="block text-white font-barlow ">FAQ</Link>
                 </div>
             </div>
-            <div className="md:hidden flex flex-col gap-1 px-14 py-2">
+            <div className="md:hidden flex flex-col gap-1 px-5 py-5">
                 <h1 className="font-semibold text-xl mb-2 flex items-center gap-2"> More Inquiry</h1>
                 <div className="flex items-center gap-4">
                     <Link href={'tel:+919897515305'} className="my-1 gap-2 block rounded-full font-barlow text-white flex items-center">

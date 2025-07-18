@@ -23,7 +23,7 @@ const OrderConfirm = ({ orderId}) => {
       </div>
 
       <h2 className="font-bold text-2xl mb-2.5">
-        Your Order Is Completed!
+        Your Booking Is Completed!
       </h2>
 
       <div className="text-gray-600 text-base mb-3">
@@ -31,7 +31,7 @@ const OrderConfirm = ({ orderId}) => {
       </div>
 
       <div className="text-[#9c8a6d] text-[15px] mb-7">
-        Order ID: <span className="text-[#6d5b3b] font-semibold">{orderId}</span>
+        Booking ID: <span className="text-[#6d5b3b] font-semibold">{orderId}</span>
       </div>
 
       <div className="flex justify-center gap-4">

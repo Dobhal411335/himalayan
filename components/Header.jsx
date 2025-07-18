@@ -102,7 +102,7 @@ const Header = () => {
               </div>
               <div className="relative border-r-2 border-black items-center flex h-6">
                 {status === "loading" ? (
-                  <Loader2 className="animate-spin text-blue-600" size={36} />
+                  <Loader2 className="animate-spin text-blue-600" size={26} />
                 ) : isUser ? (
                   <>
                     {/* Profile Picture Button */}
@@ -113,8 +113,8 @@ const Header = () => {
                       <Image
                         src={session.user.image || "/user.png"}
                         alt="Profile"
-                        width={44}
-                        height={44}
+                        width={35}
+                        height={35}
                         className="rounded-full cursor-pointer"
                       />
                     </button>
@@ -130,7 +130,7 @@ const Header = () => {
                           className="flex items-center rounded-lg w-full text-left px-4 py-2 hover:bg-blue-100"
                           onClick={() => setIsProfileOpen(false)}
                         >
-                          <User2Icon size={20} className="mr-2" /> Dashboard
+                          <User2Icon size={26} className="mr-2" /> Dashboard
                         </Link>
                         {/* <Link
                         href={`/account/${session.user.id}`}
@@ -151,7 +151,7 @@ const Header = () => {
                 ) : (
                   <div className="relative">
                     <button onClick={() => setIsAuthDropdownOpen(!isAuthDropdownOpen)} className="flex items-center pr-4 py-2">
-                      <User className="" size={20} />
+                      <User className="" size={26} />
                     </button>
                     {isAuthDropdownOpen && (
                       <div className="absolute top-12 right-0 mt-2 w-48 text-black bg-white shadow-lg rounded-lg border">

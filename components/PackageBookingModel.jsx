@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Star, X } from 'lucide-react';
+import { MoveRight, Star, X } from 'lucide-react';
 import InvoiceModal from './InvoiceModal';
 const stateList = [
     "Uttarakhand", "Uttar Pradesh", "Delhi", "Haryana", "Punjab", "Himachal Pradesh", "Rajasthan", "Maharashtra", "Karnataka", "Tamil Nadu", "Kerala", "West Bengal", "Gujarat", "Madhya Pradesh", "Bihar", "Jharkhand", "Goa", "Assam", "Odisha", "Chhattisgarh", "Telangana", "Andhra Pradesh", "Sikkim", "Tripura", "Nagaland", "Manipur", "Mizoram", "Meghalaya", "Arunachal Pradesh", "Jammu & Kashmir", "Ladakh"
@@ -9,8 +9,9 @@ const stateList = [
 import toast from 'react-hot-toast';
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 const PackageBookingModel = ({ packages, onClose, type }) => {
-    console.log(packages)
+    // console.log(packages)
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [showInvoice, setShowInvoice] = useState(false);
@@ -63,8 +64,10 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
 
     // Handlers
     const handleChange = (field, value) => {
-        setForm(prev => ({ ...prev,
-            [field]: value }));
+        setForm(prev => ({
+            ...prev,
+            [field]: value
+        }));
     }
     const handleOfferToggle = offer => setForm(prev => ({ ...prev, offers: prev.offers.includes(offer) ? prev.offers.filter(o => o !== offer) : [...prev.offers, offer] }));
 
@@ -127,7 +130,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
             setForm(prev => ({
                 ...prev,
                 id: result.url // or { url: result.url, key: result.key } if you want more info
-              }));
+            }));
             toast.success("Document uploaded successfully");
         } catch (err) {
             toast.error("Document upload failed");
@@ -189,22 +192,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                     </button>
                                 </div>
                             </div>
-                        ): uploadingID ? (
-                        <div style={{
-                            background: "#ff4d1c",
-                            color: "#fff",
-                            fontWeight: 600,
-                            fontSize: 22,
-                            padding: "10px 0",
-                            borderRadius: 28,
-                            textAlign: "center",
-                            marginBottom: 10
-                        }}>
-                            Uploading...
-                        </div>
-                        ) : (
-                        <label style={{ display: "block", marginBottom: 10 }}>
-                            <input type="file" accept="image/*" onChange={handleIDChange} style={{ display: "none" }} disabled={uploadingID} />
+                        ) : uploadingID ? (
                             <div style={{
                                 background: "#ff4d1c",
                                 color: "#fff",
@@ -213,12 +201,27 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                 padding: "10px 0",
                                 borderRadius: 28,
                                 textAlign: "center",
-                                cursor: "pointer"
+                                marginBottom: 10
                             }}>
-                                Uplode From Here
+                                Uploading...
                             </div>
-                        </label>
-)}
+                        ) : (
+                            <label style={{ display: "block", marginBottom: 10 }}>
+                                <input type="file" accept="image/*" onChange={handleIDChange} style={{ display: "none" }} disabled={uploadingID} />
+                                <div style={{
+                                    background: "#ff4d1c",
+                                    color: "#fff",
+                                    fontWeight: 600,
+                                    fontSize: 22,
+                                    padding: "10px 0",
+                                    borderRadius: 28,
+                                    textAlign: "center",
+                                    cursor: "pointer"
+                                }}>
+                                    Uplode From Here
+                                </div>
+                            </label>
+                        )}
                         <div style={{ fontSize: 15, marginTop: 8 }}>
                             We request you to submit any one of the following valid government-issued identification documents for official records:
                             <br />
@@ -414,7 +417,15 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
             {
                 key: 'Document Image',
                 label: 'Document Image',
-                value: form.id || 'Not Uploaded',
+                value: form.id ? (
+                    <img
+                        src={form.id}
+                        alt="Document"
+                        style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }}
+                    />
+                ) : (
+                    'Not Uploaded'
+                ),
             },
             {
                 key: 'basic',
@@ -505,8 +516,8 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                         onePerson: Array.isArray(packages?.packagePrice?.onePerson) ? packages.packagePrice.onePerson : [],
                                         twoPerson: Array.isArray(packages?.packagePrice?.twoPerson) ? packages.packagePrice.twoPerson : [],
                                         eightPerson: Array.isArray(packages?.packagePrice?.eightPerson) ? packages.packagePrice.eightPerson : [],
-                                      };
-                                   
+                                    };
+
 
                                     const invoiceNumber = `INV${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
@@ -520,7 +531,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                         packagesId: packages?._id,
                                         type: 'packages',
                                         packageName: packages?.title || '',
-                                        packagesPrices,                
+                                        packagesPrices,
                                     };
                                     const res = await fetch('/api/bookingDetails', {
                                         method: 'POST',
@@ -529,7 +540,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                     });
                                     const data = await res.json();
                                     if (data.success) {
-                                        toast.success('Booking successful!');
+                                        toast.success('Booking Submitted Successful!');
                                         setBookingId(bookingIdVal);
                                         setShowConfirmation(true);
                                         setInvoiceData(payload);
@@ -553,7 +564,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                                     body: JSON.stringify({
                                                         to: form.email,
                                                         subject: `Your Booking Invoice - ${packages?.title || 'Himalayan Wellness Retreat'}`,
-                                                      
+
                                                         htmlContent: invoiceHtml,
                                                     })
                                                 });
@@ -639,14 +650,11 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                     </button>
 
                     {/* Dashboard Link */}
-                    <div className="w-full">
-                        <span
-                            className="text-red-600 font-semibold text-base italic cursor-pointer"
-                            onClick={onClose}
-                        >
-                            Or Go To Dashboard &gt;&gt;
-                        </span>
-                    </div>
+                    <button className="w-full bg-red-400 text-white rounded-md py-3 font-semibold text-lg mb-3 hover:bg-gray-900 text-red-600 font-semibold text-base italic cursor-pointer"
+                        onClick={() => router.push(`/dashboard?orderId=${bookingId}`)}
+                    >
+                        Or Go To Dashboard &gt;&gt;;
+                    </button>
                 </div>
             </div>
         );

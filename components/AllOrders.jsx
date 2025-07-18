@@ -36,21 +36,21 @@ const AllOrders = ({ onViewOrder, onChatOrder, onBack }) => {
     const [error, setError] = useState(null);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const router = useRouter();
-    // console.log(orders)
+    console.log(orders)
     useEffect(() => {
         setLoading(true);
-        fetch("/api/orders")
+        fetch("/api/bookingDetails")
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    setOrders(data.orders || []);
+                    setOrders(data.bookings || []);
                 } else {
-                    setError(data.error || "Failed to fetch orders");
+                    setError(data.error || "Failed to fetch bookings");
                 }
                 setLoading(false);
             })
             .catch(err => {
-                setError(err.message || "Failed to fetch orders");
+                setError(err.message || "Failed to fetch bookings");
                 setLoading(false);
             });
     }, []);

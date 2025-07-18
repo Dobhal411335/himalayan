@@ -50,18 +50,38 @@ export default function ProductDetailView({ product }) {
       [name]: type === 'radio' ? value : value,
     }));
   };
-  const handleExpertSubmit = (e) => {
+  const handleExpertSubmit = async (e) => {
     e.preventDefault();
-    setShowExpertModal(false);
-    setExpertForm({
-      name: '',
-      email: '',
-      phone: '',
-      need: 'Appointment',
-      question: '',
-      contactMethod: 'Phone',
-    });
-    toast.success('Your question has been submitted!');
+    try {
+      const payload = {
+        ...expertForm,
+        type: 'packages',
+        room: product._id,
+        queryName: product.title || ''
+      };
+      const res = await fetch('/api/askExpertsEnquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        toast.error(error.message || 'Failed to submit your question.');
+        return;
+      }
+      setShowExpertModal(false);
+      setExpertForm({
+        name: '',
+        email: '',
+        phone: '',
+        need: 'Appointment',
+        question: '',
+        contactMethod: 'Phone',
+      });
+      toast.success('Your question has been submitted!');
+    } catch (err) {
+      toast.error('Failed to submit your question.');
+    }
   };
 
   const router = useRouter();
@@ -69,10 +89,10 @@ export default function ProductDetailView({ product }) {
   const [productUrl, setProductUrl] = React.useState("");
 
   React.useEffect(() => {
-    if (typeof window !== "undefined" && product && product._id) {
-      setProductUrl(window.location.origin + "/product/" + product._id);
-    } else if (product && product._id) {
-      setProductUrl("/product/" + product._id);
+    if (typeof window !== "undefined" && product && product.slug) {
+      setProductUrl(window.location.origin + "/package/" + product.slug);
+    } else if (product && product.slug) {
+      setProductUrl("/package/" + product.slug);
     }
   }, [product]);
 

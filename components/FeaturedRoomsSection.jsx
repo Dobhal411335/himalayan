@@ -44,7 +44,7 @@ export default function FeaturedRoomsSection({ rooms = [], onShowReviews }) {
                         if (imageUrls.length === 0) imageUrls.push('/placeholder.jpeg');
                         return (
                             <CarouselItem key={item._id || idx} className="md:basis-1/3">
-                                <div className="flex flex-col bg-[#f8f5ef] h-[550px] my-5 w-full md:w-[450px] relative group overflow-hidden">
+                                <div className="flex flex-col bg-[#f8f5ef] h-full my-5 w-full md:w-[450px] relative group overflow-hidden">
                                     {/* Room Image (Banner style) */}
                                     <div className="block w-full h-[250px] relative ">
                                         <Image
@@ -58,9 +58,7 @@ export default function FeaturedRoomsSection({ rooms = [], onShowReviews }) {
                                     {/* Card Details */}
                                     <div className="flex-1 p-5 flex flex-col gap-2 justify-between min-h-[210px] relative">
                                         <div className="flex items-center justify-between">
-                                            <Link href={`/room/${item.slug}`}>
-                                                <h3 className="text-lg font-bold text-gray-900 hover:underline">{item.title || "Room Name"}</h3>
-                                            </Link>
+                                                <h3 className="text-md md:text-lg font-bold text-gray-900 ">{item.title || "Room Name"}</h3>
                                             <button
                                                 className="flex flex-col items-center justify-between cursor-pointer group bg-transparent border-0 p-0"
                                                 onClick={() => onShowReviews?.(item)}
@@ -72,7 +70,7 @@ export default function FeaturedRoomsSection({ rooms = [], onShowReviews }) {
                                                         <Star key={i} size={14} color="#12b76a" fill="#12b76a" className="inline" />
                                                     ))}
                                                 </div>
-                                                <span className="text-xs text-gray-700 ml-1 group-hover:underline">
+                                                <span className="text-xs md:text-md text-gray-700 ml-1 group-hover:underline">
                                                     Based On {item.reviews?.length || 0} Review{(item.reviews?.length || 0) !== 1 ? 's' : ''}
                                                 </span>
                                             </button>
@@ -89,8 +87,8 @@ export default function FeaturedRoomsSection({ rooms = [], onShowReviews }) {
                                                 return text;
                                             })()}
                                         </div>
-                                        <div className="font-semibold text-gray-800 text-sm mt-1">Room Amenities</div>
-                                        <div className="flex gap-2 mb-1 text-lg">
+                                        <div className="font-semibold text-gray-800 text-sm md:text-md mt-1 ">Room Amenities</div>
+                                        <div className="flex gap-2 mb-1">
                                             <TooltipProvider>
                                                 <div className="flex gap-2 mb-1 text-md flex-wrap">
                                                     {(item.amenities || []).map((am, i) => (
@@ -112,7 +110,7 @@ export default function FeaturedRoomsSection({ rooms = [], onShowReviews }) {
                                         {(() => {
                                             const priceList = (item.prices && item.prices[0] && item.prices[0].prices) || [];
                                             return (
-                                                <div className="flex gap-8 text-sm">
+                                                <div className="flex md:gap-8 gap-2 text-xs md:text-md">
                                                     <span>
                                                         Max occupancy: {
                                                             priceList.some(p => p.type === '02 Pax')
@@ -135,12 +133,12 @@ export default function FeaturedRoomsSection({ rooms = [], onShowReviews }) {
                                             const priceList = (item.prices && item.prices[0] && item.prices[0].prices) || [];
                                             const mainPrice = priceList.find(p => p.type === '02 Pax') || priceList.find(p => p.type === '01 Pax');
                                             return (
-                                                <div className="flex items-center gap-4 mt-2">
-                                                    <span className="text-2xl font-bold text-black">Rs. {mainPrice ? mainPrice.amount : 'N/A'}</span>
-                                                    <span className="text-lg font-semibold text-gray-800 line-through">{mainPrice && mainPrice.oldPrice ? mainPrice.oldPrice : 'N/A'}</span>
-                                                    <span className="text-md text-gray-700">/ Per Night</span>
+                                                <div className="flex items-center md:gap-4 gap-2 my-4">
+                                                    <span className="text-md md:text-2xl font-bold text-black">Rs. {mainPrice ? mainPrice.amount : 'N/A'}</span>
+                                                    <span className="text-sm md:text-md font-semibold text-gray-800 line-through">{mainPrice && mainPrice.oldPrice ? mainPrice.oldPrice : 'N/A'}</span>
+                                                    <span className="text-sm md:text-md text-gray-700">/ Per Night</span>
                                                     
-                                                        <Link href={`/room/${item.slug}`} className="ml-auto bg-green-700 hover:bg-green-800 text-white font-semibold px-8 py-2 rounded-md">
+                                                        <Link href={`/room/${item.slug}`} className="ml-auto bg-green-700 hover:bg-green-800 text-white font-semibold md:px-8 px-3 md:py-2 py-1 rounded-md">
                                                         View More
                                                         </Link>
                                                         

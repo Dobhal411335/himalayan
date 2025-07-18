@@ -116,7 +116,7 @@ const AboutUsSection = () => {
                         featuredPackages.map((item) => (
                             <div
                                 key={item._id}
-                                className="flex flex-col items-center w-48 mx-auto md:w-80 rounded-3xl group"
+                                className="flex flex-col items-center w-42 mx-auto md:w-80 rounded-3xl group"
                                 style={{ padding: "1rem 0 0.5rem 0" }}
                             >
                                 <div className="w-full aspect-[4/5] rounded-2xl border overflow-hidden flex items-end justify-center">
@@ -128,7 +128,7 @@ const AboutUsSection = () => {
                                 </div>
                                 <div className="mt-4 text-center px-2 w-full flex justify-start">
                                     <Link key={item._id} href={item.link}>
-                                        <div className="font-bold text-md md:text-xl text-black hover:underline transition cursor-pointer">{item.title}</div>
+                                        <div className="font-bold text-sm md:text-xl text-black hover:underline transition cursor-pointer">{item.title}</div>
                                     </Link>
                                 </div>
                             </div>

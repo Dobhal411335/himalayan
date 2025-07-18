@@ -8,18 +8,14 @@ import Profile from "./Profile";
 import OrderConfirm from "./OrderConfirm";
 import OrderDetail from "./OrderDetail";
 import AllOrders from "./AllOrders";
-import Address from "./Address";
-import ReturnRequest from "./ReturnRequest";
 import Chat from "./Chat";
 
 const sections = [
-  { key: "orders", label: "Orders" },
-  { key: "return", label: "Return request" },
+  { key: "orders", label: "Booking" },
   { key: "chatbot", label: "Chat Bot" },
 ];
 const settings = [
   { key: "profile", label: "Profile" },
-  { key: "address", label: "Address" },
 ];
 
 import ChatOrder from "./ChatOrder";
@@ -35,8 +31,6 @@ function SectionContent({ section, orderId, onViewOrder, onBackHome, showOrderDe
     return <Chat userId={userId} />;
   }
   if (section === "orders") return <AllOrders onViewOrder={onViewOrder} onChatOrder={onChatOrder} />;
-  if (section === "address") return <Address />;
-  if (section === "return") return <ReturnRequest />;
   if (section === "dashboard" && orderId && !showOrderDetail) {
     return <OrderConfirm orderId={orderId} onViewOrder={onViewOrder} onBackHome={onBackHome} />;
   }
@@ -107,7 +101,7 @@ const Dashboard = () => {
         setOrderChatMode(true);
       } else {
         // Fallback: fetch from API
-        fetch(`/api/orders/${chatOrderId}`)
+        fetch(`/api/bookingDetails/${chatOrderId}`)
           .then(res => res.json())
           .then(data => {
             if (data.success && data.order) {

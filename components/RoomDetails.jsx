@@ -21,7 +21,6 @@ import {
 } from "./ui/dialog";
 import VisuallyHidden from '@/components/VisuallyHidden';
 import Autoplay from "embla-carousel-autoplay";
-import PackageBookingModel from "./PackageBookingModel";
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
 import {
@@ -99,20 +98,39 @@ export default function RoomDetailView({ data }) {
             [name]: type === 'radio' ? value : value,
         }));
     };
-    const handleExpertSubmit = (e) => {
+    const handleExpertSubmit = async (e) => {
         e.preventDefault();
-        setShowExpertModal(false);
-        setExpertForm({
-            name: '',
-            email: '',
-            phone: '',
-            need: 'Appointment',
-            question: '',
-            contactMethod: 'Phone',
-        });
-        toast.success('Your question has been submitted!');
+        try {
+            const payload = {
+                ...expertForm,
+                type: 'room',
+                room: data._id,
+                queryName: data.title || ''
+            };
+            const res = await fetch('/api/askExpertsEnquiry', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            if (!res.ok) {
+                const error = await res.json();
+                toast.error(error.message || 'Failed to submit your question.');
+                return;
+            }
+            setShowExpertModal(false);
+            setExpertForm({
+                name: '',
+                email: '',
+                phone: '',
+                need: 'Appointment',
+                question: '',
+                contactMethod: 'Phone',
+            });
+            toast.success('Your question has been submitted!');
+        } catch (err) {
+            toast.error('Failed to submit your question.');
+        }
     };
-
     const router = useRouter();
     const [showShareBox, setShowShareBox] = React.useState(false);
     const [productUrl, setProductUrl] = React.useState("");
@@ -152,8 +170,6 @@ export default function RoomDetailView({ data }) {
 
     const [showFullDesc, setShowFullDesc] = React.useState(false);
     const desc = data.paragraph || "No Description";
-    const [showBookingModal, setShowBookingModal] = useState(false);
-    const [selectedPackages, setSelectedPackages] = useState(null);
     const [bookingModalOpen, setBookingModalOpen] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState(null);
     const words = desc.split(' ');
@@ -337,7 +353,8 @@ export default function RoomDetailView({ data }) {
                                             required
                                         />
                                         <input
-                                            type="text"
+                                            type="number"
+                                            min={10}
                                             name="phone"
                                             value={expertForm.phone}
                                             onChange={handleExpertInputChange}
@@ -587,7 +604,7 @@ export default function RoomDetailView({ data }) {
                 </div>
             </div>
 
-            <div className="container mx-auto my-8 flex flex-col md:flex-row gap-8">
+            <div className="container mx-auto w-[80%] my-8 flex flex-col md:flex-row gap-8">
                 {/* Left column */}
                 <div className="flex-1 border rounded-lg p-6 bg-white">
                     <div className="mb-4">

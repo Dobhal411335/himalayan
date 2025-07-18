@@ -30,16 +30,10 @@ const BookingDetailsSchema = new mongoose.Schema({
     main: {
       type: { type: String },
       amount: { type: Number },
-      cgst: { type: Number },
-      sgst: { type: Number },
-      oldPrice: { type: Number },
     },
     extraBed: {
       type: { type: String },
       amount: { type: Number },
-      cgst: { type: Number },
-      sgst: { type: Number },
-      oldPrice: { type: Number },
     },
   },
   packagesPrices: {
@@ -66,10 +60,6 @@ const BookingDetailsSchema = new mongoose.Schema({
     ]
   },
   subtotal: { type: Number },
-  totalCgst: { type: Number },
-  totalSgst: { type: Number },
-  totalTaxPercent: { type: Number },
-  totalTaxAmount: { type: Number },
   finalAmount: { type: Number },
   status: { type: String, enum: ['pending', 'confirmed', 'cancelled'], default: 'pending' },
   type: { type: String, enum: ['room', 'packages'] },

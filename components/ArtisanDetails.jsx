@@ -135,19 +135,35 @@ const ArtisanDetails = ({ artisan }) => {
     }));
   };
 
-  const handleExpertSubmit = (e) => {
+  const handleExpertSubmit = async (e) => {
     e.preventDefault();
-    setShowExpertModal(false);
-    setExpertForm({
-      name: '',
-      email: '',
-      phone: '',
-      need: 'Pricing',
-      question: '',
-      contactMethod: 'Phone',
-    });
-    toast.success('Your question has been submitted!');
+    try {
+      const payload = { ...expertForm, type: 'instructor',artisanId:artisan._id,queryName:artisan.title+artisan.firstName+artisan.lastName };
+      const res = await fetch('/api/askExpertsEnquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        toast.error(error.message || 'Failed to submit your question.');
+        return;
+      }
+      setShowExpertModal(false);
+      setExpertForm({
+        name: '',
+        email: '',
+        phone: '',
+        need: 'Pricing',
+        question: '',
+        contactMethod: 'Phone',
+      });
+      toast.success('Your question has been submitted!');
+    } catch (err) {
+      toast.error('Failed to submit your question.');
+    }
   };
+
   const [isExpanded, setIsExpanded] = useState(false);
 
   const fullText = artisan.artisanStories?.longDescription || "Long description";
@@ -332,8 +348,10 @@ const ArtisanDetails = ({ artisan }) => {
                           required
                         />
                         <input
-                          type="text"
+                          type="number"
                           name="phone"
+                          min={10}
+                          
                           value={expertForm.phone}
                           onChange={handleExpertInputChange}
                           placeholder="Phone Number"
