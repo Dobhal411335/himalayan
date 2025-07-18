@@ -206,19 +206,17 @@ export default function RoomDetailView({ data }) {
                                 plugins={[Autoplay({ delay: 4000 })]}
                                 setApi={setCarouselApi}
                             >
-                                <CarouselContent className="h-[300px]">
+                                <CarouselContent className="h-[300px] md:h-[400px]">
                                     {allImages.map((img, idx) => (
                                         <CarouselItem key={idx} className="flex items-center justify-center h-full">
-                                          <div className="relative w-full h-[270px] md:h-[350px] flex items-center justify-center">
+                                          <div className="relative w-full h-[270px] md:h-[400px] flex items-center justify-center">
                                                 <Image
                                                     src={img}
                                                     alt={`Room image ${idx}`}
                                                     layout="fill"
-                                                    objectFit="contain"
                                                     className="w-full h-full object-contain"
                                                     draggable={false}
                                                     style={{
-                                                        objectFit: 'contain',
                                                         width: '100%',
                                                         height: '100%',
                                                         transition: 'transform 0.3s',

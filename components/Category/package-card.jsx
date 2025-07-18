@@ -234,13 +234,9 @@ const PackageCard = ({
               </DialogFooter>
             </DialogContent>
           </Dialog>
-
-          <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 md:px-10 md:w-48 w-1/2 rounded-md"
-          >
-            <Link href={`/package/${pkg.slug}`}>
+            <Link href={`/package/${pkg.slug}`} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 md:px-10 md:w-48 w-1/2 rounded-md">
               View More
             </Link>
-          </button>
         </div>
         <ReviewModal
           open={reviewModalOpen}

@@ -56,7 +56,7 @@ const AllOrders = () => {
   useEffect(() => {
     async function fetchOrders() {
       try {
-        let res = await fetch("/api/bookingDetails?type=packages");
+        let res = await fetch("/api/bookingDetails/admin?type=packages");
         const data = await res.json();
         if (data.success && Array.isArray(data.bookings)) {
           setOrders(data.bookings);
@@ -114,7 +114,6 @@ const AllOrders = () => {
                 <th className="p-3 text-left">Customer Name</th>
                 <th className="p-3 text-left">Arrival Date</th>
                 <th className="p-3 text-center">View</th>
-                <th className="p-3 text-right">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -131,9 +130,6 @@ const AllOrders = () => {
                   <td className="p-3">{formatDate(order.arrival)}</td>
                   <td className="p-3 text-center">
                     <button className="p-2 rounded hover:bg-blue-100" title="View" onClick={() => setViewOrder(order)}><Eye className="text-blue-600" size={20} /></button>
-                  </td>
-                  <td className="p-3 text-center">
-                    <button className="p-2 rounded hover:bg-red-100" title="Delete"><Trash2 className="text-red-600" size={20} /></button>
                   </td>
                 </tr>
               ))}

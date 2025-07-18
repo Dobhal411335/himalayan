@@ -147,17 +147,17 @@ export default function ProductDetailView({ product }) {
         <div className="w-full md:w-2/3 flex flex-col items-start md:px-10">
           {/* Main Image Carousel (QuickView style, embla-controlled) */}
           <div className="w-full flex justify-center md:mb-4">
-            <div className="relative w-full md:max-w-[800px] h-[300px] md:h-[400px] flex items-center justify-center overflow-hidden md:p-4 rounded">
+            <div className="relative w-full md:max-w-[800px] h-[300px] md:h-[400px] flex items-center justify-center overflow-hidden md:p-4 rounded-lg">
               <Carousel
                 className="w-full h-full"
                 opts={{ loop: true }}
                 plugins={[Autoplay({ delay: 4000 })]}
                 setApi={setCarouselApi}
               >
-                <CarouselContent className="h-[300px]">
+                <CarouselContent className="h-[300px] md:h-[400px]">
                   {allImages.map((img, idx) => (
                     <CarouselItem key={idx} className="flex items-center justify-center h-full">
-                      <div className="relative w-full h-[270px] md:h-[350px] flex items-center justify-center">
+                      <div className="relative w-full h-[270px] md:h-[400px] flex items-center justify-center">
                         <Image
                           src={img}
                           alt={`Product image ${idx}`}
@@ -183,7 +183,7 @@ export default function ProductDetailView({ product }) {
           </div>
           {/* Sub-Images Carousel (5 per row) */}
           {allImages.length > 1 && (
-            <div className="w-full md:px-10 py-2">
+            <div className="w-full md:px-5 py-2">
               <Carousel opts={{ align: 'center', loop: allImages.length > 5 }} className="w-full">
                 <CarouselContent>
                   {allImages.map((img, idx) => (
@@ -269,7 +269,7 @@ export default function ProductDetailView({ product }) {
 
             {showExpertModal && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-             <div className="bg-white rounded-lg shadow-lg p-6 h-[80%] overflow-y-auto md:max-w-md relative animate-fade-in">
+             <div className="bg-white rounded-lg shadow-lg p-6 h-[80%] h-[90%] overflow-y-auto md:max-w-md relative animate-fade-in">
                   <button
                     className="absolute top-2 right-2 text-gray-500 hover:text-black text-4xl font-bold"
                     onClick={() => setShowExpertModal(false)}

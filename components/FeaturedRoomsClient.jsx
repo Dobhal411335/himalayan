@@ -32,7 +32,7 @@ export default function FeaturedRoomsClient({ rooms }) {
 
   return (
     <>
-    <div className="w-full">
+    <div className="w-full md:py-2 md:px-10">
 
       {rooms.length > 0 && (
         <FeaturedRoomsSection

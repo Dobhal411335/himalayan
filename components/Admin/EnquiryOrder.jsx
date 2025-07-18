@@ -81,7 +81,7 @@ const EnquiryOrder = () => {
   useEffect(() => {
     async function fetchOrders() {
       try {
-        let res = await fetch("/api/bookingDetails?type=room");
+        let res = await fetch("/api/bookingDetails/admin?type=room");
         const data = await res.json();
         if (data.success && Array.isArray(data.bookings)) {
           setOrders(data.bookings);
@@ -139,7 +139,6 @@ const EnquiryOrder = () => {
                 <th className="p-3 text-left">Customer Name</th>
                 <th className="p-3 text-left">Date</th>
                 <th className="p-3 text-center">View</th>
-                <th className="p-3 text-right">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -153,12 +152,9 @@ const EnquiryOrder = () => {
                   <td className="p-3 font-mono text-blue-700">{idx + 1}</td>
                   <td className="p-3 ">{order.bookingId}</td>
                   <td className="p-3">{`${order.firstName || ''} ${order.lastName || ''}`.trim() || order.email || order.phone}</td>
-                  <td className="p-3">{formatDate(order.departure)}</td>
+                  <td className="p-3">{formatDate(order.arrival)}</td>
                   <td className="p-3 text-center">
                     <button className="p-2 rounded hover:bg-blue-100" title="View" onClick={() => setViewOrder(order)}><Eye className="text-blue-600" size={20} /></button>
-                  </td>
-                  <td className="p-3 text-center">
-                    <button className="p-2 rounded hover:bg-red-100" title="Delete"><Trash2 className="text-red-600" size={20} /></button>
                   </td>
                 </tr>
               ))}
@@ -219,15 +215,16 @@ const EnquiryOrder = () => {
               <div><span className="font-bold text-black">Name:</span> {viewOrder.firstName} {viewOrder.lastName}</div>
               <div><span className="font-bold text-black">Email:</span> {viewOrder.email}</div>
               <div><span className="font-bold text-black">Phone:</span> {viewOrder.callNo}</div>
+              <div><span className="font-bold text-black">Alt Call No:</span> {viewOrder.altCallNo}</div>
               <div><span className="font-bold text-black">Address:</span> <span className="text-gray-700">{viewOrder.address}</span></div>
             </div>
 
             {/* Room Info */}
             <div className="border-t border-b py-4 mb-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 text-md">
-                <div><span className="font-bold text-black">Room:</span> {viewOrder.roomName}</div>
+                <div><span className="font-bold text-black">Room Name:</span> {viewOrder.roomName}</div>
                 <div><span className="font-bold text-black">Arrival:</span> {formatDate(viewOrder.arrival)}</div>
-                <div><span className="font-bold text-black">Departure:</span> {formatDate(viewOrder.departure)}</div>
+                <div><span className="font-bold text-black">No of Rooms:</span> {formatDate(viewOrder.roomNo)}</div>
                 <div><span className="font-bold text-black">Days:</span> {viewOrder.days}</div>
                 <div><span className="font-bold text-black">Persons:</span> {viewOrder.adult} Adult{viewOrder.child ? `, ${viewOrder.child} Child` : ''}{viewOrder.infant ? `, ${viewOrder.infant} Infant` : ''}</div>
               </div>
@@ -246,11 +243,8 @@ const EnquiryOrder = () => {
               {viewOrder.priceBreakdown?.extraBed?.amount > 0 && (
                 <div className="flex justify-between py-1 font-bold text-black"><span>Extra Bed</span> <span>₹{viewOrder.priceBreakdown.extraBed.amount}</span></div>
               )}
-              <div className="flex justify-between py-1 border-t mt-2 pt-2 font-bold text-black"><span>Subtotal</span> <span>₹{viewOrder.subtotal || 0}</span></div>
-              <div className="flex justify-between py-1 font-bold text-black"><span>CGST</span> <span>₹{viewOrder.totalCgst || 0}</span></div>
-              <div className="flex justify-between py-1 font-bold text-black"><span>SGST</span> <span>₹{viewOrder.totalSgst || 0}</span></div>
-              <div className="flex justify-between py-1 font-semibold text-black"><span>Total Tax</span> <span>₹{viewOrder.totalTaxAmount || 0}</span></div>
-              <div className="flex justify-between py-2 font-bold text-lg border-t mt-3 pt-2"><span>Total</span> <span>₹{viewOrder.finalAmount || 0}</span></div>
+              <div className="flex justify-between py-1 border-t mt-2 pt-2 font-bold text-black"><span>Total</span> <span>₹{viewOrder.subtotal || 0}</span></div>
+             
             </div>
           </div>
         </div>
