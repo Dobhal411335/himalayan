@@ -175,6 +175,7 @@ const AddProduct = ({ id }) => {
         try {
             const payload = {
                 title,
+                slug: slugify(title),
                 code: productCode,
                 order,
                 active: typeof active === 'boolean' ? active : true, // always true by default

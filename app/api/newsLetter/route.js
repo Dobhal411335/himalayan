@@ -40,49 +40,89 @@ export async function POST(req) {
             sender: { name: 'Himalayan Wellness Retreat', email: 'himalayanwellnessretreats@gmail.com' },
             to: [{ email }],
             subject: 'Thank You for Subscribing – Get Ready for Exclusive Deals!',
-            htmlContent: `
-            <div style="font-family: 'Courier New', Courier, monospace; background: #fcf7f1; margin:0; padding:0;">
-              <!-- Header -->
-              <div style="background:#c7eaff;padding:24px 0 12px 0;text-align:center;border-bottom:2px solid #222;">
-                <h1 style="margin:0;font-size:2.2rem;font-weight:900;letter-spacing:1px;">
-                  <span style="border-bottom:4px solid #222;">Himalayan Wellness Retreat.</span>
-                </h1>
-                <div style="font-size:1.1rem;font-weight:500;margin-top:6px;">
-                  Himalayan Wellness Retreats is a wellness retreat center located in Rishikesh, India. We offer a range of wellness programs and activities to help you achieve your health and wellness goals.
-                </div>
-              </div>
-              <!-- Main Content -->
-              <div style="max-width:600px;margin:32px auto 0 auto;background:#fff;padding:32px 24px 24px 24px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-                <p style="font-size:1.1rem;font-weight:bold;">Dear Valuable User,</p>
-                <p style="font-size:1.05rem;">Thank you for subscribing to us!</p>
-                <p style="font-size:1.05rem;">
-                  We&rsquo;re excited to have you as part of our Himalayan Wellness Retreat family. You&rsquo;ll now be the first to know about our best trending deals, exclusive offers.
-                </p>
-                <p style="font-size:1.05rem;">
-                  Stay tuned and enjoy a smarter shopping experience with handpicked collections and special discounts curated just for you.
-                </p>
-                <p style="font-size:1.05rem;margin-top:28px;margin-bottom:0;">
-                  Happy Shopping!<br>
-                  <strong>Team Himalayan Wellness Retreat</strong>
-                </p>
-                <div style="margin:28px 0 18px 0;">
-                  <img src="https://www.himalayanwellnessretreats.com/logo.png" alt="Himalayan Wellness Retreat Logo" style="height:64px;margin-bottom:8px;" />
-                  <div style="font-size:1.1rem;font-weight:bold;margin-bottom:2px;">
-                    Web: <a href="https://www.himalayanwellnessretreats.com" style="color:#0056b3;text-decoration:underline;">www.himalayanwellnessretreats.com</a>
-                  </div>
-                  <div style="font-size:0.98rem;color:#444;">Your Gateway to Artisan Excellence</div>
-                </div>
-              </div>
-              <!-- Footer -->
-              <div style="background:#ededed;padding:20px 0 16px 0;margin-top:32px;font-size:0.93rem;color:#222;border-top:2px solid #222;">
-                <div style="max-width:700px;margin:0 auto;padding:0 16px;">
-                  Please do not reply to this mail as this is an automated mail service. The information provided on this website is for general informational purposes only. While we strive to keep the information up to date and accurate, we make no representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability, suitability, or availability with respect to the website or the information, products, services, or related graphics contained on the website for any purpose.
-                  <br><br>
-                  <span style="color:#888;">© ${new Date().getFullYear()} Himalayan Wellness Retreat. All rights reserved</span>
-                </div>
-              </div>
-            </div>
-          `
+            htmlContent: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
+
+  <!-- Green Header -->
+  <div style="background: #4caf50; padding: 40px 20px; text-align: center; color: white;">
+    <h1 style="margin: 0 0 10px 0; font-size: 24px; font-weight: bold;">Escape. Relax. Reconnect</h1>
+    <p style="margin: 0; font-size: 16px;">Stay Where Nature Meets Comfort</p>
+  </div>
+
+  <!-- Welcome Message -->
+  <div style="padding: 30px 20px;">
+    <p style="font-size: 14px; color: #333333; font-weight: bold; line-height: 1.6;">
+      Thank you for subscribing to our newsletter! You're now part of a community that values tranquility, luxury, and heartfelt hospitality.
+      Nestled amidst nature’s beauty, our hotel offers more than just a place to stay — it's an experience.
+    </p>
+
+    <p style="font-size: 14px; color: #333333; font-weight: bold; line-height: 1.6;">
+      Wake up to serene views, unwind with our modern amenities, and enjoy the warmth of our personalized hospitality.
+    </p>
+
+    <h3 style="font-size: 16px;color: #333333; font-weight: bold; margin-top: 20px;">What to expect from us:</h3>
+    <ul style="padding-left: 20px; font-size: 14px; color: #555555;">
+      <li>✅ Exclusive Offers & Seasonal Discounts</li>
+      <li>✅ Travel Tips & Local Experiences</li>
+      <li>✅ Special Retreat Packages</li>
+      <li>✅ Early Access to Bookings & Events</li>
+    </ul>
+
+    <p style="font-size: 14px; color: #333333; font-weight: bold; line-height: 1.6; margin-top: 20px;">
+      Whether you're planning a family getaway, a couple’s retreat, or a solo escape — we’re here to make every moment memorable.
+      Let the journey to comfort and calm begin. Stay tuned for your first exclusive offer — coming soon!
+    </p>
+  </div>
+
+  <!-- Contact Section -->
+  <div style="background: #f5f5f5; border-radius: 4px; padding: 20px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="width: 100%; max-width: 100%;">
+    <tr>
+      <!-- Logo Cell -->
+      <td width="120" align="center" valign="middle" style="background: #d9d9d9; padding: 10px;">
+        <span style="color: #555; font-size: 16px;">
+        <img src="https://himalayanwellnessretreats.com/logo.png" width="100" height="80" alt="Logo">
+        </span>
+      </td>
+
+      <!-- Contact Info -->
+      <td style="padding-left: 20px; font-family: Arial, sans-serif;">
+        <div style="font-size: 16px; font-weight: bold; color: #333;">Himalayan Wellness Retreat</div>
+
+        <table style="margin-top: 10px;">
+          <tr>
+            <td>
+              <img src="https://cdn-icons-png.flaticon.com/512/597/597177.png" width="20" style="vertical-align: middle; margin-right: 5px;">
+              <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png" width="20" style="vertical-align: middle; margin-right: 5px;">
+            </td>
+            <td style="font-size: 14px; color: #555;">
+              himalayanwellnessretreat@gmail.com<br>
+              <span style="font-size: 18px; font-weight: bold; color: #4a3f00;">9897515305</span>
+            </td>
+          </tr>
+        </table>
+
+        <div style="font-size: 13px; color: #000; margin-top: 5px; font-weight: 600;">
+          Balak Nath Temple Street, Upper Tapovan,
+                        <br />
+                        Tehri Garhwal Rishikesh,Uttarakhand 249201
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<!-- Footer -->
+<div style="background: #cccccc; padding: 20px 20px; text-align: center; font-family: Arial, sans-serif;">
+  <div style="font-size: 14px; color: #000; font-weight: 600; margin-bottom: 5px;">
+    www.himalayanwellnessretreats.com
+  </div>
+  <div style="font-size: 12px; color: #333; margin-bottom: 15px;">
+    You’re receiving this email because you subscribed to updates from Us.<br>
+    We respect your inbox and promise only to send valuable updates.
+  </div>
+</div>
+</div>
+`
           })
         });
       } else {

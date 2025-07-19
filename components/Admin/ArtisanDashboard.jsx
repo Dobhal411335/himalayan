@@ -9,9 +9,8 @@ import { ArrowLeftIcon } from 'lucide-react';
 const sectionTitles = [
   'Profile',
   'Promotions Reviews',
-  'Catalog',
   'Blog',
-  'Artisan Story',
+  'Instructor Story',
   'Social Plugins',
   'Certificates',
 ];
@@ -35,7 +34,6 @@ const ArtisanDashboard = () => {
   const artisanId = params?.id;
   // State for artisan and all section data
   const [artisan, setArtisan] = useState(null);
-  console.log(artisan)
   const [loading, setLoading] = useState(true);
   const [promotions, setPromotions] = useState([]);
   const [blogs, setBlogs] = useState([]);
@@ -52,8 +50,6 @@ const ArtisanDashboard = () => {
   const [showCertificateModal, setShowCertificateModal] = useState(false);
   const [selectedCertificate, setSelectedCertificate] = useState(null);
   const [deleteModal, setDeleteModal] = useState({ show: false, type: '', id: null });
-  const [catalogLoading, setCatalogLoading] = useState(false);
-  const [products, setProducts] = useState([]);
   const router = useRouter();
   // console.log(stories)
   useEffect(() => {
@@ -64,7 +60,6 @@ const ArtisanDashboard = () => {
         const artisan = await res.json();
         if (!artisan || artisan.message === 'Artisan not found') {
           setArtisan(null);
-          setProducts([]);
           setPromotions([]);
           setBlogs([]);
           setStories([]);
@@ -72,7 +67,6 @@ const ArtisanDashboard = () => {
           setCertificates([]);
         } else {
           setArtisan(artisan);
-          setProducts(Array.isArray(artisan.products) ? artisan.products : []);
           setPromotions(Array.isArray(artisan.promotions) ? artisan.promotions : []);
           setBlogs(Array.isArray(artisan.artisanBlogs) ? artisan.artisanBlogs : []);
           setStories(artisan.artisanStories ? artisan.artisanStories : null);
@@ -81,7 +75,6 @@ const ArtisanDashboard = () => {
         }
       } catch (e) {
         setArtisan(null);
-        setProducts([]);
         setPromotions([]);
         setBlogs([]);
         setStories([]);
@@ -132,14 +125,14 @@ const ArtisanDashboard = () => {
     <div className="flex flex-col items-center justify-center my-10">
       <div className="flex items-center gap-2">
         <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <span className="text-lg text-gray-700 font-medium">Loading artisan details...</span>
+        <span className="text-lg text-gray-700 font-medium">Loading instructor details...</span>
       </div>
     </div>
   );
   if (!artisan) return (
     <div className="flex flex-col items-center justify-center my-10">
-      <div className="text-center text-lg mb-2">Artisan not found.</div>
-      <Button href="/admin/create_artisan" className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Create New Artisan</Button>
+      <div className="text-center text-lg mb-2">Instructor not found.</div>
+      <Button href="/admin/create_artisan" className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Create New Instructor</Button>
     </div>
   );
 
@@ -148,7 +141,7 @@ const ArtisanDashboard = () => {
       {/* Sidebar */}
       <div className="absolute -top-5 z-10 ">
         <button className='px-4 py-1 bg-gray-500 text-white rounded flex items-center' onClick={() => router.back()}>
-          <ArrowLeftIcon className="w-4 h-4 mr-2" /> Back to View Artisan
+          <ArrowLeftIcon className="w-4 h-4 mr-2" /> Back to View Instructor
         </button>
       </div>
       <div className="h-fit me-4" style={{ border: '1px solid #ced4da', borderRadius: '8px', background: '#fff', overflowY: 'auto', padding: '15px' }}>
@@ -171,9 +164,8 @@ const ArtisanDashboard = () => {
         {activeKey === 'Profile' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div style={boxStyle}><b>Name: &nbsp;</b>{artisan.title} {artisan.firstName} {artisan.lastName}</div>
-            <div style={boxStyle}><b>{artisan.fatherHusbandType || 'Father/Husband'}'s Name: &nbsp;</b> {artisan.fatherHusbandTitle} {artisan.fatherHusbandName} {artisan.fatherHusbandLastName}</div>
-            <div style={boxStyle}><b>Artisan Number: &nbsp;</b> {artisan.artisanNumber || 'N/A'}</div>
-            <div style={boxStyle}><b>SHG Name: &nbsp;</b> {artisan.shgName || 'N/A'}</div>
+            <div style={boxStyle}><b>Instructor Number: &nbsp;</b> {artisan.instructorNumber || 'N/A'}</div>
+            <div style={boxStyle}><b>Team Name: &nbsp;</b> {artisan.shgName || 'N/A'}</div>
             <div style={boxStyle}><b>Mobile: &nbsp;</b> {artisan.contact?.callNumber || artisan.contact?.whatsappNumber || 'N/A'}</div>
             <div style={boxStyle}><b>Email: &nbsp;</b> {artisan.contact?.email || artisan.email || 'N/A'}</div>
             <div style={boxStyle}><b>Years of Experience: &nbsp;</b> {artisan.yearsOfExperience || 'N/A'}</div>
@@ -195,7 +187,7 @@ const ArtisanDashboard = () => {
         {activeKey === 'Promotions Reviews' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {promotions.length === 0 ? (
-              <div className="col-span-3 text-center">No promotions found for this artisan.</div>
+              <div className="col-span-3 text-center">No promotions found for this instructor.</div>
             ) : (
               promotions.map((promotion, idx) => (
                 <div key={promotion._id || idx} className="relative bg-white rounded-xl shadow-lg p-6 flex flex-col items-start min-h-[260px]">
@@ -226,49 +218,11 @@ const ArtisanDashboard = () => {
             )}
           </div>
         )}
-        {/* Catalog Section */}
-        {activeKey === 'Catalog' && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {catalogLoading ? (
-              <div className="col-span-3 text-center">Loading products...</div>
-            ) : products.length === 0 ? (
-              <div className="col-span-3 text-center">No products found for this artisan.</div>
-            ) : (
-              products.map((product, idx) => (
-                <div
-                  key={product._id || idx}
-                  className="flex flex-col overflow-hidden"
-                >
-                  {/* Image Section */}
-                  <div className="w-full h-48 bg-gray-100">
-                    <img
-                      src={product.gallery?.mainImage?.url || '/placeholder.jpeg'}
-                      alt={product.title || 'Product Image'}
-                      className="w-full h-full object-cover rounded-xl"
-                      onError={e => { e.target.onerror = null; e.target.src = '/placeholder.jpeg'; }}
-                    />
-                  </div>
-                  {/* Info Section */}
-                  <div className="flex items-center justify-between gap-1 p-3">
-                    <Link
-                      href={`/product/${product._id}`}
-                    >
-                      <div className="font-semibold text-base text-gray-900 truncate hover:underline cursor-pointer">{product.title || 'Product'}</div>
-                    </Link>
-                    <div className="text-green-700 font-bold text-lg">
-                      {product.quantity?.variants[0] ? `₹${product.quantity.variants[0].price}` : 'No price'}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        )}
         {/* Blogs Section */}
         {activeKey === 'Blog' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {blogs.length === 0 ? (
-              <div className="col-span-3 text-center">No blogs found for this artisan.</div>
+              <div className="col-span-3 text-center">No blogs found for this instructor.</div>
             ) : (
               blogs.map((blog, idx) => (
                 <div key={blog._id || idx} className="relative bg-white rounded-xl shadow-lg p-6 flex flex-col items-start min-h-[260px]">
@@ -298,7 +252,7 @@ const ArtisanDashboard = () => {
           </div>
         )}
         {/* Artisan Story Section */}
-        {activeKey === 'Artisan Story' && (
+        {activeKey === 'Instructor Story' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {stories ? (
               <div className="relative bg-white rounded-xl shadow-lg p-6 flex flex-col items-start min-h-[260px]">
@@ -320,7 +274,7 @@ const ArtisanDashboard = () => {
                 </div>
               </div>
             ) : (
-              <div className="col-span-3 text-center">No stories found for this artisan.</div>
+              <div className="col-span-3 text-center">No stories found for this instructor.</div>
             )}
           </div>
         )}
@@ -363,7 +317,7 @@ const ArtisanDashboard = () => {
         {activeKey === 'Certificates' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {(!certificates || certificates.length === 0) ? (
-              <div className="text-center">No certificates found for this artisan.</div>
+              <div className="text-center">No certificates found for this instructor.</div>
             ) : (
               certificates.map((cert, idx) => (
                 <div key={cert._id || idx} className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center min-h-[220px]">
@@ -516,7 +470,7 @@ const ArtisanDashboard = () => {
           <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
             <div className="bg-white rounded-lg p-8 max-w-lg w-full shadow-lg relative">
               <button className="absolute top-2 right-2 text-xl" onClick={() => setShowStoryModal(false)}>×</button>
-              <h3 className="mb-4 text-lg font-semibold">Artisan Story Details</h3>
+              <h3 className="mb-4 text-lg font-semibold">Instructor Story Details</h3>
               <div className="grid grid-cols-1 gap-4 mb-2">
                 <div className="bg-white p-3 rounded border border-gray-200 shadow-md mb-2">
                   <div className="font-semibold text-gray-800">Story Title</div>

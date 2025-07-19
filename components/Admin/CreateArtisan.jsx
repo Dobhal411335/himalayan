@@ -34,8 +34,6 @@ import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
 
 const CreateArtisan = () => {
-  // ...existing state
-  const [fatherHusbandType, setFatherHusbandType] = useState("Father");
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploadedImage, setUploadedImage] = useState(null); // { url, key }
   // ...other state
@@ -92,6 +90,7 @@ const CreateArtisan = () => {
     "Lakshadweep",
     "Puducherry",
   ];
+  // console.log(users)
   const slugify = (text) => {
     return text
       .toLowerCase()
@@ -177,8 +176,6 @@ const CreateArtisan = () => {
       pincode: '',
       city: '',
       title: "Mr.",
-      fatherHusbandType: "Father",
-      fatherHusbandTitle: "Mr.",
       // Add other defaults if needed
     },
   });
@@ -224,10 +221,6 @@ const CreateArtisan = () => {
       slug,
       firstName: data.firstName,
       lastName: data.lastName,
-      fatherHusbandType: data.fatherHusbandType,
-      fatherHusbandTitle: data.fatherHusbandTitle,
-      fatherHusbandName: data.fatherHusbandName,
-      fatherHusbandLastName: data.fatherHusbandLastName,
       shgName: data.shgName,
       artisanNumber: data.artisanNumber,
       yearsOfExperience: data.yearsOfExperience,
@@ -271,7 +264,6 @@ const CreateArtisan = () => {
       reset();
       setUploadedImage(null);
       setSelectedImage(null);
-      setFatherHusbandType("Father");
       setSelectedSpecs([]);
       setEditForm({});
       setEditingUser(null);
@@ -367,10 +359,6 @@ const CreateArtisan = () => {
     setValue("order", artisan.order || 1, { shouldValidate: true });
     setValue("firstName", artisan.firstName || "");
     setValue("lastName", artisan.lastName || "");
-    setValue("fatherHusbandType", artisan.fatherHusbandType || "Father");
-    setValue("fatherHusbandTitle", artisan.fatherHusbandTitle || "Mr.");
-    setValue("fatherHusbandName", artisan.fatherHusbandName || "");
-    setValue("fatherHusbandLastName", artisan.fatherHusbandLastName || "");
     setValue("shgName", artisan.shgName || "");
     setValue("artisanNumber", artisan.artisanNumber || "");
     setValue("yearsOfExperience", artisan.yearsOfExperience || "");
@@ -442,10 +430,6 @@ const CreateArtisan = () => {
       title: formData.title,
       firstName: formData.firstName,
       lastName: formData.lastName,
-      fatherHusbandType: formData.fatherHusbandType,
-      fatherHusbandTitle: formData.fatherHusbandTitle,
-      fatherHusbandName: formData.fatherHusbandName,
-      fatherHusbandLastName: formData.fatherHusbandLastName,
       shgName: formData.shgName,
       artisanNumber: formData.artisanNumber,
       yearsOfExperience: formData.yearsOfExperience,
@@ -581,61 +565,7 @@ const CreateArtisan = () => {
                 {...register("lastName", { required: "Last Name is required" })}
               />
               {renderError("lastName")}
-            </div>
-            <div className="font-semibold mb-1">Father/Husband Details</div>
-            {/* Father/Husband Row */}
-            <div className="flex gap-2 mb-2">
-              <Select
-                value={watch("fatherHusbandType") || fatherHusbandType}
-                onValueChange={(val) => {
-                  setFatherHusbandType(val);
-                  setValue("fatherHusbandType", val, { shouldValidate: true });
-                }}
-              >
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Father/Husband" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Father">Father</SelectItem>
-                  <SelectItem value="Husband">Husband</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            {/* Father/Husband Details Row */}
-            <div className="flex gap-2 mb-2">
-              <Select
-                value={watch("fatherHusbandTitle") || ""}
-                onValueChange={(val) =>
-                  setValue("fatherHusbandTitle", val, { shouldValidate: true })
-                }
-              >
-                <SelectTrigger className="w-24">
-                  <SelectValue placeholder="Mr." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Mr.">Mr.</SelectItem>
-                  <SelectItem value="Mrs.">Late.</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                placeholder={
-                  fatherHusbandType === "Husband"
-                    ? "Husband First Name"
-                    : "Father First Name"
-                }
-                {...register("fatherHusbandName", { required: "Father/Husband Name is required" })}
-              />
-              {renderError("fatherHusbandName")}
-              <Input
-                placeholder={
-                  fatherHusbandType === "Husband"
-                    ? "Husband Last Name"
-                    : "Father Last Name"
-                }
-                {...register("fatherHusbandLastName", { required: "Father/Husband Last Name is required" })}
-              />
-              {renderError("fatherHusbandLastName")}
-            </div>
+            </div>        
           </div>
           {/* Artisan Detail */}
           <div>
@@ -1123,14 +1053,6 @@ const CreateArtisan = () => {
                     label="Full Name"
                     value={`${selectedUser.title} ${selectedUser.firstName} ${selectedUser.lastName}`}
                   />
-                  <DetailBox
-                    label="Relationship Type"
-                    value={selectedUser.fatherHusbandType}
-                  />
-                  <DetailBox
-                    label={`${selectedUser.fatherHusbandType} Name`}
-                    value={`${selectedUser.fatherHusbandTitle} ${selectedUser.fatherHusbandName} ${selectedUser.fatherHusbandLastName}`}
-                  />
                   <DetailBox label="Any Group Name" value={selectedUser.shgName} />
                   <DetailBox
                     label="Artisan Number"
@@ -1272,44 +1194,6 @@ const CreateArtisan = () => {
                 <Input
                   name="title"
                   value={editForm.title || ""}
-                  onChange={handleEditFormChange}
-                  required
-                />
-              </div>
-              <div>
-                <label className="font-semibold">Father/Husband Type</label>
-                <Input
-                  name="fatherHusbandType"
-                  value={editForm.fatherHusbandType || ""}
-                  onChange={handleEditFormChange}
-                  required
-                />
-              </div>
-              <div>
-                <label className="font-semibold">Father/Husband Title</label>
-                <Input
-                  name="fatherHusbandTitle"
-                  value={editForm.fatherHusbandTitle || ""}
-                  onChange={handleEditFormChange}
-                  required
-                />
-              </div>
-              <div>
-                <label className="font-semibold">Father/Husband Name</label>
-                <Input
-                  name="fatherHusbandName"
-                  value={editForm.fatherHusbandName || ""}
-                  onChange={handleEditFormChange}
-                  required
-                />
-              </div>
-              <div>
-                <label className="font-semibold">
-                  Father/Husband Last Name
-                </label>
-                <Input
-                  name="fatherHusbandLastName"
-                  value={editForm.fatherHusbandLastName || ""}
                   onChange={handleEditFormChange}
                   required
                 />

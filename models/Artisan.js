@@ -22,26 +22,6 @@ const artisanSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  fatherHusbandType: {
-    type: String,
-    required: true,
-    enum: ['Father', 'Husband']
-  },
-  fatherHusbandTitle: {
-    type: String,
-    required: true,
-    enum: ['Mr.', 'Late']
-  },
-  fatherHusbandName: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  fatherHusbandLastName: {
-    type: String,
-    required: true,
-    trim: true
-  },
   shgName: {
     type: String,
     required: true,

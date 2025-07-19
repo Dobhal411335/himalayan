@@ -19,8 +19,7 @@ export async function POST(req) {
     const data = await req.json();
 
     // Validate required fields
-    if (!data.title || !data.slug || !data.firstName || !data.lastName || !data.fatherHusbandType || !data.fatherHusbandTitle || !data.fatherHusbandName ||
-      !data.fatherHusbandLastName || !data.shgName || !data.artisanNumber || !data.yearsOfExperience ||
+    if (!data.title || !data.slug || !data.firstName || !data.lastName || !data.shgName || !data.artisanNumber || !data.yearsOfExperience ||
       !data.callNumber || !data.address || !data.city || !data.pincode || !data.state) {
       return new Response(JSON.stringify({ message: 'Missing required fields' }), { status: 400 });
     }
@@ -35,10 +34,6 @@ export async function POST(req) {
       slug: data.slug,
       firstName: data.firstName,
       lastName: data.lastName,
-      fatherHusbandType: data.fatherHusbandType,
-      fatherHusbandTitle: data.fatherHusbandTitle,
-      fatherHusbandName: data.fatherHusbandName,
-      fatherHusbandLastName: data.fatherHusbandLastName,
       shgName: data.shgName,
       artisanNumber: data.artisanNumber,
       yearsOfExperience: Number(data.yearsOfExperience),
@@ -124,7 +119,7 @@ export async function PATCH(req) {
     }
     if (!Array.isArray(updateFields.specializations)) {
       updateFields.specializations = updateFields.specializations ? [updateFields.specializations] : [];
-    }
+    }``
     // Allow toggling active status
     if (typeof updateFields.active !== 'undefined') {
       updateFields.active = !!updateFields.active;

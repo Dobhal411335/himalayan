@@ -19,12 +19,12 @@ const sectionConfig = [
   },
   {
     key: 'artisanBlogs',
-    label: 'Artisan Blogs / Experience',
+    label: 'Instructor Blogs',
     component: ManageArtisanBlogs,
   },
   {
     key: 'artisanStory',
-    label: 'Artisan Story',
+    label: 'Instructor Story',
     component: ArtisonStory,
   },
   {
