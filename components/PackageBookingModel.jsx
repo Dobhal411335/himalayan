@@ -80,6 +80,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
         let stepErrors = {};
         if (step === 1) {
             if (!form.arrival) stepErrors.arrival = 'Arrival date is required';
+            if (!selectedID) stepErrors.id = 'Government ID upload is required';
             if (!form.id) stepErrors.id = 'ID is required';
         } else if (step === 2) {
             if (!form.firstName) stepErrors.firstName = 'First name is required';
@@ -151,10 +152,10 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                 });
                 const data = await res.json();
                 if (!res.ok) {
-                    toast.error('Cloudinary error: ' + (data.error || 'Failed to delete document from Cloudinary'));
+                    toast.error('Cloudinary error: ' + (data.error || 'Failed to delete document'));
                 }
             } catch (err) {
-                toast.error('Failed to delete document from Cloudinary');
+                toast.error('Failed to delete document');
             }
         }
     };
@@ -163,11 +164,11 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
     if (step === 1) {
         stepContent = (
             <>
-                <div className="mb-6">
+                <div className="md:mb-6 my-2">
                     <div className="font-semibold italic text-md mb-2">Dear Guest, To proceed with your booking order and ensure smooth booking experience, we kindly request you to provide the following basic information.</div>
                     <hr className="mb-4 border-gray-300" />
                 </div>
-                <div className="mb-8">
+                <div className="my-2 md:mb-8">
                     <div className="font-bold text-md text-[#8a6a2f] mb-4">Arrival Date</div>
                     <div className="flex flex-col items-center mb-8">
                         <input
@@ -179,21 +180,19 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                         {errors.arrival && <div className="text-red-600 text-xs mt-1">{errors.arrival}</div>}
                     </div>
 
-                    <div style={{ background: "#fff8ee", padding: 24, borderRadius: 8 }}>
-                        <div style={{ fontWeight: 600, color: "#6d4b1e", marginBottom: 10 }}>
-                            Kindly Provide Government-Approved ID for Office Use
-                        </div>
+                    <div className='p-2 rounded-lg bg-[#fff8ee]'>
+                        <div className="font-semibold text-md mb-2">Kindly Provide Government-Approved ID for Office Use</div>
                         {selectedID ? (
-                            <div style={{ marginBottom: 10 }}>
-                                <img src={selectedID} alt="Uploaded ID" style={{ maxWidth: 180, borderRadius: 8, marginBottom: 8 }} />
+                            <div className="my-2">
+                                <img src={selectedID} alt="Uploaded ID" className="max-w-48 rounded" />
                                 <div>
-                                    <button onClick={handleRemoveID} style={{ color: "#fff", background: "#e74c3c", border: "none", padding: "6px 14px", borderRadius: 6 }}>
+                                    <button onClick={handleRemoveID} className="text-white bg-red-500 px-4 py-2 my-2 rounded">
                                         Remove
                                     </button>
                                 </div>
                             </div>
                         ) : uploadingID ? (
-                            <div style={{
+                            <div className='px-4 py-2 rounded bg-[#ff4d1c] text-white font-semibold text-lg cursor-pointer text-center' style={{
                                 background: "#ff4d1c",
                                 color: "#fff",
                                 fontWeight: 600,
@@ -208,20 +207,12 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                         ) : (
                             <label style={{ display: "block", marginBottom: 10 }}>
                                 <input type="file" accept="image/*" onChange={handleIDChange} style={{ display: "none" }} disabled={uploadingID} />
-                                <div style={{
-                                    background: "#ff4d1c",
-                                    color: "#fff",
-                                    fontWeight: 600,
-                                    fontSize: 22,
-                                    padding: "10px 0",
-                                    borderRadius: 28,
-                                    textAlign: "center",
-                                    cursor: "pointer"
-                                }}>
-                                    Uplode From Here
+                                <div className='px-4 py-2 rounded-lg bg-[#ff4d1c] text-white font-semibold text-lg cursor-pointer text-center'>
+                                    Upload From Here
                                 </div>
                             </label>
                         )}
+                        {errors.id && <div className="text-red-600 text-xs mt-2">{errors.id}</div>}
                         <div style={{ fontSize: 15, marginTop: 8 }}>
                             We request you to submit any one of the following valid government-issued identification documents for official records:
                             <br />
@@ -246,7 +237,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
     } else if (step === 2) {
         stepContent = (
             <>
-                <div className="overflow-y-auto max-h-[90vh] pr-2">
+                <div className="md:overflow-y-auto md:max-h-[90vh] md:pr-2">
                     <div className="mb-2">
                         <div className="font-semibold italic text-md mb-2">Dear Guest, To proceed with your booking order and ensure smooth booking experience, we kindly request you to provide the following basic information.</div>
                         <hr className="mb-2 border-gray-300" />
@@ -280,7 +271,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                 inputMode="numeric"
                                 pattern="\d*"
                                 maxLength={10}
-                                placeholder="Enter Call Number"
+                                placeholder="Call Number"
                                 className="w-full bg-gray-200 rounded-full px-5 py-1 text-md"
                                 value={form.callNo}
                                 onChange={(e) => {
@@ -302,7 +293,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                 inputMode="numeric"
                                 pattern="\d*"
                                 maxLength={10}
-                                placeholder="Enter Alt Call Number"
+                                placeholder="Alt Call Number"
                                 className="w-full bg-gray-200 rounded-full px-5 py-1 text-md"
                                 value={form.altCallNo}
                                 onChange={(e) => {
@@ -344,7 +335,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                     onChange={e => handleChange('state', e.target.value)}
                                 >
                                     {errors.state && <div className="text-red-600 text-xs mt-1">{errors.state}</div>}
-                                    <option value="">Select State</option>
+                                    <option value="">State</option>
                                     {stateList.map(state => (
                                         <option key={state} value={state}>{state}</option>
                                     ))}
@@ -386,7 +377,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                     <div className="font-semibold italic text-md mb-2">Dear Guest, To proceed with your booking order and ensure smooth booking experience, we kindly request you to provide the following basic information.</div>
                     <hr className="mb-4 border-gray-300" />
                 </div>
-                <div className="font-bold text-md text-[#8a6a2f] mb-2">Any Special Additional Requirement</div>
+                <div className="font-bold text-md text-[#8a6a2f] mb-2">Any Special Additional Requirement (Optional)</div>
                 <textarea className="w-full bg-gray-200 rounded-xl px-5 py-4 text-lg mb-6 min-h-[80px]" placeholder="Type here..." value={form.specialReq} onChange={e => handleChange('specialReq', e.target.value)} />
                 <div className="font-bold text-md text-[#8a6a2f] mb-2">Additional Offer <span className="text-xs font-normal text-black">Please Click On Check List</span></div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
@@ -532,6 +523,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                         type: 'packages',
                                         packageName: packages?.title || '',
                                         packagesPrices,
+                                        packageIdImage: uploadedID || null,
                                     };
                                     const res = await fetch('/api/bookingDetails', {
                                         method: 'POST',
@@ -564,7 +556,6 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                                     body: JSON.stringify({
                                                         to: form.email,
                                                         subject: `Your Booking Invoice - ${packages?.title || 'Himalayan Wellness Retreat'}`,
-
                                                         htmlContent: invoiceHtml,
                                                     })
                                                 });
@@ -615,7 +606,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
     if (showConfirmation) {
         return (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40" onClick={onClose}>
-                <div className="bg-white rounded-2xl shadow-lg max-w-xl w-full p-8 relative flex flex-col items-start text-start" onClick={e => e.stopPropagation()}>
+                <div className="bg-white rounded-2xl shadow-lg  max-w-xl w-full p-8 relative flex flex-col items-start text-start" onClick={e => e.stopPropagation()}>
                     <button
                         className="absolute top-3 right-3 bg-gray-400 rounded-full text-white p-2 hover:text-gray-700 text-xl font-bold"
                         onClick={onClose}
@@ -629,12 +620,12 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                     </div>
 
                     {/* Confirmation Title */}
-                    <div className="text-2xl italic font-bold mb-4 text-[#7a5b2b]">
+                    <div className="text-xl md:text-2xl italic font-bold md:mb-4 mb-2 text-[#7a5b2b]">
                         Booking Order Under Review
                     </div>
 
                     {/* Confirmation Message */}
-                    <div className="text-base text-black mb-6 leading-relaxed">
+                    <div className="text-sm md:text-base text-black mb-6 leading-relaxed">
                         Dear Guest, Thank you for choosing to stay with us. We are pleased to confirm that we have received your booking request.
 
                         Our team is now reviewing the details and will ensure all necessary arrangements are in place for your comfortable stay. You will receive a confirmation via email or phone call shortly.
@@ -645,15 +636,17 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                     </div>
 
                     {/* Invoice Button */}
-                    <button className="w-full bg-black text-white rounded-md py-3 font-semibold text-lg mb-3 hover:bg-gray-900" onClick={() => setShowInvoice(true)}>
+                    <button className="w-full bg-black text-white rounded-md py-3 font-semibold text-lg md:mb-3 hover:bg-gray-900" onClick={() => setShowInvoice(true)}>
                         Invoice Booking Voucheri
                     </button>
+                    <h2 className="text-center text-md font-semibold w-full my-2">OR</h2>
+
 
                     {/* Dashboard Link */}
                     <button className="w-full bg-red-400 text-white rounded-md py-3 font-semibold text-lg mb-3 hover:bg-gray-900 text-red-600 font-semibold text-base italic cursor-pointer"
                         onClick={() => router.push(`/dashboard?orderId=${bookingId}`)}
                     >
-                        Or Go To Dashboard &gt;&gt;;
+                        Go To Dashboard
                     </button>
                 </div>
             </div>
@@ -661,7 +654,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
     }
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            <div className="bg-[#fcf9f4] rounded-2xl shadow-lg max-w-4xl w-full flex flex-col md:flex-row p-5 gap-4 relative" onClick={e => e.stopPropagation()}>
+            <div className="bg-[#fcf9f4] rounded-2xl shadow-lg h-full overflow-y-auto md:h-fit max-w-4xl w-full flex flex-col md:flex-row p-5 gap-4 relative" onClick={e => e.stopPropagation()}>
                 {/* Close button */}
                 <button className="absolute top-1 right-1 bg-gray-500 rounded-full text-white p-1 hover:text-gray-700 text-xl font-bold" onClick={onClose}><X /></button>
                 {/* Left: Step Content */}
@@ -670,7 +663,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                 </div>
                 {/* Right: Room Summary */}
                 <div className="bg-white rounded-xl border border-gray-200 shadow-md p-2 max-w-[350px] w-full flex flex-col">
-                    <div className="w-full h-60 relative mb-3 rounded-lg overflow-hidden">
+                    <div className="w-full md:h-60 h-44 relative mb-3 rounded-lg overflow-hidden">
                         <Image src={packageImg} alt={packageName} fill className="object-contain" />
                     </div>
                     <div className="p-2">

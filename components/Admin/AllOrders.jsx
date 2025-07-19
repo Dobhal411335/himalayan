@@ -198,6 +198,11 @@ const AllOrders = () => {
             <div className="border-t border-b py-4 mb-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 text-md">
                 <div><span className="font-bold text-black">Package Name:</span> {viewOrder.packageName}</div>
+                <div><span className="font-bold text-black">Uploaded ID:</span> 
+                  {viewOrder.packageIdImage?.url ? (
+                    <img src={viewOrder.packageIdImage?.url} alt="ID Document" className="w-24 h-24 object-cover" />
+                  ) : 'Not uploaded'}
+                </div>
                 <div><span className="font-bold text-black">Arrival:</span> {formatDate(viewOrder.arrival)}</div>
                 <div><span className="font-bold text-black">Persons:</span> {viewOrder.adult} Adult{viewOrder.child ? `, ${viewOrder.child} Child` : ''}{viewOrder.infant ? `, ${viewOrder.infant} Infant` : ''}</div>
               </div>
@@ -208,15 +213,6 @@ const AllOrders = () => {
               <div><span className="font-bold text-black">Offers:</span> {Array.isArray(viewOrder.offers) && viewOrder.offers.length > 0 ? viewOrder.offers.join(', ') : 'None'}</div>
               <div><span className="font-bold text-black">Special Requests:</span> {viewOrder.specialReq || 'None'}</div>
             </div>
-
-            {/* Price Breakdown */}
-            {/* <div className="bg-gray-50 rounded-md p-4 text-md">
-              <div className="text-base font-semibold mb-2 text-black">Price Breakdown</div>
-              <div className="flex justify-between py-1 font-bold text-black"><span>Room Price</span> <span>₹{viewOrder.packagePrices?.main?.amount || 0}</span></div>
-              {viewOrder.packagePrices?.extraBed?.amount > 0 && (
-                <div className="flex justify-between py-1 font-bold text-black"><span>Extra Bed</span> <span>₹{viewOrder.packagePrices.extraBed.amount}</span></div>
-              )}
-            </div> */}
           </div>
         </div>
       )}

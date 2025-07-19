@@ -146,8 +146,8 @@ export default function ProductDetailView({ product }) {
         {/* LEFT: Product Images */}
         <div className="w-full md:w-2/3 flex flex-col items-start md:px-10">
           {/* Main Image Carousel (QuickView style, embla-controlled) */}
-          <div className="w-full flex justify-center md:mb-4">
-            <div className="relative w-full md:max-w-[800px] h-[300px] md:h-[400px] flex items-center justify-center overflow-hidden md:p-4 rounded-lg">
+          <div className="w-full flex justify-center md:mb-4 ">
+            <div className="relative w-full md:max-w-[800px] h-[300px] md:h-[400px] flex items-center justify-center md:p-4">
               <Carousel
                 className="w-full h-full"
                 opts={{ loop: true }}
@@ -157,13 +157,13 @@ export default function ProductDetailView({ product }) {
                 <CarouselContent className="h-[300px] md:h-[400px]">
                   {allImages.map((img, idx) => (
                     <CarouselItem key={idx} className="flex items-center justify-center h-full">
-                      <div className="relative w-full h-[270px] md:h-[400px] flex items-center justify-center">
+                      <div className="relative w-full h-[260px] md:h-[400px] flex items-center justify-center rounded-2xl overflow-hidden">
                         <Image
                           src={img}
                           alt={`Product image ${idx}`}
                           layout="fill"
                           objectFit="contain"
-                          className="w-full h-full object-contain"
+                          className="w-full h-full object-contain rounded-xl"
                           draggable={false}
                           style={{
                             objectFit: 'contain',

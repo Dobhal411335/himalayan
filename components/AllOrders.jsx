@@ -38,22 +38,42 @@ const AllOrders = ({ onViewOrder,userId, onChatOrder, onBack }) => {
     const router = useRouter();
     console.log(orders)
     useEffect(() => {
-        setLoading(true);
-        fetch(`/api/bookingDetails?userId=${encodeURIComponent(userId)}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    setOrders(data.bookings || []);
-                } else {
-                    setError(data.error || "Failed to fetch bookings");
+        const fetchOrders = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const response = await fetch(`/api/bookingDetails?userId=${encodeURIComponent(userId)}`);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to fetch orders');
                 }
-                setLoading(false);
-            })
-            .catch(err => {
+                
+                if (data.success) {
+                    // Transform the data to match the expected format
+                    const formattedOrders = (data.bookings || []).map(booking => ({
+                        ...booking,
+                        // Ensure required fields have default values
+                        bookingId: booking.bookingId || `B-${booking._id?.slice(-6) || 'N/A'}`,
+                        status: booking.status || 'PENDING',
+                        createdAt: booking.createdAt || new Date().toISOString(),
+                        // Add any other transformations needed
+                    }));
+                    
+                    setOrders(formattedOrders);
+                } else {
+                    setError(data.error || "No bookings found");
+                }
+            } catch (err) {
+                console.error('Error fetching orders:', err);
                 setError(err.message || "Failed to fetch bookings");
+            } finally {
                 setLoading(false);
-            });
-    }, []);
+            }
+        };
+
+        fetchOrders();
+    }, [userId]);
 
     const totalPages = Math.ceil(orders.length / PAGE_SIZE);
     const paginatedOrders = orders.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -85,8 +105,15 @@ const AllOrders = ({ onViewOrder,userId, onChatOrder, onBack }) => {
                                             (idx % 2 === 1 ? "bg-[#fcf7f1]" : "bg-white")
                                         }
                                     >
-                                        <td className="py-3 px-2 font-mono text-[15px] text-[#222]">#{order.bookingId}</td>
-                                        <td className="py-3 px-2 text-[15px] text-gray-700">{formatDate(order.createdAt)}</td>
+                                        <td className="py-3 px-2 font-mono text-[15px] text-[#222]">
+                                            {order.bookingId || `B-${order._id?.slice(-6) || 'N/A'}`}
+                                        </td>
+                                        <td className="py-3 px-2 text-[15px] text-gray-700">
+                                            {formatDate(order.createdAt || new Date())}
+                                            <div className="text-xs text-gray-500">
+                                                {order.type === 'packages' ? 'Package' : 'Room'}
+                                            </div>
+                                        </td>
                                         <td className="py-3 px-2 text-sm">
                                             <button
                                                 className="text-blue-600 hover:underline"

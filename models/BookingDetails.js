@@ -59,6 +59,10 @@ const BookingDetailsSchema = new mongoose.Schema({
       }
     ]
   },
+  packageIdImage: {
+    url: { type: String },
+    key: { type: String }
+  },
   subtotal: { type: Number },
   finalAmount: { type: Number },
   status: { type: String, enum: ['pending', 'confirmed', 'cancelled'], default: 'pending' },

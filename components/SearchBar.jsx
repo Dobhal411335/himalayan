@@ -18,7 +18,7 @@ export default function SearchBar({ placeholder }) {
 
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const router = useRouter();
-    console.log(relatedProducts)
+    // console.log(relatedProducts)
 
     useEffect(() => {
         const fetchCategories = async () => {

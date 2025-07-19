@@ -16,24 +16,26 @@ export async function GET(req) {
     return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
   }
   try {
-    let type = 'room';
-    if (req?.url) {
-      if (searchParams.get('type')) type = searchParams.get('type');
-    }
-    // Prefer userId from query, fallback to session
-    let userFilter = {};
+    // Build the base query
+    let query = {};
+    
+    // Add user filter (either by userId or email)
     if (userIdFromQuery) {
-      userFilter.userId = userIdFromQuery;
+      query.userId = userIdFromQuery;
     } else if (session?.user?.id) {
-      userFilter.userId = session.user.id;
+      query.userId = session.user.id;
     } else if (session?.user?.email) {
-      userFilter.email = session.user.email;
+      query.email = session.user.email;
     }
-    // console.log('USER FILTER:', userFilter);
-    const bookings = await BookingDetails.find({
-      type,
-      ...userFilter
-    }).sort({ createdAt: -1 });
+    
+    // If type is specified in query, filter by it, otherwise get all types
+    const type = searchParams.get('type');
+    if (type) {
+      query.type = type;
+    }
+    
+    // Fetch bookings with the constructed query
+    const bookings = await BookingDetails.find(query).sort({ createdAt: -1 });
     // console.log('BOOKINGS FOUND:', bookings.length);
     return NextResponse.json({ bookings, success: true }, { status: 200 });
   } catch (error) {

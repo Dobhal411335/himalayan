@@ -46,7 +46,6 @@ const BookingDetails = ({ room, onClose, type }) => {
     const router = useRouter();
     const pathname = usePathname();
     const [openAccordion, setOpenAccordion] = React.useState(null);
-    const [openEditSection, setOpenEditSection] = React.useState(null);
     // Step state
     const [step, setStep] = useState(1);
     // Form data state
@@ -75,7 +74,7 @@ const BookingDetails = ({ room, onClose, type }) => {
     // Offer list
     const offerList = [
         'Rafting',
-        'Local sightseeing',
+        'Local Sightseeing',
         'Pickup Require',
         'Dropp Off Require',
         'Bike On Rent',
@@ -135,13 +134,13 @@ const BookingDetails = ({ room, onClose, type }) => {
     if (step === 1) {
         stepContent = (
             <>
-                <div className="mb-6">
-                    <div className="font-semibold italic text-md mb-2">Dear Guest, To proceed with your booking order and ensure smooth booking experience, we kindly request you to provide the following basic information.</div>
+                <div className="md:mb-6">
+                    <div className="text-sm md:font-semibold italic text-md mb-2">Dear Guest, To proceed with your booking order and ensure smooth booking experience, we kindly request you to provide the following basic information.</div>
                     <hr className="mb-4 border-gray-300" />
                 </div>
-                <div className="mb-8">
-                    <div className="font-bold text-md text-[#8a6a2f] mb-4">Arrival Date</div>
-                    <div className="flex flex-col items-center mb-8">
+                <div className="md:mb-8">
+                    <div className="text-sm md:text-xl font-bold text-md text-[#8a6a2f] my-2 md:mb-4">Arrival Date</div>
+                    <div className="flex flex-col items-center md:mb-8">
                         <input
                             type="date"
                             className="w-full bg-gray-200 rounded-full px-5 py-2 text-md focus:outline-none appearance-none"
@@ -150,8 +149,8 @@ const BookingDetails = ({ room, onClose, type }) => {
                         />
                         {errors.arrival && <div className="text-red-600 text-xs mt-1">{errors.arrival}</div>}
                     </div>                  
-                    <div className="font-bold text-md text-[#8a6a2f] mb-4">Total Number Of Room</div>
-                    <div className="flex flex-col items-center mb-8">
+                    <div className="text-sm md:text-xl font-bold text-md text-[#8a6a2f] my-2 md:mb-4">Total Number Of Room</div>
+                    <div className="flex flex-col items-center md:mb-8">
                         <input
                             id="roomNo"
                             type="text"
@@ -171,21 +170,21 @@ const BookingDetails = ({ room, onClose, type }) => {
                         {errors.roomNo && <div className="text-red-600 text-xs mt-1">{errors.roomNo}</div>}
                     </div>
 
-                    <div className="font-bold text-md text-[#8a6a2f] mb-3">Total Days For Stay</div>
-                    <div className="flex items-center bg-gray-200 rounded-full px-2 py-2 w-full mb-8">
+                    <div className="text-sm md:text-xl font-bold text-md text-[#8a6a2f] md:mb-3 my-1">Total Days For Stay</div>
+                    <div className="flex items-center bg-gray-200 rounded-full px-2 py-2 w-full md:mb-8">
                         <button className="text-2xl px-4" onClick={() => handleChange('days', Math.max(1, (form.days || 1) - 1))}>-</button>
-                        <span className="flex-1 text-center text-2xl font-semibold">{form.days || 1}</span>
+                        <span className="flex-1 text-center text-xl md:text-2xl font-semibold">{form.days || 1}</span>
                         {errors.days && <div className="text-red-600 text-xs mt-1">{errors.days}</div>}
                         <button className="text-2xl px-4" onClick={() => handleChange('days', (form.days || 1) + 1)}>+</button>
                     </div>
                 </div>
-                <div className="flex gap-2 mt-10">
+                <div className="flex gap-2 md:mt-10 mt-5">
                     {step > 1 && (
                         <button className="px-4 py-2 bg-gray-200 rounded text-black text-sm" onClick={handlePrevStep}>
                             Back
                         </button>
                     )}
-                    <button className="flex-1 bg-black text-white font-semibold text-lg py-4 rounded-md" onClick={handleNextStep}>
+                    <button className="flex-1 bg-black text-white font-semibold text-lg py-1 md:py-4 rounded-md" onClick={handleNextStep}>
                         Looks Good, Keep Going
                     </button>
                 </div>
@@ -194,9 +193,9 @@ const BookingDetails = ({ room, onClose, type }) => {
     } else if (step === 2) {
         stepContent = (
             <>
-                <div className="overflow-y-auto max-h-[90vh] pr-2">
+                <div className="md:overflow-y-auto md:max-h-[90vh] md:pr-2">
                     <div className="mb-2">
-                        <div className="font-semibold italic text-md mb-2">Dear Guest, To proceed with your booking order and ensure smooth booking experience, we kindly request you to provide the following basic information.</div>
+                        <div className="font-semibold italic mb-2">Dear Guest, To proceed with your booking order and ensure smooth booking experience, we kindly request you to provide the following basic information.</div>
                         <hr className="mb-2 border-gray-300" />
                     </div>
                     <div className="font-bold text-md text-[#8a6a2f] mb-2">Basic Profile</div>
@@ -228,7 +227,7 @@ const BookingDetails = ({ room, onClose, type }) => {
                                 inputMode="numeric"
                                 pattern="\d*"
                                 maxLength={10}
-                                placeholder="Enter Call Number"
+                                placeholder="Call Number"
                                 className="w-full bg-gray-200 rounded-full px-5 py-1 text-md"
                                 value={form.callNo}
                                 onChange={(e) => {
@@ -238,8 +237,6 @@ const BookingDetails = ({ room, onClose, type }) => {
                                     }
                                 }}
                             />
-
-
                             {errors.callNo && <div className="text-red-600 text-xs mt-1">{errors.callNo}</div>}
                         </div>
                         <div className="flex-1">
@@ -250,7 +247,7 @@ const BookingDetails = ({ room, onClose, type }) => {
                                 inputMode="numeric"
                                 pattern="\d*"
                                 maxLength={10}
-                                placeholder="Enter Alt Call Number"
+                                placeholder="Alt Call Number"
                                 className="w-full bg-gray-200 rounded-full px-5 py-1 text-md"
                                 value={form.altCallNo}
                                 onChange={(e) => {
@@ -260,8 +257,6 @@ const BookingDetails = ({ room, onClose, type }) => {
                                     }
                                 }}
                             />
-
-
                         </div>
                     </div>
                     <hr className="my-2 border-gray-300" />
@@ -292,7 +287,7 @@ const BookingDetails = ({ room, onClose, type }) => {
                                     onChange={e => handleChange('state', e.target.value)}
                                 >
                                     {errors.state && <div className="text-red-600 text-xs mt-1">{errors.state}</div>}
-                                    <option value="">Select State</option>
+                                    <option value="">State</option>
                                     {stateList.map(state => (
                                         <option key={state} value={state}>{state}</option>
                                     ))}
@@ -334,7 +329,7 @@ const BookingDetails = ({ room, onClose, type }) => {
                     <div className="font-semibold italic text-md mb-2">Dear Guest, To proceed with your booking order and ensure smooth booking experience, we kindly request you to provide the following basic information.</div>
                     <hr className="mb-4 border-gray-300" />
                 </div>
-                <div className="font-bold text-md text-[#8a6a2f] mb-2">Any Special Additional Requirement</div>
+                <div className="font-bold text-md text-[#8a6a2f] mb-2">Any Special Additional Requirement (Optional) </div>
                 <textarea className="w-full bg-gray-200 rounded-xl px-5 py-4 text-lg mb-6 min-h-[80px]" placeholder="Type here..." value={form.specialReq} onChange={e => handleChange('specialReq', e.target.value)} />
                 <div className="font-bold text-md text-[#8a6a2f] mb-2">Additional Offer <span className="text-xs font-normal text-black">Please Click On Check List</span></div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
@@ -467,7 +462,7 @@ const BookingDetails = ({ room, onClose, type }) => {
                                     const subtotal = baseAmount + (hasExtraBed ? extrabedAmount : 0);
                                     const finalAmount = subtotal;
 
-                                    const invoiceNumber = `INV${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+                                    const invoiceNumber = `INV-${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}`;
 
                                     const payload = {
                                         ...form,
@@ -588,12 +583,12 @@ const BookingDetails = ({ room, onClose, type }) => {
                     </div>
 
                     {/* Confirmation Title */}
-                    <div className="text-2xl italic font-bold mb-4 text-[#7a5b2b]">
+                    <div className="text-xl md:text-2xl italic font-bold mb-4 text-[#7a5b2b]">
                         Booking Order Under Review
                     </div>
 
                     {/* Confirmation Message */}
-                    <div className="text-base text-black mb-6 leading-relaxed">
+                    <div className="text-sm md:text-base text-black mb-6 leading-relaxed">
                         Dear Guest, Thank you for choosing to stay with us. We are pleased to confirm that we have received your booking request.
 
                         Our team is now reviewing the details and will ensure all necessary arrangements are in place for your comfortable stay. You will receive a confirmation via email or phone call shortly.
@@ -604,7 +599,7 @@ const BookingDetails = ({ room, onClose, type }) => {
                     </div>
 
                     {/* Invoice Button */}
-                    <button className="w-full bg-black text-white rounded-md py-3 font-semibold text-lg mb-3 hover:bg-gray-900" onClick={() => setShowInvoice(true)}>
+                    <button className="w-full bg-black text-white rounded-md py-3 font-semibold text-lg hover:bg-gray-900" onClick={() => setShowInvoice(true)}>
                         Invoice Booking Voucheri
                     </button>
                     <h2 className="text-center text-md font-semibold w-full my-2">OR</h2>
@@ -621,7 +616,7 @@ const BookingDetails = ({ room, onClose, type }) => {
     }
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            <div className="bg-[#fcf9f4] rounded-2xl shadow-lg max-w-4xl w-full flex flex-col md:flex-row p-5 gap-4 relative" onClick={e => e.stopPropagation()}>
+            <div className="bg-[#fcf9f4] rounded-2xl shadow-lg h-full overflow-y-auto md:h-fit max-w-4xl w-full flex flex-col md:flex-row p-5 gap-4 relative" onClick={e => e.stopPropagation()}>
                 {/* Close button */}
                 <button className="absolute top-1 right-1 bg-gray-500 rounded-full text-white p-1 hover:text-gray-700 text-xl font-bold" onClick={onClose}><X /></button>
                 {/* Left: Step Content */}
@@ -630,12 +625,12 @@ const BookingDetails = ({ room, onClose, type }) => {
                 </div>
                 {/* Right: Room Summary */}
                 <div className="bg-white rounded-xl border border-gray-200 shadow-md p-2 max-w-[350px] w-full flex flex-col">
-                    <div className="w-full h-60 relative mb-3 rounded-lg overflow-hidden">
+                    <div className="w-full md:h-60 h-44 relative mb-3 rounded-lg overflow-hidden">
                         <Image src={roomImg} alt={roomName} fill className="object-contain" />
                     </div>
                     <div className="p-2">
                         <div className="flex items-center justify-between">
-                            <div className="font-bold text-md  mb-2">{roomName}</div>
+                            <div className="font-bold text-sm md:text-md mb-2">{roomName}</div>
                             <button
                                 className="flex flex-col items-center justify-center bg-transparent border-0 p-0"
                                 style={{ outline: 'none' }}
@@ -646,12 +641,12 @@ const BookingDetails = ({ room, onClose, type }) => {
                                         <Star key={i} size={13} color="#12b76a" fill="#12b76a" className="inline" />
                                     ))}
                                 </div>
-                                <span className="text-xs text-gray-700 ml-1">
+                                <span className="text-xs md:text-sm text-gray-700 ml-1">
                                     Based On {room.reviews?.length || 0} Review{(room.reviews?.length || 0) !== 1 ? 's' : ''}
                                 </span>
                             </button>
                         </div>
-                        <div className="text-gray-800 text-sm">
+                        <div className="text-gray-800 text-xs md:text-sm">
                             {(() => {
                                 const text = (room.paragraph || '').replace(/<[^>]+>/g, '');
                                 const words = text.split(' ');
@@ -684,7 +679,7 @@ const BookingDetails = ({ room, onClose, type }) => {
                         {(() => {
                             const priceList = (room.prices && room.prices[0] && room.prices[0].prices) || [];
                             return (
-                                <div className="flex gap-8 text-sm">
+                                <div className="flex gap-8 text-xs md:text-sm">
                                     <span>
                                         Max occupancy: {
                                             priceList.some(p => p.type === '02 Pax')
@@ -702,6 +697,7 @@ const BookingDetails = ({ room, onClose, type }) => {
                                 </div>
                             );
                         })()}
+                        <hr className="my-1 border-gray-300" />
                         {(() => {
                             if (!room?.prices || !Array.isArray(room.prices) || room.prices.length === 0) {
                                 return (
@@ -718,13 +714,13 @@ const BookingDetails = ({ room, onClose, type }) => {
                             const hasExtraBed = extrabedAmount > 0;
                             return (
                                 <>
-                                    <div className="font-bold text-lg my-2">
+                                    <div className="font-bold text-md md:text-lg my-2">
                                         Room Price
                                         <span className="text-md text-gray-600">
                                             <span className="float-right text-black flex items-center gap-2">
                                                 Rs&nbsp;{baseAmount.toLocaleString()}
                                                 {oldPrice > 0 && (
-                                                    <div className="text-sm text-gray-800 font-bold line-through">
+                                                    <div className="text-xs md:text-sm text-gray-800 font-bold line-through">
                                                         Rs&nbsp;{oldPrice.toLocaleString()}
                                                     </div>
                                                 )}
@@ -732,16 +728,14 @@ const BookingDetails = ({ room, onClose, type }) => {
                                             </span>
                                         </span>
                                     </div>
-                                    <hr className="my-1 border-gray-300" />
                                     {hasExtraBed && (
                                         <div className="flex justify-between mt-1">
-                                            <span className='text-md font-bold'>Extra Bed Price</span>
+                                            <span className='text-md md:text-lg font-bold'>Extra Bed Price</span>
                                             <div className="flex items-center gap-2">
-                                                <span className='text-md text-black font-bold'>Rs&nbsp;{extrabedAmount.toLocaleString()}</span>
+                                                <span className='text-md md:text-lg text-black font-bold'>Rs&nbsp;{extrabedAmount.toLocaleString()}</span>
                                             </div>
                                         </div>
                                     )}
-                                    <hr className="my-1 border-gray-300" />
                                 </>
                             );
 

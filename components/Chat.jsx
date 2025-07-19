@@ -68,10 +68,6 @@ export default function Chat({
             setAdminName(null); // Reset on error
         }
     }, [userId])
-
-    // Removed enquiry and booking details logic for e-commerce chat
-
-    // And update your useEffect to call it when type is "booking"
     useEffect(() => {
         
         // Only merge chatbot_history once per session

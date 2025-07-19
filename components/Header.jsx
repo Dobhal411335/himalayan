@@ -230,7 +230,7 @@ const Header = () => {
                     className="rounded-full cursor-pointer"
                   />
                 </button>
-                <SearchBar />
+                {/* <SearchBar /> */}
 
                 {/* Dropdown Menu */}
                 {isProfileOpen && (

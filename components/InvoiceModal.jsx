@@ -34,27 +34,16 @@ const InvoiceModal = ({ open, onClose, booking, bookingId, bookingDate }) => {
   const main = booking?.priceBreakdown?.main || {};
   const extrabed = booking?.priceBreakdown?.extraBed || null;
   const baseAmount = main?.amount || 0;
-  const cgst = main?.cgst || 0;
-  const sgst = main?.sgst || 0;
   const extrabedAmount = extrabed?.amount || 0;
-  const extrabedCgst = extrabed?.cgst || 0;
-  const extrabedSgst = extrabed?.sgst || 0;
   const hasExtraBed = extrabedAmount > 0;
-  const totalCgst = cgst + (hasExtraBed ? extrabedCgst : 0);
-  const totalSgst = sgst + (hasExtraBed ? extrabedSgst : 0);
-  const totalTaxAmount = totalCgst + totalSgst;
-  const subtotal = baseAmount + (hasExtraBed ? extrabedAmount : 0);
-  const totalTaxPercent = subtotal > 0 ? ((totalTaxAmount / subtotal) * 100).toFixed(2) : 0;
-  const finalAmount = subtotal + totalTaxAmount;
-  const coupon = booking?.coupon || '';
   const invoiceNumber = booking?.invoiceNumber;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 print:bg-transparent" style={{overflowY:'auto'}}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 print:bg-transparent p-2 md:p-4" style={{overflowY:'auto'}}>
       <div
         ref={invoiceRef}
-        className={`bg-white rounded-xl shadow-lg max-w-2xl w-full p-8 relative text-black print:shadow-none print:p-0 print:bg-white ${isExportingPdf ? '' : 'h-[90vh] overflow-y-auto'}`}
-        style={{ fontFamily: 'Barlow, Arial, sans-serif', minWidth: '700px' }}
+        className={`bg-white rounded-xl shadow-lg md:max-w-2xl w-full max-w-full p-3 md:p-8 relative text-black print:shadow-none print:p-0 print:bg-white ${isExportingPdf ? '' : 'max-h-[95vh] overflow-y-auto'}`}
+        style={{ fontFamily: 'Barlow, Arial, sans-serif' }}
       >
         {/* Close Button */}
         { !isExportingPdf && (
@@ -66,55 +55,55 @@ const InvoiceModal = ({ open, onClose, booking, bookingId, bookingDate }) => {
           </button>
         ) }
         {/* Header */}
-        <div className="flex justify-between items-start mb-2">
+        <div className="flex md:justify-between items-center md:items-start mb-2">
           <div>
-            <div className="bg-[#f5e9d9] w-44 h-16 flex items-center justify-center text-2xl font-bold mb-2 rounded"><img src="/logo.png" alt="" /></div>
+            <div className="bg-[#f5e9d9] md:w-44 w-32 h-16 flex items-center justify-center text-2xl font-bold mb-2 rounded"><img src="/logo.png" alt="" /></div>
             <div className="mt-2 text-sm">
               <div className="font-semibold">Thanks for your order,</div>
               <div className="text-gray-700 mt-2">
-                <div><span className="inline-block w-16">Name</span> <span className="ml-2">{booking?.firstName} {booking?.lastName}</span></div>
-                <div><span className="inline-block w-16">Call</span> <span className="ml-2">{booking?.callNo}</span></div>
-                <div><span className="inline-block w-16">Email</span> <span className="ml-2">{booking?.email}</span></div>
-                <div><span className="inline-block w-16">Address</span> <span className="ml-2">{booking?.address}</span></div>
+                <div><span className="inline-block md:w-16 w-12">Name:</span> <span className="ml-2">{booking?.firstName} {booking?.lastName}</span></div>
+                <div><span className="inline-block md:w-16 w-12">Call:</span> <span className="ml-2">{booking?.callNo}</span></div>
+                <div><span className="inline-block md:w-16 w-12">Email:</span> <span className="ml-2">{booking?.email}</span></div>
+                <div><span className="inline-block md:w-16 w-12">Address: </span> <span className="ml-2">{booking?.address}</span></div>
               </div>
-              <div className="mt-2 text-sm">Invoice Number: <span className="font-bold">{invoiceNumber}</span></div>
+              <div className="mt-2 text-sm">Invoice No: <span className="text-xs md:text-md font-bold">{invoiceNumber}</span></div>
             </div>
           </div>
-          <div className="text-right text-sm">
+          <div className="text-left md:text-right text-xs mt-5">
             <div className="mb-2">
-              <div className="font-semibold">Registration / GST Number</div>
-              <div>Email: {booking?.email}</div>
-              <div>Contact Number: {booking?.callNo}</div>
-              <div>Address: {booking?.address}</div>
+              <div className="font-semibold md:text-md text-xs">GST Number</div>
+              <div><span className="font-semibold">Email:</span> <span className="ml-2">{booking?.email}</span></div>
+              <div><span className="font-semibold">Contact:</span> <span className="ml-2">{booking?.callNo}</span></div>
+              <div><span className="font-semibold">Address:</span> <span className="ml-2">{booking?.address}</span></div>
             </div>
-            <div className="font-bold text-md mt-2">Booking Order No</div>
+            <div className="font-bold text-md mt-2">Booking Order No:</div>
             <div className="font-semibold">{bookingId}</div>
-            <div className="font-bold text-md mt-2">Booking Date</div>
+            <div className="font-bold text-md mt-2">Booking Date:</div>
             <div>{formatDate(bookingDate)}</div>
           </div>
         </div>
         {/* Table */}
-        <div className="grid grid-cols-2 gap-0 border-t border-b border-gray-400 mt-4 mb-2">
-          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3">Room Name</div>
-          <div className="py-2 px-3">{roomName}</div>
-          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3">No Of Person</div>
-          <div className="py-2 px-3">
+        <div className="grid grid-cols-2 gap-0 border border-gray-400 mt-4 mb-2 w-full">
+          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Room Name</div>
+          <div className="text-sm md:text-md py-2 px-3">{roomName}</div>
+          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">No Of Person</div>
+          <div className="text-sm md:text-md py-2 px-3">
             {numAdult > 0 && <div>Adult: {numAdult}</div>}
             {numChild > 0 && <div>Child: {numChild}</div>}
             {numInfant > 0 && <div>Infant: {numInfant}</div>}
           </div>
-          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3">Date Of Arrival</div>
-          <div className="py-2 px-3">{arrival}</div>
-          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3">Number Of Days</div>
-          <div className="py-2 px-3">{days}</div>
-          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3">Number Of Room Required</div>
-          <div className="py-2 px-3">{numRoom}</div>
-          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3">Room Price</div>
-          <div className="py-2 px-3">Rs {baseAmount.toLocaleString()}</div>
+          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Date Of Arrival</div>
+          <div className="text-sm md:text-md py-2 px-3">{arrival}</div>
+          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Number Of Days</div>
+          <div className="text-sm md:text-md py-2 px-3">{days}</div>
+          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Number Of Room Required</div>
+          <div className="text-sm md:text-md py-2 px-3">{numRoom}</div>
+          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Room Price</div>
+          <div className="text-sm md:text-md py-2 px-3">Rs {baseAmount.toLocaleString()}</div>
           {hasExtraBed && (
             <React.Fragment>
-              <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3">Extra Bed Price</div>
-              <div className="py-2 px-3">Rs {extrabedAmount.toLocaleString()}</div>
+              <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Extra Bed Price</div>
+              <div className="text-sm md:text-md py-2 px-3">Rs {extrabedAmount.toLocaleString()}</div>
             </React.Fragment>
           )}
         </div>
