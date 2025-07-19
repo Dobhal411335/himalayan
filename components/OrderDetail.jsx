@@ -40,7 +40,7 @@ function formatCurrency(amount) {
 
 const OrderDetail = ({ order, onBack }) => {
   const router = useRouter();
-  
+  // console.log(order)
   if (!order) {
     return (
       <div className="max-w-4xl mx-auto p-6">
@@ -68,7 +68,7 @@ const OrderDetail = ({ order, onBack }) => {
     ...order,
     checkIn: order.arrival ? new Date(order.arrival) : null,
     checkOut: order.arrival,
-    totalGuests: (order.adult || 0) + (order.child || 0),
+    totalGuests: (order.adult || 0) + (order.child || 0) + (order.infant || 0),
     status: order.status?.toLowerCase() || 'pending',
     isPackage,
     // For packages, use packageName; for rooms, use roomName
@@ -211,7 +211,7 @@ const OrderDetail = ({ order, onBack }) => {
                         </p>
                         <p className="text-xs text-gray-500">
                           {bookingData.adult || 1} Adult{bookingData.adult !== 1 ? 's' : ''}
-                          {bookingData.child ? `, ${bookingData.child} Child${bookingData.child !== 1 ? 'ren' : ''}` : ''} {bookingData.infants ? `, ${bookingData.infants} Infants${bookingData.infants !== 1 ? 'ren' : ''}` : ''}
+                          {bookingData.child ? `, ${bookingData.child} Child${bookingData.child !== 1 ? 'ren' : ''}` : ''} {bookingData.infant ? `, ${bookingData.infant} Infant${bookingData.infant !== 1 ? '' : ''}` : ''}
                         </p>
                       </div>
                     </div>

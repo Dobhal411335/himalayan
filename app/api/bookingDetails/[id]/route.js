@@ -1,5 +1,5 @@
 import { connectDB } from "@/lib/connectDB";
-import Booking from "@/models/Booking";
+import BookingDetails from "@/models/BookingDetails";
 import { NextResponse } from "next/server";
 
 export async function GET(request, { params }) {
@@ -16,7 +16,7 @@ export async function GET(request, { params }) {
     await connectDB();
 
     // Find booking by ID and populate related data
-    const booking = await Booking.findById(id)
+    const booking = await BookingDetails.findById(id)
       .populate('roomId', 'name description images')
       .lean();
 
@@ -38,7 +38,8 @@ export async function GET(request, { params }) {
       days: booking.days,
       guests: {
         adults: booking.adult || 1,
-        children: booking.child || 0
+        children: booking.child || 0,
+        infants: booking.infant || 0,
       },
       guestInfo: {
         name: `${booking.firstName} ${booking.lastName}`,
