@@ -286,40 +286,7 @@ export default function ChatBot() {
   const [faqClicked, setFaqClicked] = useState(null);
   const [selectedMainTopic, setSelectedMainTopic] = useState(null);
   const [selectedSubQuestion, setSelectedSubQuestion] = useState(null);
-  const PRODUCT_FAQS = [
-    {
-      q: "Is this product available in stock?",
-      a: (prod) => prod?.inStock ? `Yes, the product is currently available. (${prod.inStock} in stock)` : "Sorry, this product is currently out of stock.",
-      key: "stock"
-    },
-    {
-      q: "What sizes/colors are available?",
-      a: (prod) => {
-        let sizes = prod?.sizes?.length ? prod.sizes.join(", ") : "Not specified";
-        let colors = prod?.colors?.length ? prod.colors.join(", ") : "Not specified";
-        return `Sizes: ${sizes}\nColors: ${colors}`;
-      },
-      key: "sizecolor"
-    },
-    {
-      q: "Is this product genuine/original?",
-      a: () => "Yes, we only sell 100% genuine and authentic products.",
-      key: "genuine"
-    },
-    {
-      q: "Does this product have a warranty?",
-      a: (prod) => prod?.warranty ? `Yes, it comes with a ${prod.warranty} warranty provided by the manufacturer.` : "No warranty information available.",
-      key: "warranty"
-    },
-    {
-      q: "Where can I find more information about this product?",
-      a: (prod) => prod?._id ?
-        `You can find more information about this product at <a href="/product/${prod._id}" target="_blank" rel="noopener noreferrer" class="underline hover:text-blue-600">${prod.title}</a>`
-        : "No additional information available.",
-      key: "url"
-    },
-  ];
-
+  
   const handleSubQuestionClick = (sub) => {
     // Show user's question and a "..." typing bubble from bot
     setMessages(msgs => [
@@ -367,23 +334,6 @@ export default function ChatBot() {
   // Load chat history from DB (or localStorage fallback)
   useEffect(() => {
     async function loadHistory() {
-      // if (session?.user?.id) {
-      //   try {
-      //     const res = await fetch(`/api/getMessages?userId=${session.user.id}`);
-      //     const data = await res.json();
-
-      //     if (data.messages && Array.isArray(data.messages)) {
-      //       setMessages((prev) => (JSON.stringify(prev) !== JSON.stringify(data.messages) ? data.messages : prev));
-      //       return;
-      //     } else {
-      //       setMessages([]);
-      //     }
-      //   } catch (error) {
-      //     setMessages([]);
-      //   }
-      // }
-
-      // fallback to localStorage
       const localHistory = localStorage.getItem("chatbot_history");
       if (localHistory) {
         try {
@@ -500,68 +450,10 @@ export default function ChatBot() {
   const handleTalkToSupportClick = () => {
     setShowSupportOptions(true);
   };
-  const handleProduct = async (e) => {
-    e.preventDefault();
-    if (!product.trim()) {
-      setError("Please enter a product name.");
-      return;
-    }
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/product/search?q=${product}`);
-      const data = await response.json();
-      let foundProduct = null;
-      if (Array.isArray(data.products) && data.products.length > 0) {
-        foundProduct = data.products[0];
-      } else if (data.product) {
-        foundProduct = data.product;
-      }
-      setFaqClicked(null);
-      setSelectedProduct(null);
-      if (foundProduct) {
-        // Compose bot message with product details
-        let imageUrl = foundProduct || '/placeholder.jpeg';
-        let price = foundProduct.price ? `₹${foundProduct.price}` : 'Price not available';
-
-        setMessages(msgs => [
-          ...msgs,
-          { from: "You", sender: session?.user?.id || "user", text: product, createdAt: new Date().toISOString() },
-          {
-            from: "Bot",
-            sender: "bot",
-            text: `Product: ${foundProduct.title}\n${price}`,
-            image: imageUrl,
-            createdAt: new Date().toISOString()
-          },
-        ]);
-        setSelectedProduct(foundProduct);
-        setStep("faq");
-      } else {
-        setMessages(msgs => [
-          ...msgs,
-          { from: "You", sender: session?.user?.id || "user", text: product, createdAt: new Date().toISOString() },
-          { from: "Bot", sender: "bot", text: "Sorry, product not found.", createdAt: new Date().toISOString() }
-        ]);
-      }
-    } catch (e) {
-      setMessages(msgs => [...msgs, { from: "Bot", sender: "bot", text: "Sorry, something went wrong.", createdAt: new Date().toISOString() }]);
-    }
-    setLoading(false);
-    setProduct("");
-    setError("");
-    setStep("faq");
-  };
-
-  // Reset chat on close
+  // Close chat without resetting messages
   const handleClose = () => {
     setOpen(false);
-    setStep(0);
-    setMessages([
-      { from: "Bot", sender: "bot", text: "...", createdAt: new Date().toISOString() }
-    ]);
     setInput("");
-    setContact({ name: "", phone: "", email: "" });
-    setProduct("");
     setError("");
   };
 
@@ -877,50 +769,6 @@ export default function ChatBot() {
                 </div>
               )
             )}
-            {step === "product-info" && (
-              <>
-
-                <form onSubmit={handleProduct} className="flex gap-2 mt-1">
-                  <input
-                    type="text"
-                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-blue-500 bg-gray-50"
-                    placeholder="Product Name or Code (required)"
-                    value={product}
-                    onChange={e => setProduct(e.target.value)}
-                    autoFocus
-                  />
-                  <button
-                    type="submit"
-                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-3 py-2 flex items-center justify-center disabled:opacity-60"
-                    disabled={!product.trim()}
-                    aria-label="Send"
-                  >
-                    <Send className="w-5 h-5" />
-                  </button>
-                </form>
-                {step === "faq" && selectedProduct && (
-                  <>
-                    <div className="font-semibold text-gray-700 mb-2">Frequently Asked Questions:</div>
-                    <div className="flex flex-col gap-2">
-                      {PRODUCT_FAQS.map((faq) => (
-                        <button
-                          key={faq.key}
-                          onClick={() => handleFaqClick(faq)}
-                          className={`w-full text-left px-4 py-2 rounded-lg font-medium shadow-sm text-xs transition whitespace-nowrap bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200 ${faqClicked === faq.key
-                            ? 'bg-blue-600 text-black border-blue-600'
-                            : 'bg-white text-blue-700 border-blue-300 hover:bg-blue-50'
-                            }`}
-                          disabled={faqClicked === faq.key}
-                        >
-                          {faq.q}
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
-
-              </>
-            )}
             {/* Step 4: Main menu */}
             {step === 4 && !selectedProduct && (
               <>
@@ -936,8 +784,6 @@ export default function ChatBot() {
                     </button>
                   ))}
                 </div>
-
-
                 {!(step === "faq" && selectedProduct) && (
                   <>
                     <button
@@ -985,66 +831,7 @@ export default function ChatBot() {
                 </button>
               </form>
             )}
-            {step === "faq" && selectedProduct && (
-              <>
-                <div className="font-semibold text-gray-700 mb-2">Frequently Asked Questions:</div>
-                <div className="flex flex-wrap gap-2 mb-1">
-                  {PRODUCT_FAQS.map((faq) => (
-                    <button
-                      key={faq.key}
-                      onClick={() => handleFaqClick(faq)}
-                      className={`w-full text-left px-2 py-2 rounded-lg font-medium shadow-sm text-xs transition whitespace-nowrap bg-white text-gray-700 border border-gray-300 hover:bg-gray-200
-            ${faqClicked === faq.key
-                          ? 'text-black border border-blue-600'
-                          : 'border'
-                        }`}
-                      disabled={faqClicked === faq.key}
-                    >
-                      {faq.q}
-                    </button>
-                  ))}
-                  {/* Add Back to Chat button at the end */}
-                  <button
-                    onClick={handleBackToChat}
-                    className="w-full px-4 py-2 rounded-lg border transition-colors duration-150 font-medium shadow-sm text-xs transition whitespace-nowrap "
-                  >
-                    👈 Back to Main Menu
-                  </button>
-                </div>
-              </>
-            )}
-            {step === "faq" && messages[messages.length - 1]?.text === "Sorry, product not found." && (
-              <div className="p-2 bg-white">
-                <form onSubmit={handleProduct} className="flex gap-2">
-                  <input
-                    type="text"
-                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-blue-500 bg-gray-50"
-                    placeholder="Product Name (required)"
-                    value={product}
-                    onChange={e => setProduct(e.target.value)}
-                    autoFocus
-                  />
-                  <button
-                    type="submit"
-                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-3 py-2 flex items-center justify-center disabled:opacity-60"
-                    disabled={!product.trim()}
-                    aria-label="Send"
-                  >
-                    <Send className="w-5 h-5" />
-                  </button>
-                </form>
-                <div className="flex justify-end mt-2">
-                  <button
-                    type="button"
-                    onClick={handleBackToChat}
-                    className="w-full text-left px-2 py-2 rounded-lg font-medium shadow-sm text-xs transition whitespace-nowrap bg-white text-gray-700 border border-gray-300 hover:bg-gray-200"
-                    style={{ minWidth: 0 }}
-                  >
-                    👈 Back to Main Menu
-                  </button>
-                </div>
-              </div>
-            )}
+            
           </div>
         </div>
       )}
