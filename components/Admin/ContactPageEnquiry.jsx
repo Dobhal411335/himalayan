@@ -24,11 +24,34 @@ const ContactPageEnquiry = () => {
             try {
                 const url = typeFilter === 'all' ? '/api/askExpertsEnquiry' : `/api/askExpertsEnquiry?type=${typeFilter}`;
                 const response = await fetch(url);
-                const data = await response.json();
-                setAllEnquiry(data);
-                setFilteredEnquiry(data);
+                let data = await response.json();
+                
+                // Handle different response formats
+                if (Array.isArray(data)) {
+                    // If data is already an array, use it as is
+                    setAllEnquiry(data);
+                    setFilteredEnquiry(data);
+                } else if (data && typeof data === 'object') {
+                    // If data is an object, convert it to an array of its values
+                    const dataArray = Object.values(data);
+                    setAllEnquiry(dataArray);
+                    setFilteredEnquiry(dataArray);
+                } else {
+                    // If data is not in expected format, set to empty array
+                    console.warn('Unexpected API response format:', data);
+                    setAllEnquiry([]);
+                    setFilteredEnquiry([]);
+                }
             } catch (error) {
-                toast.error("Something went wrong", { style: { borderRadius: "10px", border: "2px solid red" } })
+                console.error('Error fetching enquiries:', error);
+                toast.error("Failed to load enquiries", { 
+                    style: { 
+                        borderRadius: "10px", 
+                        border: "2px solid red" 
+                    } 
+                });
+                setAllEnquiry([]);
+                setFilteredEnquiry([]);
             }
         }
         fetchEnquiries();
@@ -37,6 +60,10 @@ const ContactPageEnquiry = () => {
     // Group enquiries by month
     const groupByMonth = (enquiries) => {
         const months = {}
+        if (!Array.isArray(enquiries)) {
+            console.error('Expected an array of enquiries but got:', enquiries)
+            return months
+        }
         enquiries.forEach(enquiry => {
             const date = new Date(enquiry.createdAt)
             const monthYear = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`
@@ -80,7 +107,7 @@ const ContactPageEnquiry = () => {
         <div className="my-20 font-barlow w-full max-w-7xl mx-auto flex flex-col gap-8 items-center justify-center bg-blue-100 p-4 rounded-lg">
             {/* Type & Month Filter */}
             <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h2 className="text-xl font-bold">Ask Experts Enquiries</h2>
+          
                 <div className="flex items-center gap-4">
                     <span className="text-sm">Filter by type:</span>
                     <select
@@ -100,8 +127,8 @@ const ContactPageEnquiry = () => {
                         className="border rounded-md px-3 py-1 text-sm"
                     >
                         <option value="all">All Months</option>
-                        {Object.keys(monthGroups).map(month => (
-                            <option key={month} value={month}>{month}</option>
+                        {Object.keys(monthGroups).map((month,idx) => (
+                            <option key={idx} value={month}>{month}</option>
                         ))}
                     </select>
                 </div>

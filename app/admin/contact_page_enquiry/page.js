@@ -11,7 +11,7 @@ const page = () => {
                 </div>
             </header>
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                <h1 className="text-3xl md:text-4xl px-12 font-semibold">Contact Page Enquiry</h1>
+                <h1 className="text-3xl md:text-4xl px-12 font-semibold">Ask Experts Enquiry</h1>
                 <ContactPageEnquiry />
             </div>
         </SidebarInset>
