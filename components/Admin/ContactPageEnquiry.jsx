@@ -17,7 +17,6 @@ const ContactPageEnquiry = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [selectedMonth, setSelectedMonth] = useState('all')
     const itemsPerPage = 10
-
     const [typeFilter, setTypeFilter] = useState('all');
     useEffect(() => {
         const fetchEnquiries = async () => {
@@ -142,8 +141,7 @@ const ContactPageEnquiry = () => {
                         <TableHead>Contact</TableHead>
                         <TableHead>Email</TableHead>
                         <TableHead>Type</TableHead>
-                        <TableHead>Query Name</TableHead>
-                        <TableHead>Question</TableHead>
+                        <TableHead>Query From</TableHead>
                         <TableHead className="w-[200px]">Action</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -156,7 +154,6 @@ const ContactPageEnquiry = () => {
                             <TableCell>{enquiry.email}</TableCell>
                             <TableCell className="capitalize">{enquiry.type}</TableCell>
                             <TableCell>{enquiry.queryName || '-'}</TableCell>
-                            <TableCell>{enquiry.question}</TableCell>
                             <TableCell>
                                 <div className="flex gap-2">
                                     <Button onClick={() => handleView(enquiry)} variant="outline" size="sm" className="h-8 flex-1">
@@ -190,7 +187,7 @@ const ContactPageEnquiry = () => {
                     <div className="flex items-center gap-1">
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                             <Button
-                                key={page}
+                                key={`page-${page}`}
                                 variant={currentPage === page ? "default" : "outline"}
                                 size="sm"
                                 onClick={() => handlePageChange(page)}
