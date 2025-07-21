@@ -127,8 +127,8 @@ const ContactPageEnquiry = () => {
                         className="border rounded-md px-3 py-1 text-sm"
                     >
                         <option value="all">All Months</option>
-                        {Object.keys(monthGroups).map((month,idx) => (
-                            <option key={idx} value={month}>{month}</option>
+                        {Object.keys(monthGroups).map((month) => (
+                            <option key={month} value={month}>{month}</option>
                         ))}
                     </select>
                 </div>
