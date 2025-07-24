@@ -14,23 +14,23 @@ const Activity = ({ data }) => {
       {/* Banner */}
       <div className="relative w-full h-[150px] md:h-[320px] flex items-center justify-center">
         <Image src={data.bannerImage?.url} alt="Banner" layout="fill" objectFit="cover" className="z-0 opacity-100" priority />
-        <div className="hidden md:flex absolute top-20 z-10 container w-fit mx-auto px-4 flex-col justify-center h-full bg-[#fcf7f1] rounded-xl">
+        <div className="hidden md:flex absolute left-[10%] top-10 z-10 container w-fit mx-auto px-4 flex-col justify-center h-full bg-[#fcf7f1] rounded-xl">
           <div className="max-w-2xl flex flex-col items-center justify-center px-10">
             <h1 className="text-2xl font-semibold text-black mb-2 drop-shadow-lg">{data.firstTitle}</h1>
-              <div className="w-96 rounded-lg overflow-hidden">
+            <div className="w-96 rounded-lg overflow-hidden">
               <Image src={data.imageFirst?.url} alt="Intro" width={550} height={300} className="object-cover w-full h-[250px]" />
             </div>
           </div>
         </div>
       </div>
       <div className="md:hidden relative container w-fit mx-auto flex flex-col justify-center h-full bg-[#fcf7f1] rounded-xl">
-          <div className="flex flex-col items-center justify-center px-2">
-            <h1 className="text-2xl font-semibold text-black mb-2 drop-shadow-lg">{data.firstTitle}</h1>
-              <div className="w-full rounded-lg overflow-hidden">
-              <Image src={data.imageFirst?.url} alt="Intro" width={550} height={300} className="object-cover w-full h-[250px]" />
-            </div>
+        <div className="flex flex-col items-center justify-center px-2">
+          <h1 className="text-2xl font-semibold text-black mb-2 drop-shadow-lg">{data.firstTitle}</h1>
+          <div className="w-full rounded-lg overflow-hidden">
+            <Image src={data.imageFirst?.url} alt="Intro" width={550} height={300} className="object-cover w-full h-[250px]" />
           </div>
         </div>
+      </div>
 
       {/* Main Content */}
       <section className="py-10 md:py-20">
@@ -40,7 +40,7 @@ const Activity = ({ data }) => {
             <div className="lg:w-1/2 w-full">
               <div className="px-5 mb-8">
                 <h4 className="pacifico-h2 text-green-800 text-2xl md:text-3xl mb-4">{data.secondTitle}</h4>
-                <p className="text-base text-gray-700 mb-4">
+                <p className="text-base text-justify text-gray-700 mb-4">
                   {data.shortPara && (
                     <div
                       className="custom-desc-list my-4"
@@ -211,16 +211,16 @@ const Activity = ({ data }) => {
           {/* Long Paragraph */}
           <div className="px-2">
 
-          {data.longPara && (
-            <div className="mt-4 w-full rounded-xl overflow-hidden border-2 border-black p-5">
-              <div
-                className="custom-desc-list my-4"
-                dangerouslySetInnerHTML={{ __html: data.longPara }}
+            {data.longPara && (
+              <div className="mt-4 w-full rounded-xl overflow-hidden border-2 border-black p-5">
+                <div
+                  className="custom-desc-list my-4"
+                  dangerouslySetInnerHTML={{ __html: data.longPara }}
                 />
-            </div>
-          )}
-        </div>
+              </div>
+            )}
           </div>
+        </div>
       </section>
     </div>
   );
