@@ -35,7 +35,7 @@ const accordionData = [
 const WhatWeDo = () => {
   const [openIndex, setOpenIndex] = useState(0);
   return (
-    <div className="w-full min-h-screen bg-[#fcf7f1]">
+    <div className="w-full min-h-screen bg-white">
       {/* Banner */}
       <div className="relative w-full md:h-[320px] h-[100px] flex items-center justify-center">
         <Image src="/bg7.jpg" alt="Banner" layout="fill" className="z-0 md:object-cover object-contain" priority />
@@ -141,7 +141,7 @@ const WhatWeDo = () => {
               </div>
             </div>
             {/* Right Side - keep width fixed and separated */}
-            <div className="lg:w-5/12 w-full flex items-center justify-center sticky top-20  self-start p-10 md:p-0">
+            <div className="lg:w-5/12 w-full flex items-center justify-center sticky top-20 self-start p-10 md:p-0">
               <div className="w-full max-w-md rounded-xl overflow-hidden bg-white shadow-lg">
                 <Image
                   src="/image.png"
