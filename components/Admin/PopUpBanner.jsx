@@ -185,11 +185,11 @@ const PopUpBanner = () => {
 
     return (
         <div className="max-w-5xl mx-auto py-10 w-full">
-            <h2 className="text-2xl font-bold mb-6">{editBanner ? "Edit Promotinal Banner" : "Add New Promotinal Banner"}</h2>
+            <h2 className="text-2xl font-bold mb-6">{editBanner ? "Edit PopUp Banner" : "Add New PopUp Banner"}</h2>
             <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg p-6 space-y-4">
                 {/* Banner Image Upload */}
                 <div className="mb-4">
-                    <Label className="block mb-2 font-bold">Promotional Image</Label>
+                    <Label className="block mb-2 font-bold">PopUp Banner Image</Label>
                     <input
                         type="file"
                         accept="image/*"
@@ -204,7 +204,7 @@ const PopUpBanner = () => {
                         className="mb-2 flex items-center gap-2 bg-blue-500 text-white"
                         onClick={() => fileInputRef.current && fileInputRef.current.click()}
                     >
-                        <span>Select Promotinal Image</span>
+                        <span>Select PopUp Banner Image</span>
                         <UploadIcon className="w-4 h-4" />
                     </Button>
                     {uploading && <div className="text-blue-600 font-semibold">Uploading...</div>}
@@ -212,7 +212,7 @@ const PopUpBanner = () => {
                         <div className="relative w-48 h-28 border rounded overflow-hidden mb-2">
                             <Image
                                 src={formData.image.url}
-                                alt="Promotinal Image Preview"
+                                alt="PopUp Image Preview"
                                 fill
                                 className="object-cover"
                             />
@@ -244,7 +244,7 @@ const PopUpBanner = () => {
                 </div>
                 <div className="flex gap-3">
                     <Button type="submit" className="bg-blue-600 hover:bg-blue-500">
-                        {editBanner ? "Update Promotinal Banner" : "Add Promotinal Banner"}
+                        {editBanner ? "Update PopUp Banner" : "Add PopUp Banner"}
                     </Button>
                     {editBanner && (
                         <Button
@@ -298,7 +298,7 @@ const PopUpBanner = () => {
                                 <TableCell>
                                     <Image
                                         src={banner.image?.url || "/placeholder.jpeg"}
-                                        alt="Promotional Image"
+                                        alt="PopUp Image"
                                         width={100}
                                         height={50}
                                         className="rounded-xl"

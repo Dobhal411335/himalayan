@@ -55,7 +55,7 @@ const ContactPageEnquiry = () => {
         }
         fetchEnquiries();
     }, [typeFilter]);
-
+// console.log(allEnquiry)
     // Group enquiries by month
     const groupByMonth = (enquiries) => {
         const months = {}

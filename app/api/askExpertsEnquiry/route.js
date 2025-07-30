@@ -1,5 +1,6 @@
 import connectDB from "@/lib/connectDB";
 import AskExperts from "@/models/AskExperts";
+import Room from "@/models/Room";
 
 export async function GET(req) {
   await connectDB();
