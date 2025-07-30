@@ -114,7 +114,7 @@ const CategoryAdvertisment = () => {
 
     const handleEdit = (banner) => {
         setEditBanner(banner._id);
-        console.log(banner)
+        // console.log(banner)
         setFormData({
             buttonLink: banner.buttonLink,
             order: banner.order,
@@ -167,7 +167,7 @@ const CategoryAdvertisment = () => {
 
     return (
         <div className="max-w-5xl mx-auto py-10 w-full">
-            <h2 className="text-2xl font-bold mb-6">{editBanner ? "Edit Banner" : "Add New Banner Offer"}</h2>
+
             <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg p-6 space-y-4">
                 {/* Banner Image Upload */}
                 <div className="mb-4">
@@ -186,7 +186,7 @@ const CategoryAdvertisment = () => {
                         className="mb-2 flex items-center gap-2 bg-blue-500 text-white"
                         onClick={() => fileInputRef.current && fileInputRef.current.click()}
                     >
-                        <span>Select Featured Offer Image</span>
+                        <span>Select Category Offer Image</span>
                         <UploadIcon className="w-4 h-4" />
                     </Button>
                     {uploading && <div className="text-blue-600 font-semibold">Uploading...</div>}
@@ -194,7 +194,7 @@ const CategoryAdvertisment = () => {
                         <div className="relative w-48 h-28 border rounded overflow-hidden mb-2">
                             <Image
                                 src={formData.image.url}
-                                alt="Featured Offer Image Preview"
+                                alt="Category Offer Image Preview"
                                 fill
                                 className="object-cover"
                             />
@@ -258,7 +258,7 @@ const CategoryAdvertisment = () => {
                             <TableRow key={banner._id}>
                                 <TableCell>{banner.order}</TableCell>
                                 <TableCell>
-                                    <Image src={banner.image.url} alt="Featured Offer Image" width={100} height={50} className="rounded-lg" />
+                                    <Image src={banner.image.url} alt="Category Offer Image" width={100} height={50} className="rounded-lg" />
                                 </TableCell>
                                 <TableCell>
                                     <TooltipProvider>
