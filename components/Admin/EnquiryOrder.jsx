@@ -230,10 +230,52 @@ const EnquiryOrder = () => {
               </div>
             </div>
 
+            {/* Payment Info */}
+            {viewOrder.payment && (
+              <div className="border-t border-b py-4 mb-4">
+                <h3 className="font-bold text-lg text-black mb-3">Payment Details</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-md">
+                  <div><span className="font-bold text-black">Amount:</span> ₹{viewOrder.payment.amount?.toLocaleString('en-IN')}</div>
+                  <div><span className="font-bold text-black">Currency:</span> {viewOrder.payment.originalCurrency || 'INR'}</div>
+                  <div><span className="font-bold text-black">Payment ID:</span> {viewOrder.payment.razorpayPaymentId || 'N/A'}</div>
+                  <div><span className="font-bold text-black">Order ID:</span> {viewOrder.payment.razorpayOrderId || 'N/A'}</div>
+                  <div><span className="font-bold text-black">Paid At:</span> {new Date(viewOrder.payment.paidAt).toLocaleString()}</div>
+                  <div><span className="font-bold text-black">Method:</span> {viewOrder.payment.method || 'Razorpay'}</div>
+                </div>
+              </div>
+            )}
+
             {/* Extra Info */}
-            <div className="text-md mb-4 space-y-1">
-              <div><span className="font-bold text-black">Offers:</span> {Array.isArray(viewOrder.offers) && viewOrder.offers.length > 0 ? viewOrder.offers.join(', ') : 'None'}</div>
-              <div><span className="font-bold text-black">Special Requests:</span> {viewOrder.specialReq || 'None'}</div>
+            <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4">
+              <h3 className="font-bold text-lg text-black mb-3">Additional Information</h3>
+              <div className="space-y-3">
+                <div className="flex items-start">
+                  <span className="font-semibold text-gray-700 min-w-[120px]">Offers:</span>
+                  <div className="flex-1">
+                    {Array.isArray(viewOrder.offers) && viewOrder.offers.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {viewOrder.offers.map((offer, index) => (
+                          <span key={index} className="bg-amber-50 text-amber-800 text-sm px-3 py-1 rounded-full border border-amber-100">
+                            {offer}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-gray-500">None</span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <span className="font-semibold text-gray-700 min-w-[120px]">Special Requests:</span>
+                  <div className="flex-1 bg-gray-50 p-3 rounded-md border border-gray-100">
+                    {viewOrder.specialReq ? (
+                      <p className="text-gray-700">{viewOrder.specialReq}</p>
+                    ) : (
+                      <span className="text-gray-500">No special requests</span>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Price Breakdown */}

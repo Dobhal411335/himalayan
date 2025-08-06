@@ -47,21 +47,32 @@ export async function POST(req) {
   await connectDB();
   try {
     const body = await req.json();
+    // console.log('Received booking data:', JSON.stringify(body, null, 2));
+    
     if (body.type === 'room' || body.type === 'packages') {
       const booking = new BookingDetails({ ...body });
       await booking.save();
-      // Also add booking._id to the user's bookings array
+      
+      // Add booking._id to the user's bookings array
       if (booking.userId) {
         await User.findByIdAndUpdate(
           booking.userId,
-          { $push: { bookings: booking._id } }
+          { $addToSet: { bookings: booking._id } },
+          { new: true, upsert: true }
         );
       }
       return NextResponse.json({ success: true, booking });
     } else {
-      return NextResponse.json({ success: false, error: 'Unsupported booking type' }, { status: 400 });
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Unsupported booking type' 
+      }, { status: 400 });
     }
   } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    console.error('Error saving booking:', error);
+    return NextResponse.json({ 
+      success: false, 
+      error: error.message || 'Failed to save booking' 
+    }, { status: 500 });
   }
 }

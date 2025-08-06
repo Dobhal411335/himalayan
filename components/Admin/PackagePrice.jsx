@@ -12,7 +12,6 @@ const PackagePrice = ({productData, packageId }) => {
   });
   const [loading, setLoading] = React.useState(false);
   const [editing, setEditing] = React.useState(false); // true if updating
-// console.log(rows)
   React.useEffect(() => {
     if (!packageId) return;
     setLoading(true);

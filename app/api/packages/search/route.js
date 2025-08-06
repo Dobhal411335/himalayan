@@ -25,14 +25,14 @@ export async function GET(request) {
       subMenu = menu.subMenu[0];
       // Try both possible fields for package references
       packageIds = subMenu.rooms || subMenu.products || [];
-      console.log('category:', category, 'menu:', !!menu, 'subMenu:', !!subMenu, 'packageIds:', packageIds);
+      // console.log('category:', category, 'menu:', !!menu, 'subMenu:', !!subMenu, 'packageIds:', packageIds);
       if (!Array.isArray(packageIds) || packageIds.length === 0) {
         return Response.json({ packages: [] });
       }
       filter._id = { $in: packageIds };
     } else {
       // No such category, return empty
-      console.log('No subMenu found for category:', category);
+      // console.log('No subMenu found for category:', category);
       return Response.json({ packages: [] });
     }
   }

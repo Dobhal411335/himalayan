@@ -8,6 +8,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// In app/api/uploadPdf/route.js
 export async function POST(req) {
   try {
     const formData = await req.formData();
@@ -17,35 +18,58 @@ export async function POST(req) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
 
+    // Check file size (e.g., 20MB limit)
+    const maxSize = 20 * 1024 * 1024; // 20MB
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
+    
+    if (buffer.length > maxSize) {
+      return NextResponse.json({ error: 'File size exceeds 20MB limit' }, { status: 400 });
+    }
+
     // Simple backend validation for .pdf extension
     if (!file.name || !file.name.toLowerCase().endsWith('.pdf')) {
       return NextResponse.json({ error: 'Only PDF files are allowed!' }, { status: 400 });
     }
+
     const title = formData.get('title');
     const filename = title ? `${title}.pdf` : (file.name || `file-${Date.now()}.pdf`);
 
+    // Use upload_large for files over 100MB
+    const options = {
+      resource_type: 'raw',
+      type: 'upload',
+      public_id: `pdfs/${filename}`,
+      chunk_size: 6000000, // 6MB chunks for large files
+      timeout: 120000 // 2 minute timeout
+    };
+
     const result = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          resource_type: 'raw',
-          type: 'upload',
-          public_id: `pdfs/${filename}`  // KEEP ".pdf"
-        },
+        options,
         (err, result) => {
-          if (err) reject(err);
-          else resolve(result);
+          if (err) {
+            console.error('Cloudinary upload error:', err);
+            reject(err);
+          } else {
+            resolve(result);
+          }
         }
       );
       uploadStream.end(buffer);
     });
-    console.log(result)
 
-    return NextResponse.json({ url: result.secure_url, key: result.public_id }, { status: 200 });
+    return NextResponse.json({ 
+      url: result.secure_url, 
+      key: result.public_id 
+    }, { status: 200 });
 
   } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error('Upload error:', err);
+    return NextResponse.json({ 
+      error: err.message || 'Upload failed',
+      details: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    }, { status: 500 });
   }
 }
 

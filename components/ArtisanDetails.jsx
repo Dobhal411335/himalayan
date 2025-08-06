@@ -197,7 +197,7 @@ useEffect(() => {
     }
 }, [artisan?._id]);
 const mixReviews=[...artisan.promotions,...artisanReviews];
-console.log(mixReviews)
+// console.log(mixReviews)
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-amber-50 to-white flex flex-col items-center px-2 md:px-0">

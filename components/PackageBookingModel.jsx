@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { getExchangeRate } from '@/utils/exchangeRate';
 const PackageBookingModel = ({ packages, onClose, type }) => {
     // console.log(packages)
 
@@ -19,20 +20,48 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
     const { data: session, status } = useSession();
     const router = useRouter();
     const pathname = usePathname();
-    const [openAccordion, setOpenAccordion] = React.useState(null);
-    const [showFullDesc, setShowFullDesc] = React.useState(false);
+    const [openAccordion, setOpenAccordion] = useState(null);
+    const [showFullDesc, setShowFullDesc] = useState(false);
     const desc = packages.description?.overview || "No Description";
     const words = desc.split(' ');
     const [uploadedID, setUploadedID] = useState(null); // { url, key }
     const [selectedID, setSelectedID] = useState(null); // url
     const [uploadingID, setUploadingID] = useState(false);
+    const [razorpayLoaded, setRazorpayLoaded] = useState(false);
     const [uploadProgressID, setUploadProgressID] = useState(0);
+
+    useEffect(() => {
+        // Check if Razorpay is already loaded
+        if (window.Razorpay) {
+            setRazorpayLoaded(true);
+            return;
+        }
+
+        // Load Razorpay script
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.async = true;
+        script.onload = () => {
+            // console.log('Razorpay script loaded successfully');
+            setRazorpayLoaded(true);
+        };
+        script.onerror = () => {
+            console.error('Failed to load Razorpay script');
+            toast.error('Failed to load payment processor. Please try again.');
+        };
+        document.body.appendChild(script);
+
+        return () => {
+            // Cleanup
+            if (document.body.contains(script)) {
+                document.body.removeChild(script);
+            }
+        };
+    }, []);
     // Step state
     const [step, setStep] = useState(1);
-    // Form data state
+    // Form state
     const [form, setForm] = useState({
-        arrival: '',
-        id: '',
         firstName: '',
         lastName: '',
         email: '',
@@ -42,12 +71,111 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
         city: '',
         district: '',
         state: '',
-        adult: '',
-        infant: '',
-        child: '',
+        arrival: '',
+        departure: '',
+        adult: 1,
+        child: 0,
+        infant: 0,
         specialReq: '',
         offers: [],
+        type: type || 'packages',
+        accommodationType: '',
+        numPersons: 1
     });
+    // Handle number of persons change
+    const handleNumPersonsChange = (newValue) => {
+        const num = Math.max(1, Math.min(8, newValue));
+        setForm(prev => ({
+            ...prev,
+            numPersons: num
+        }));
+    };
+    
+    // Handle accommodation type change
+    const handleAccommodationChange = (e) => {
+        setForm(prev => ({
+            ...prev,
+            accommodationType: e.target.value
+        }));
+    };
+    
+    // 1. Add this at the top with other state declarations
+    const [selectedCurrency, setSelectedCurrency] = useState('INR');
+    const [convertedPrice, setConvertedPrice] = useState(null);
+
+    // 2. Add this effect to handle price conversion
+    useEffect(() => {
+        const updatePrice = async () => {
+            const price = parseFloat(getSelectedPrice());
+            if (isNaN(price)) return;
+
+            if (selectedCurrency === 'INR') {
+                setConvertedPrice(price);
+            } else {
+                try {
+                    const rate = await getExchangeRate('USD');
+                    setConvertedPrice((price / rate).toFixed(2));
+                } catch (error) {
+                    console.error('Error converting price:', error);
+                    // Fallback to a default conversion rate
+                    setConvertedPrice((price / 83.25).toFixed(2));
+                }
+            }
+        };
+
+        updatePrice();
+    }, [selectedCurrency, form.accommodationType, form.numPersons]); // Add any other dependencies that affect price
+
+    // 
+    const [packagePrices, setPackagePrices] = useState({
+        onePerson: [],
+        twoPerson: [],
+        eightPerson: []
+    });
+
+
+    // Get accommodations based on number of persons
+    const getAvailableAccommodations = () => {
+        let accommodations = [];
+        const num = form.numPersons || 1;
+        
+        if (num === 1) {
+            accommodations = packagePrices.onePerson || [];
+        } else if (num === 2) {
+            accommodations = packagePrices.twoPerson || [];
+        } else if (num > 2 && num <= 8) {
+            accommodations = packagePrices.eightPerson || [];
+        }
+        
+        // If no accommodation is selected but we have options, select the first one
+        if (accommodations.length > 0 && !form.accommodationType) {
+            setForm(prev => ({
+                ...prev,
+                accommodationType: accommodations[0].type
+            }));
+        }
+        
+        return accommodations;
+    };
+
+    // Get selected accommodation price
+    const getSelectedPrice = () => {
+        const accommodations = getAvailableAccommodations();
+        const selected = accommodations.find(acc => acc.type === form.accommodationType);
+        if (!selected) return '0.00';
+        return selectedCurrency === 'INR' ? selected.inr : selected.usd;
+    };
+
+    // Update package prices when component mounts or packages prop changes
+    useEffect(() => {
+        if (packages?.packagePrice) {
+            setPackagePrices({
+                onePerson: packages.packagePrice.onePerson || [],
+                twoPerson: packages.packagePrice.twoPerson || [],
+                eightPerson: packages.packagePrice.eightPerson || []
+            });
+        }
+    }, [packages]);
     const [invoiceData, setInvoiceData] = useState(null);
     const packageName = packages?.title || 'Room Name';
     const packageImg = packages?.gallery?.mainImage?.url || '/placeholder.jpeg';
@@ -80,8 +208,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
         let stepErrors = {};
         if (step === 1) {
             if (!form.arrival) stepErrors.arrival = 'Arrival date is required';
-            if (!selectedID) stepErrors.id = 'Government ID upload is required';
-            if (!form.id) stepErrors.id = 'ID is required';
+            if (!form.id) stepErrors.id ='Government ID upload is required';
         } else if (step === 2) {
             if (!form.firstName) stepErrors.firstName = 'First name is required';
             if (!form.lastName) stepErrors.lastName = 'Last name is required';
@@ -157,6 +284,118 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
             } catch (err) {
                 toast.error('Failed to delete document');
             }
+        }
+    };
+    const handleSuccessfulPayment = async (bookingData) => {
+        // console.log('Processing successful payment:', bookingData);
+        try {
+            const invoiceNumber = `INV${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
+            const paymentDetails = {
+                status: 'paid',
+                amount: bookingData.amountPaid || bookingData.finalAmount,
+                originalCurrency: bookingData.currency || 'INR',
+                razorpayOrderId: bookingData.payment?.razorpayOrderId || bookingData.razorpayOrderId,
+                razorpayPaymentId: bookingData.payment?.razorpayPaymentId || bookingData.paymentId,
+                razorpaySignature: bookingData.payment?.razorpaySignature,
+                paidAt: new Date().toISOString(),
+                method: 'razorpay',
+                exchangeRate: 1,
+                amountInINR: bookingData.amountPaid || bookingData.finalAmount,
+                details: {
+                    basePrice: bookingData.price,
+                    cgst: bookingData.cgst || 0,
+                    sgst: bookingData.sgst || 0,
+                    totalGst: (bookingData.cgst || 0) + (bookingData.sgst || 0),
+                    finalAmount: bookingData.finalAmount
+                }
+            };
+
+            const payload = {
+                ...form,
+                specialReq: form.specialReq,
+                offers: form.offers,
+                bookingId: bookingData.bookingId || `HWR-${Date.now()}`,
+                invoiceNumber,
+                userId: session.user.id || session.user._id,
+                packagesId: packages?._id,
+                type: 'packages',
+                packageName: packages?.title || '',
+                packagesPrices: {
+                    onePerson: Array.isArray(packages?.packagePrice?.onePerson) ? packages.packagePrice.onePerson : [],
+                    twoPerson: Array.isArray(packages?.packagePrice?.twoPerson) ? packages.packagePrice.twoPerson : [],
+                    eightPerson: Array.isArray(packages?.packagePrice?.eightPerson) ? packages.packagePrice.eightPerson : [],
+                },
+                packageIdImage: uploadedID || null,
+                paymentStatus: 'paid',
+                status: 'confirmed',
+                confirmedAt: new Date().toISOString(),
+                price: bookingData.price,
+                finalAmount: bookingData.finalAmount,
+                cgst: bookingData.cgst || 0,
+                sgst: bookingData.sgst || 0,
+                currency: bookingData.currency || 'INR',
+                payment: paymentDetails
+            };
+
+            const res = await fetch('/api/bookingDetails', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                toast.success('Booking submitted successfully!');
+                setBookingId(payload.bookingId);
+                setShowConfirmation(true);
+                setInvoiceData(payload);
+
+                // Send email with invoice if email exists
+                if (form.email) {
+                    try {
+                        const [{ default: ReactDOMServer }, { default: BeautifulInvoice }] = await Promise.all([
+                            import('react-dom/server'),
+                            import('./BeautifulInvoice'),
+                        ]);
+
+                        const invoiceHtml = ReactDOMServer.renderToStaticMarkup(
+                            <BeautifulInvoice
+                                booking={payload}
+                                bookingId={payload.bookingId}
+                                bookingDate={new Date()}
+                                invoiceNumber={invoiceNumber}
+                            />
+                        );
+
+                        const emailRes = await fetch('/api/brevo', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                to: form.email,
+                                subject: `Your Booking Confirmation - ${packages?.title || 'Himalayan Wellness Retreat'}`,
+                                htmlContent: invoiceHtml,
+                            })
+                        });
+
+                        const emailData = await emailRes.json();
+                        if (emailRes.ok) {
+                            toast.success('Booking confirmation sent to your email!');
+                        } else {
+                            toast.error('Failed to send booking confirmation email.');
+                        }
+                    } catch (err) {
+                        console.error('Error sending email:', err);
+                        toast.error('Error sending booking confirmation email');
+                    }
+                }
+            } else {
+                throw new Error(data.error || 'Failed to save booking');
+            }
+        } catch (error) {
+            console.error('Error processing booking:', error);
+            toast.error(error.message || 'Error processing your booking');
         }
     };
 
@@ -237,7 +476,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
     } else if (step === 2) {
         stepContent = (
             <>
-                <div className="md:overflow-y-auto md:max-h-[90vh] md:pr-2">
+                <div className="md:overflow-y-auto md:max-h-[85vh] md:pr-2">
                     <div className="mb-2">
                         <div className="font-semibold italic text-md mb-2">Dear Guest, To proceed with your booking order and ensure smooth booking experience, we kindly request you to provide the following basic information.</div>
                         <hr className="mb-2 border-gray-300" />
@@ -398,7 +637,6 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
         );
     } else if (step === 4) {
         // Accordion state for expanded section
-
         const accordionSections = [
             {
                 key: 'arrival',
@@ -486,6 +724,100 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                 </div>
                 <div className="flex gap-2 mt-6">
                     <button className="px-4 py-2 bg-gray-200 rounded text-black text-sm" onClick={() => setStep(step - 1)}>Back</button>
+                    <button className="flex-1 bg-black text-white font-semibold text-lg py-3 rounded-md" onClick={() => setStep(step + 1)}>Looks Good, Keep Going</button>
+                </div>
+            </>
+        );
+    } else if (step === 5) {
+        stepContent = (
+            <>
+                <div className="mb-6">
+                    <div className="font-semibold italic text-[18px] mb-2">
+                        You’re almost done!
+                    </div>
+                    <div className="text-sm italic text-gray-700 mb-4">
+                        Select any optional details before finalizing your confirmation.
+                    </div>
+                    <hr className="mb-4 border-gray-300" />
+                </div>
+
+                <div className="space-y-6">
+                    {/* Select Number Of Person */}
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            Select Number Of Person
+                        </label>
+                        <div className="flex items-center justify-between w-full bg-gray-100 rounded-full px-3 py-2 max-w-xs">
+                            <button
+                                type="button"
+                                className="text-xl font-semibold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200"
+                                onClick={() => handleNumPersonsChange((form.numPersons || 1) - 1)}
+                            >
+                                -
+                            </button>
+                            <span className="text-sm font-medium">{(form.numPersons || 1).toString().padStart(2, '0')}</span>
+                            <button
+                                type="button"
+                                className="text-xl font-semibold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200"
+                                onClick={() => handleNumPersonsChange((form.numPersons || 1) + 1)}
+                            >
+                                +
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Select Accommodation Type */}
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            Select Accommodation Type
+                        </label>
+                        <select
+                            className="w-full max-w-sm bg-gray-100 rounded-lg px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-[#8a6a2f] focus:border-transparent"
+                            value={form.accommodationType || ''}
+                            onChange={handleAccommodationChange}
+                        >
+                            <option value="">Select Accommodation</option>
+                            {getAvailableAccommodations().map((acc, index) => (
+                                <option key={index} value={acc.type}>
+                                    {acc.type}  ({selectedCurrency === 'INR' ? acc.inr : acc.usd} {selectedCurrency})
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            Package Price
+                        </label>
+                        <div className="text-2xl font-bold text-gold-900">
+                            {selectedCurrency === 'INR' ? '₹' : '$'}
+                            {convertedPrice ? Number(convertedPrice).toLocaleString('en-IN', {
+                                maximumFractionDigits: 2,
+                                minimumFractionDigits: 2
+                            }) : '0.00'}
+                            <span className="text-sm font-normal text-gray-500 ml-2">
+                                ({selectedCurrency})
+                            </span>
+                        </div>
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Currency
+                        </label>
+                        <select
+                            value={selectedCurrency}
+                            onChange={(e) => setSelectedCurrency(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500"
+                        >
+                            <option value="INR">Indian Rupee (₹)</option>
+                            <option value="USD">US Dollar ($)</option>
+                        </select>
+
+                    </div>
+                </div>
+                {/* Continue Button */}
+                <div className="flex gap-2 mt-6">
+                    {step > 1 && <button className="px-4 py-2 bg-gray-200 rounded text-black text-sm" onClick={() => setStep(step - 1)}>Back</button>}
                     <button
                         className="flex-1 bg-black text-white font-semibold text-lg py-3 rounded-md"
                         onClick={async () => {
@@ -494,99 +826,190 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                 router.replace(`/sign-in?callbackUrl=${encodeURIComponent(pathname)}`);
                                 return;
                             }
+
+                            if (!razorpayLoaded) {
+                                toast.error('Payment processor is still loading. Please wait...');
+                                return;
+                            }
+
+                            const selectedPrice = parseFloat(getSelectedPrice());
+                            if (!selectedPrice || isNaN(selectedPrice)) {
+                                toast.error('Please select a valid accommodation type');
+                                return;
+                            }
+
                             try {
-                                if ((packages?.type || type) === 'packages') {
-                                    function generateBookingId() {
-                                        const now = new Date();
-                                        const pad = n => n.toString().padStart(2, '0');
-                                        const dateStr = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
-                                        return `HWR-${dateStr}`;
-                                    }
-                                    const bookingIdVal = generateBookingId();
-                                    const packagesPrices = {
-                                        onePerson: Array.isArray(packages?.packagePrice?.onePerson) ? packages.packagePrice.onePerson : [],
-                                        twoPerson: Array.isArray(packages?.packagePrice?.twoPerson) ? packages.packagePrice.twoPerson : [],
-                                        eightPerson: Array.isArray(packages?.packagePrice?.eightPerson) ? packages.packagePrice.eightPerson : [],
-                                    };
-
-
-                                    const invoiceNumber = `INV${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-
-                                    const payload = {
-                                        ...form,
-                                        specialReq: form.specialReq,
-                                        offers: form.offers,
-                                        bookingId: bookingIdVal,
-                                        invoiceNumber,
-                                        userId: session.user.id || session.user._id,
-                                        packagesId: packages?._id,
-                                        type: 'packages',
-                                        packageName: packages?.title || '',
-                                        packagesPrices,
-                                        packageIdImage: uploadedID || null,
-                                    };
-                                    const res = await fetch('/api/bookingDetails', {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify(payload),
-                                    });
-                                    const data = await res.json();
-                                    if (data.success) {
-                                        toast.success('Booking Submitted Successful!');
-                                        setBookingId(bookingIdVal);
-                                        setShowConfirmation(true);
-                                        setInvoiceData(payload);
-                                        if (form.email) {
-                                            try {
-                                                const [{ default: ReactDOMServer }, { default: BeautifulInvoice }] = await Promise.all([
-                                                    import('react-dom/server'),
-                                                    import('./BeautifulInvoice'),
-                                                ]);
-                                                const invoiceHtml = ReactDOMServer.renderToStaticMarkup(
-                                                    <BeautifulInvoice
-                                                        booking={payload}
-                                                        bookingId={bookingIdVal}
-                                                        bookingDate={new Date()}
-                                                        invoiceNumber={payload.invoiceNumber}
-                                                    />
-                                                );
-                                                const resEmail = await fetch('/api/brevo', {
-                                                    method: 'POST',
-                                                    headers: { 'Content-Type': 'application/json' },
-                                                    body: JSON.stringify({
-                                                        to: form.email,
-                                                        subject: `Your Booking Invoice - ${packages?.title || 'Himalayan Wellness Retreat'}`,
-                                                        htmlContent: invoiceHtml,
-                                                    })
-                                                });
-                                                const emailRes = await resEmail.json();
-                                                if (emailRes.success) {
-                                                    toast.success('Invoice sent to your email!');
-                                                } else {
-                                                    toast.error('Failed to send invoice email.');
-                                                }
-                                            } catch (err) {
-                                                toast.error('Error sending invoice: ' + err.message);
-                                            }
-                                        }
-
-                                    } else {
-                                        toast.error(data.error || 'Booking failed');
-                                    }
-                                } else {
-                                    toast.error('Unsupported booking type');
+                                const selectedPrice = parseFloat(getSelectedPrice());
+                                if (!selectedPrice || isNaN(selectedPrice)) {
+                                    toast.error('Please select a valid price');
+                                    return;
                                 }
-                            } catch (err) {
-                                toast.error('Booking failed: ' + err.message);
+                                // Create Razorpay order
+                                // In your onClick handler, update the fetch call:
+                                const response = await fetch('/api/razorpay', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        amount: selectedPrice, // Don't multiply by 100 here, let the API handle it
+                                        currency: selectedCurrency,
+                                        receipt: `order_${Date.now()}`,
+                                        customer: {
+                                            name: `${form.firstName} ${form.lastName}`.trim(),
+                                            email: form.email,
+                                            contact: form.callNo || '0000000000' // Provide a default contact number
+                                        }
+                                    })
+                                });
+
+                                if (!response.ok) {
+                                    const errorData = await response.json();
+                                    throw new Error(errorData.error || 'Failed to create order');
+                                }
+
+                                const orderData = await response.json();
+
+                                if (!response.ok) {
+                                    throw new Error(orderData.error || 'Failed to create payment order');
+                                }
+
+                                const options = {
+                                    key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+                                    amount: orderData.amount,
+                                    currency: orderData.currency,
+                                    name: 'Himalayan Wellness Retreat',
+                                    description: `Booking for ${packages?.title}`,
+                                    order_id: orderData.id,
+                                    // In your Razorpay handler
+                                    // In your Razorpay handler
+                                    // In your Razorpay handler
+                                    handler: async function (response) {
+                                        try {
+                                            // Format dates properly
+                                            const formatDate = (date) => {
+                                                if (!date) return new Date();
+                                                return typeof date === 'string' ? new Date(date) : date;
+                                            };
+
+
+                                            const bookingData = {
+                                                ...form,
+                                                packagesId: packages?._id,
+                                                packageName: packages?.title,
+                                                numPersons: Number(form.numPersons) || 1,
+                                                accommodationType: form.accommodationType || 'Standard',
+                                                price: selectedPrice, // Base price before tax
+                                                finalAmount: selectedPrice, // Total amount including tax
+                                                amountPaid: selectedPrice,
+                                                currency: selectedCurrency || 'INR',
+                                                paymentStatus: 'paid',
+                                                payment: {
+                                                    status: 'paid',
+                                                    amount: selectedPrice,
+                                                    currency: selectedCurrency || 'INR',
+                                                    originalCurrency: selectedCurrency || 'INR',
+                                                    exchangeRate: 1,
+                                                    amountInINR: selectedPrice,
+                                                    razorpayOrderId: orderData.id,
+                                                    razorpayPaymentId: response.razorpay_payment_id,
+                                                    razorpaySignature: response.razorpay_signature,
+                                                    paidAt: new Date().toISOString(),
+                                                    method: 'razorpay',
+                                                    details: {
+                                                        basePrice: selectedPrice,
+                                                        cgst: 0,
+                                                        sgst: 0,
+                                                        totalGst: 0,
+                                                        finalAmount: selectedPrice
+                                                    }
+                                                },
+                                                userId: session?.user?.id || null,
+                                                arrival: formatDate(form.arrival),
+                                                departure: formatDate(form.departure) || null,
+                                                adult: Number(form.adult) || 1,
+                                                child: Number(form.child) || 0,
+                                                infant: Number(form.infant) || 0,
+                                                firstName: form.firstName || 'Guest',
+                                                lastName: form.lastName || 'User',
+                                                email: form.email || '',
+                                                callNo: form.callNo || '',
+                                                altCallNo: form.altCallNo || '',
+                                                address: form.address || '',
+                                                city: form.city || '',
+                                                district: form.district || '',
+                                                state: form.state || '',
+                                                specialReq: form.specialReq || '',
+                                                offers: form.offers || [],
+                                                type: 'packages',
+                                                // Add package prices to the booking data
+                                                packagesPrices: packages?.packagePrice || {}
+                                            };
+                                            
+                                            // Remove any undefined values
+                                            Object.keys(bookingData).forEach(key => {
+                                                if (bookingData[key] === undefined) {
+                                                    delete bookingData[key];
+                                                }
+                                            });
+
+                                            const verificationResponse = await fetch('/api/razorpay', {
+                                                method: 'PUT',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({
+                                                    order_id: orderData.id,
+                                                    payment_id: response.razorpay_payment_id,
+                                                    signature: response.razorpay_signature,
+                                                    amount: selectedPrice,
+                                                    currency: selectedCurrency,
+                                                    bookingDetails: bookingData
+                                                })
+                                            });
+
+                                            const verificationData = await verificationResponse.json();
+
+                                            if (!verificationResponse.ok) {
+                                                console.error('Verification failed:', verificationData);
+                                                throw new Error(verificationData.error || 'Payment verification failed');
+                                            }
+
+                                            // Handle successful payment
+                                            await handleSuccessfulPayment(verificationData.booking);
+
+                                        } catch (error) {
+                                            console.error('Payment verification error:', error);
+                                            toast.error(error.message || 'Payment verification failed. Please contact support.');
+                                        }
+                                    },
+                                    prefill: {
+                                        name: `${form.firstName} ${form.lastName}`.trim(),
+                                        email: form.email,
+                                        contact: form.callNo
+                                    },
+                                    theme: {
+                                        color: '#8a6a2f'
+                                    },
+                                    modal: {
+                                        ondismiss: function () {
+                                            toast.info('Payment was cancelled');
+                                        }
+                                    }
+                                };
+
+                                const rzp = new window.Razorpay(options);
+                                rzp.open();
+                            } catch (error) {
+                                console.error('Payment error:', error);
+                                toast.error(error.message || 'Payment processing failed');
                             }
                         }}
                     >
-                        Make Confirm Order
+                        Pay Now
                     </button>
                 </div>
             </>
         );
     }
+
+
     useEffect(() => {
         document.body.style.overflow = (showConfirmation || step > 0) ? 'hidden' : '';
         return () => { document.body.style.overflow = ''; };
@@ -605,8 +1028,8 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
     }
     if (showConfirmation) {
         return (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40" onClick={onClose}>
-                <div className="bg-white rounded-2xl shadow-lg  max-w-xl w-full p-8 relative flex flex-col items-start text-start" onClick={e => e.stopPropagation()}>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                <div className="bg-white rounded-2xl shadow-lg max-w-xl w-full p-8 relative flex flex-col items-start text-start">
                     <button
                         className="absolute top-3 right-3 bg-gray-400 rounded-full text-white p-2 hover:text-gray-700 text-xl font-bold"
                         onClick={onClose}
@@ -637,13 +1060,13 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
 
                     {/* Invoice Button */}
                     <button className="w-full bg-black text-white rounded-md py-3 font-semibold text-lg md:mb-3 hover:bg-gray-900" onClick={() => setShowInvoice(true)}>
-                        Invoice Booking Voucheri
+                        Invoice Booking Voucher
                     </button>
                     <h2 className="text-center text-md font-semibold w-full my-2">OR</h2>
 
 
                     {/* Dashboard Link */}
-                    <button className="w-full bg-red-400 text-white rounded-md py-3 font-semibold text-lg mb-3 hover:bg-gray-900 text-red-600 font-semibold text-base italic cursor-pointer"
+                    <button className="w-full bg-red-400 text-white rounded-md py-3 font-semibold text-lg mb-3 text-red-600 font-semibold text-base italic cursor-pointer"
                         onClick={() => router.push(`/dashboard?orderId=${bookingId}`)}
                     >
                         Go To Dashboard
@@ -654,21 +1077,35 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
     }
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            <div className="bg-[#fcf9f4] rounded-2xl shadow-lg h-full overflow-y-auto md:h-fit max-w-4xl w-full flex flex-col md:flex-row p-5 gap-4 relative" onClick={e => e.stopPropagation()}>
+            <div className="bg-[#fcf9f4] rounded-2xl shadow-lg h-fit overflow-y-auto md:h-fit max-w-4xl w-full flex flex-col md:flex-row p-5 gap-4 relative">
                 {/* Close button */}
                 <button className="absolute top-1 right-1 bg-gray-500 rounded-full text-white p-1 hover:text-gray-700 text-xl font-bold" onClick={onClose}><X /></button>
                 {/* Left: Step Content */}
                 <div className="flex-1 max-w-[500px]">
                     {stepContent}
                 </div>
+
                 {/* Right: Room Summary */}
-                <div className="bg-white rounded-xl border border-gray-200 shadow-md p-2 max-w-[350px] w-full flex flex-col">
-                    <div className="w-full md:h-60 h-44 relative mb-3 rounded-lg overflow-hidden">
-                        <Image src={packageImg} alt={packageName} fill className="object-contain" />
+                <div className="bg-white rounded-xl border border-gray-200 shadow-md p-2 max-w-[350px] w-full flex flex-col h-[80vh] overflow-y-auto">
+                    <div className="w-full h-60 relative mb-3 rounded-lg">
+                        {packageImg ? (
+                            <Image
+                                src={packageImg}
+                                alt={packageName}
+                                fill
+                                className="object-contain"
+                                priority
+                                sizes="(max-width: 768px) 100vw, 33vw"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                                <span className="text-gray-500">No image available</span>
+                            </div>
+                        )}
                     </div>
-                    <div className="p-2">
+                    <div className="flex-1 overflow-y-auto p-2">
                         <div className="flex items-center justify-between">
-                            <div className="font-bold text-md  mb-2">{packageName}</div>
+                            <div className="font-bold text-md mb-2">{packageName}</div>
                             {packages?.code && (
                                 <span className="text-sm text-black my-2 md:my-0 w-fit font-mono bg-gray-100 px-2 py-1 rounded border border-gray-200">Code: {packages?.code}</span>
                             )}
@@ -702,8 +1139,8 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                 );
                             }
                             return (
-                                <div className="text-gray-700 my-4 text-md max-w-lg">
-                                    <div dangerouslySetInnerHTML={{ __html: words.slice(0, 10).join(' ') + '...' }} />
+                                <div className="text-gray-700 my-4 text-md">
+                                    <div dangerouslySetInnerHTML={{ __html: words.slice(0, 15).join(' ') + '...' }} />
                                     <button className="text-blue-600 underline" onClick={() => setShowFullDesc(true)}>Read more</button>
                                 </div>
                             );

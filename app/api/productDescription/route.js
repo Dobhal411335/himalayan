@@ -7,16 +7,18 @@ import Packages from '@/models/Packages';
 export async function POST(req) {
   await connectDB();
   try {
-    const { packageId, overview } = await req.json();
-    if (!packageId || !overview) {
-      return NextResponse.json({ error: 'Missing packageId or overview' }, { status: 400 });
+    const { packageId, overview = '', heading = '', description = '' } = await req.json();
+    if (!packageId) {
+      return NextResponse.json({ error: 'Missing packageId' }, { status: 400 });
     }
     let descDoc = await Description.findOne({ packageId });
     if (descDoc) {
       descDoc.overview = overview;
+      descDoc.heading = heading;
+      descDoc.description = description;
       await descDoc.save();
     } else {
-      descDoc = await Description.create({ packageId, overview });
+      descDoc = await Description.create({ packageId, overview,heading,description });
     }
     // Link Description to Product
     await Packages.findByIdAndUpdate(packageId, { description: descDoc._id });
@@ -49,20 +51,29 @@ export async function GET(req) {
 export async function PATCH(req) {
   await connectDB();
   try {
-    const { packageId, overview } = await req.json();
-    if (!packageId || !overview) {
-      return NextResponse.json({ error: 'Missing packageId or overview' }, { status: 400 });
+    const { packageId, overview, heading, description } = await req.json();
+    if (!packageId) {
+      return NextResponse.json({ error: 'Missing packageId' }, { status: 400 });
     }
-    const descDoc = await Description.findOneAndUpdate(
-      { packageId },
-      { overview },
-      { new: true }
-    );
+    
+    // First, get the existing document
+    const existingDoc = await Description.findOne({ packageId });
+    if (!existingDoc) {
+      return NextResponse.json({ error: 'Document not found' }, { status: 404 });
+    }
+    
+    // Update only the fields that were provided in the request
+    if (overview !== undefined) existingDoc.overview = overview;
+    if (heading !== undefined) existingDoc.heading = heading;
+    if (description !== undefined) existingDoc.description = description;
+    
+    // Save the updated document
+    const updatedDoc = await existingDoc.save();
+    
     // Ensure Product.description is set
-    if (descDoc) {
-      await Packages.findByIdAndUpdate(packageId, { description: descDoc._id });
-    }
-    return NextResponse.json({ description: descDoc });
+    await Packages.findByIdAndUpdate(packageId, { description: updatedDoc._id });
+    
+    return NextResponse.json({ description: updatedDoc });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

@@ -246,7 +246,7 @@ const RoomReview = ({ roomData, roomId }) => {
   const [editId, setEditId] = useState(null);
   const [tableLoading, setTableLoading] = useState(false);
 
-  console.log(reviews)
+  // console.log(reviews)
 
   // Fetch reviews for this product
   const fetchReviews = async () => {

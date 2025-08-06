@@ -107,7 +107,7 @@ const PackageCard = ({
   return (
     <div key={pkg._id} className="relative flex flex-col md:flex-row w-full md:w-[90%] mx-auto bg-[#f8f5ef] rounded-2xl md:p-2 p-5 md:items-center gap-6 mx-auto border border-gray-200">
       {/* Image Carousel */}
-      <div className="relative w-full md:w-[420px] md:h-[280px] h-[250px] flex-shrink-0 flex items-center justify-center rounded-xl overflow-hidden">
+      <div className="relative w-full md:w-[420px] md:h-[280px] h-[250px] flex-shrink-0 flex items-center justify-center overflow-hidden">
         <Carousel className="w-full h-full" opts={{ loop: true }}>
           <CarouselContent>
             {imageUrls.map((img, i) => (
@@ -117,7 +117,7 @@ const PackageCard = ({
                   alt={pkg.title || 'Package'}
                   width={420}
                   height={420}
-                  className="object-contain object-top w-[420px] h-[420px] rounded-xl"
+                  className="object-contain object-top w-[420px] h-[420px]"
                   priority={i === 0}
                 />
               </CarouselItem>
@@ -154,14 +154,14 @@ const PackageCard = ({
           </button>
         </div>
         <hr className="h-[2px] w-full bg-black" />
-        <div className="text-gray-800 text-sm mb-4 w-24" dangerouslySetInnerHTML={{ __html: pkg?.description?.overview }} />
+        <div className="text-gray-800 text-sm mb-2 overflow-y-auto h-16" dangerouslySetInnerHTML={{ __html: pkg?.description?.overview }} />
         {/* Package Highlight Section */}
         {pkg.packageHighlight && Array.isArray(pkg.packageHighlight.highlights) && pkg.packageHighlight.highlights.length > 0 && (
-          <div className="mt-2">
+          <div className="">
             <div className="font-bold text-sm md:text-base text-black mb-1">Package Highlight</div>
-            <ul className="ml-2 flex flex-col gap-1 h-24 overflow-y-auto">
+            <ul className="ml-2 flex flex-col gap-1 h-16 overflow-y-auto">
               {pkg.packageHighlight.highlights.map((h, i) => (
-                <li key={i} className="flex items-start gap-2 text-green-700 md:text-[15px] text-sm">
+                <li key={i} className="flex items-start gap-2 text-green-700 md:text-[12px] text-[10px]">
                   <span className="mt-1">{/* Green check icon */}
                     <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <circle cx="10" cy="10" r="10" fill="#22c55e" />

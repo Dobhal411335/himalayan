@@ -15,7 +15,7 @@ const ProductGallery = ({ productData, productId }) => {
   // Remove uploaded main image before save
   const handleRemoveMainImageUpload = async () => {
     if (selectedMainImage && selectedMainImage.key) {
-      toast.loading('Deleting main image from Cloudinary...', { id: 'cloud-delete-main' });
+      toast.loading('Deleting main image ...', { id: 'cloud-delete-main' });
       try {
         const res = await fetch('/api/cloudinary', {
           method: 'DELETE',
@@ -143,10 +143,6 @@ const ProductGallery = ({ productData, productId }) => {
     if (!files.length) return;
     // Determine current sub images state based on edit mode
     const currentSubImages = editGallery ? editSubImages : selectedSubImages;
-    if (currentSubImages.length + files.length > 10) {
-      toast.error('You can only add up to 10 sub images.');
-      return;
-    }
     setSubImagesUploading(true);
     try {
       const uploaded = [];
@@ -412,7 +408,7 @@ const ProductGallery = ({ productData, productId }) => {
                 >
                   {subImagesUploading ? 'Uploading...' : ((editGallery ? editSubImages : selectedSubImages).length > 0 ? 'Add More Images' : 'Choose Images')}
                 </Button>
-                <div className="text-xs text-gray-500 mt-1">Max 10 images. Selected: {(editGallery ? editSubImages : selectedSubImages).length}</div>
+                <div className="text-xs text-gray-500 mt-1">Selected Images : {(editGallery ? editSubImages : selectedSubImages).length}</div>
               </div>
             </div>
             {/* Submit Button */}

@@ -115,12 +115,6 @@ const OrderDetail = ({ order, onBack }) => {
                 {bookingData.invoiceNumber && ` • Invoice #${bookingData.invoiceNumber}`}
               </p>
             </div>
-            <div className="mt-4 sm:mt-0 flex space-x-3">
-              <Button variant="outline" className="hidden sm:flex">
-                <Printer className="h-4 w-4 mr-2" />
-                Print
-              </Button>
-            </div>
           </div>
         </div>
 
@@ -323,11 +317,11 @@ const OrderDetail = ({ order, onBack }) => {
                     <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
                       <div>
                         <p className="text-sm font-medium text-gray-500">Booking ID</p>
-                        <p className="mt-1 text-sm text-gray-900">{bookingData.bookingId}</p>
+                        <p className="mt-1 text-sm text-gray-900 font-mono">{bookingData.bookingId}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-500">Invoice Number</p>
-                        <p className="mt-1 text-sm text-gray-900">{bookingData.invoiceNumber || 'N/A'}</p>
+                        <p className="mt-1 text-sm text-gray-900 font-mono">{bookingData.invoiceNumber || 'N/A'}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-500">Booking Date</p>
@@ -348,6 +342,61 @@ const OrderDetail = ({ order, onBack }) => {
                         </p>
                       </div>
                     </div>
+
+                    {/* Payment Information Section */}
+                    {bookingData.payment && (
+                      <div className="mt-8 pt-6 border-t border-gray-200">
+                        <h4 className="text-md font-medium text-gray-900 mb-4">Payment Information</h4>
+                        <div className="grid grid-cols-1 gap-y-4 gap-x-4 sm:grid-cols-2">
+                          <div>
+                            <p className="text-sm font-medium text-gray-500">Amount</p>
+                            <p className="mt-1 text-sm text-gray-900">
+                              ₹{bookingData.payment.amount?.toLocaleString('en-IN')} {bookingData.payment.originalCurrency}
+                            </p>
+                          </div>
+                          {bookingData.payment.amountInINR && bookingData.payment.originalCurrency !== 'INR' && (
+                            <div>
+                              <p className="text-sm font-medium text-gray-500">Amount in INR</p>
+                              <p className="mt-1 text-sm text-gray-900">
+                                ₹{bookingData.payment.amountInINR?.toLocaleString('en-IN')}
+                              </p>
+                            </div>
+                          )}
+                          {bookingData.payment.exchangeRate && bookingData.payment.exchangeRate !== 1 && (
+                            <div>
+                              <p className="text-sm font-medium text-gray-500">Exchange Rate</p>
+                              <p className="mt-1 text-sm text-gray-900">
+                                1 {bookingData.payment.originalCurrency} = {bookingData.payment.exchangeRate} INR
+                              </p>
+                            </div>
+                          )}
+                          <div>
+                            <p className="text-sm font-medium text-gray-500">Payment Method</p>
+                            <p className="mt-1 text-sm text-gray-900 capitalize">
+                              {bookingData.payment.method || 'N/A'}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-500">Paid On</p>
+                            <p className="mt-1 text-sm text-gray-900">
+                              {bookingData.payment.paidAt ? new Date(bookingData.payment.paidAt).toLocaleString() : 'N/A'}
+                            </p>
+                          </div>
+                          <div className="sm:col-span-2">
+                            <p className="text-sm font-medium text-gray-500">Razorpay Order ID</p>
+                            <p className="mt-1 text-sm text-gray-900 font-mono">
+                              {bookingData.payment.razorpayOrderId || 'N/A'}
+                            </p>
+                          </div>
+                          <div className="sm:col-span-2">
+                            <p className="text-sm font-medium text-gray-500">Razorpay Payment ID</p>
+                            <p className="mt-1 text-sm text-gray-900 font-mono">
+                              {bookingData.payment.razorpayPaymentId || 'N/A'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

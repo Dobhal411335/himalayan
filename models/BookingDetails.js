@@ -64,9 +64,30 @@ const BookingDetailsSchema = new mongoose.Schema({
     url: { type: String },
     key: { type: String }
   },
+  accommodationType: { type: String },
+  numPersons: { type: Number},
   subtotal: { type: Number },
   finalAmount: { type: Number },
-  status: { type: String, enum: ['pending', 'confirmed', 'cancelled'], default: 'pending' },
+  // In your BookingDetails model
+payment: {
+  status: { type: String, enum: ['pending', 'paid', 'failed'], default: 'pending' },
+  method: String,
+  amount: Number,
+  originalCurrency: { type: String, default: 'INR' },
+  exchangeRate: { type: Number, default: 1 },
+  amountInINR: Number,
+  razorpayOrderId: String,
+  razorpayPaymentId: String,
+  razorpaySignature: String,
+  paidAt: Date,
+  receipt: String,
+  exchangeRateUpdatedAt: Date
+},
+status: { 
+  type: String, 
+  enum: ['pending_payment', 'confirmed', 'cancelled', 'completed'],
+  default: 'pending_payment'
+},
   type: { type: String, enum: ['room', 'packages'] },
   createdAt: { type: Date, default: Date.now },
 });

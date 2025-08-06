@@ -81,7 +81,7 @@ const ProductProfile = ({ id }) => {
             .then(res => res.json())
             .then(data => setProducts(Array.isArray(data) ? data : []));
     }, [refreshTable]);
-    console.log(products)
+    // console.log(products)
 
     // Modal state for deletion
     const [showDeleteModal, setShowDeleteModal] = useState(false);

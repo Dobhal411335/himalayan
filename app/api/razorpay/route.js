@@ -1,181 +1,237 @@
-import Razorpay from "razorpay";
-import { NextResponse } from "next/server";
-import crypto from "crypto";
-import Order from "@/models/Order"; // Import your Order model
-import connectDB from "@/lib/connectDB";
+// app/api/razorpay/route.js
+import { NextResponse } from 'next/server';
+import Razorpay from 'razorpay';
+import crypto from 'crypto';
+import connectDB from '@/lib/connectDB';
 import User from "@/models/User";
-
+import BookingDetails from "@/models/BookingDetails"; // Add this import
+import { convertToINR } from '@/utils/exchangeRate';
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-// 📌 Create a Razorpay Order
+// Create Razorpay Order
 export async function POST(request) {
     await connectDB();
+
     try {
-        const { amount, currency, receipt, products, customer } = await request.json();
-
-        // Create Razorpay order
-        const razorpayOrder = await razorpay.orders.create({
-            amount: amount * 100, // ₹1 = 100 paise
-            currency,
+        const {
+            amount,
+            currency = 'INR',
             receipt,
-        });
-        console.log('Razorpay order creation response:', razorpayOrder);
+            customer,
+            bookingDetails
+        } = await request.json();
+        // console.log('Creating order with:', { amount, currency, receipt });
+        // Convert amount to paise (smallest currency unit for INR)
+        let amountInPaise = Math.round(amount * 100);
+        let finalCurrency = currency;
+        if (currency === 'USD') {
+            try {
+                const amountInINR = await convertToINR(amount, 'USD');
+                amountInPaise = Math.round(amountInINR * 100);
+                finalCurrency = 'INR'; // Razorpay processes in INR
+            } catch (error) {
+                console.error('Currency conversion error:', error);
+                return NextResponse.json(
+                    { error: 'Currency conversion failed' },
+                    { status: 400 }
+                );
+            }
+        }
+        const options = {
+            amount: amountInPaise,
+            currency: finalCurrency,
+            receipt: receipt,
+            payment_capture: 1
+        };
 
-        if (!razorpayOrder || !razorpayOrder.id) {
-            // console.error('Razorpay order creation failed or missing order id:', razorpayOrder);
-            return NextResponse.json({ error: 'Failed to create Razorpay order', details: razorpayOrder }, { status: 500 });
+
+
+        // Basic validation
+        if (!amount || isNaN(amount)) {
+            return NextResponse.json(
+                { error: 'Invalid amount provided' },
+                { status: 400 }
+            );
         }
 
-        // Save the order in the database
-        // Import the Order model at the top: import Order from "@/models/Order";
-        let dbOrder;
-        try {
-            // If user is logged in, always use their session email
-            // Only customer?.email is available here; user is not defined in POST
-            let userEmail = customer?.email;
-            dbOrder = await Order.create({
-                products,
-                customerName: customer?.name,
-                customerEmail: customer?.email,
-                customerPhone: customer?.phone,
-                address: customer?.address,
-                amount,
-                currency,
-                receipt,
-                razorpayOrderId: razorpayOrder.id,
-                orderId: razorpayOrder.id,
-                status: "Pending",
-                payment: "online",
-                paymentMethod: "razorpay",
-                agree: true, // Always set agree true for online orders
-                email: userEmail // Always set email for online orders, prefer session user
-            });
-        } catch (dbErr) {
-            console.error("Failed to save order in DB:", dbErr);
-            return NextResponse.json({ error: "Failed to save order in DB" }, { status: 500 });
-        }
+        // Create Razorpay order (always in INR)
+        const order = await razorpay.orders.create(options);
+            // amount: Math.round(amount * 100), // Convert to paise
+            // currency: 'INR',
+            // receipt: receipt || `rcpt_${Date.now()}`,
+            // payment_capture: 1,
+            // notes: {
+            //     customer_name: customer?.name,
+            //     customer_email: customer?.email,
+            //     customer_contact: customer?.contact,
+            //     booking_details: bookingDetails ? JSON.stringify(bookingDetails) : undefined
+            // }
+        // });
 
-        // Respond with both Razorpay order ID and DB order ID
+        // console.log('Order created:', order.id);
+
         return NextResponse.json({
-            id: razorpayOrder.id, // Razorpay order ID for payment modal
-            orderId: dbOrder._id, // MongoDB order ID for tracking
-            amount: razorpayOrder.amount,
-            currency: razorpayOrder.currency
+            id: order.id,
+            currency: finalCurrency,
+            amount: order.amount,
+            amount_due: order.amount_due,
+            amount_paid: order.amount_paid,
+            receipt: order.receipt,
+            status: order.status,
+            attempts: order.attempts,
+            notes: order.notes,
+            created_at: order.created_at
         });
+
     } catch (error) {
-        console.error("Error creating Razorpay order:", error);
+        console.error('Razorpay order creation error:', error);
         return NextResponse.json(
-            { error: "Failed to create order" },
+            {
+                error: 'Failed to create order',
+                details: process.env.NODE_ENV === 'development' ? error.message : undefined
+            },
             { status: 500 }
         );
     }
 }
 
-// 📌 Verify Payment & Fetch Payment Details
+// app/api/razorpay/route.js (PUT handler)
 export async function PUT(request) {
     await connectDB();
-
     try {
-        const body = await request.json();
-        const { razorpay_payment_id, razorpay_order_id, razorpay_signature, cart, checkoutData, formFields, user } = body;
-        // console.log({
-        //     razorpay_payment_id,
-        //     razorpay_order_id,
-        //     razorpay_signature
-        //   });
-        // Step 1: Verify Razorpay Signature
-        const generatedSignature = crypto
-            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-            .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-            .digest("hex");
+        const { order_id, payment_id, signature, amount, currency, bookingDetails } = await request.json();
+        // console.log('Verifying payment:', { order_id, payment_id, bookingDetails });
 
-        if (generatedSignature !== razorpay_signature) {
+        // Verify payment signature
+        const generatedSignature = crypto
+            .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+            .update(`${order_id}|${payment_id}`)
+            .digest('hex');
+
+        if (generatedSignature !== signature) {
+            console.error('Invalid signature:', { generatedSignature, signature });
             return NextResponse.json(
-                { success: false, error: "Invalid signature" },
+                { error: 'Invalid payment signature' },
                 { status: 400 }
             );
         }
 
-        // Step 2: Update order with transactionId (Razorpay payment ID) and payment details
-        const order = await Order.findOne({ orderId: razorpay_order_id });
-        // console.log("Order found:", order);
-        if (!order) {
-            return NextResponse.json({ success: false, error: "Order not found for this Razorpay order ID." }, { status: 404 });
-        }
-        order.transactionId = razorpay_payment_id;
-        order.status = "Paid";
-        order.paymentMethod = "online";
-        order.datePurchased = new Date();
-        // Merge additional details from frontend if provided
-        if (cart) order.products = cart;
-        if (checkoutData) {
-            order.cartTotal = checkoutData.cartTotal;
-            order.subTotal = checkoutData.subTotal;
-            order.totalDiscount = checkoutData.totalDiscount;
-            order.totalTax = checkoutData.totalTax;
-            order.shippingCost = checkoutData.shippingCost;
-            order.promoCode = checkoutData.promoCode;
-            order.promoDiscount = checkoutData.promoDiscount;
-        }
-        if (formFields) {
-            order.firstName = formFields.firstName || formFields.fullName || order.firstName;
-            order.lastName = formFields.lastName || order.lastName;
-            order.email = formFields.email || order.email;
-            order.phone = formFields.mobile || formFields.phone || order.phone;
-            order.altPhone = formFields.altPhone || order.altPhone;
-            order.street = formFields.street || order.street;
-            order.city = formFields.city || order.city;
-            order.district = formFields.district || order.district;
-            order.state = formFields.state || order.state;
-            order.pincode = formFields.pincode || order.pincode;
-            order.address = formFields.address || [formFields.street, formFields.city, formFields.district, formFields.state, formFields.pincode].filter(Boolean).join(', ');
-        }
-        if (user) {
-            order.userId = user._id || order.userId;
-        }
-        // Fetch Full Payment Details from Razorpay
-        const paymentResponse = await fetch(
-            `https://api.razorpay.com/v1/payments/${razorpay_payment_id}`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Basic ${Buffer.from(
-                        `${process.env.RAZORPAY_KEY_ID}:${process.env.RAZORPAY_KEY_SECRET}`
-                    ).toString("base64")}`,
-                },
+        // Generate booking ID and invoice number
+        const now = new Date();
+        const pad = n => n.toString().padStart(2, '0');
+        const dateStr = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+        const bookingId = bookingDetails.bookingId || `HWR-${dateStr}`;
+        const invoiceNumber = `INV${dateStr}`;
+
+        // Prepare payment details
+        const finalAmount = parseFloat(bookingDetails.finalAmount || amount || 0);
+        const basePrice = parseFloat(bookingDetails.price || (finalAmount / 1.18).toFixed(2)); // Remove 18% GST
+        const gstAmount = finalAmount - basePrice;
+
+        // Format payment details
+        const paymentDetails = {
+            status: 'paid',
+            amount: parseFloat(finalAmount.toFixed(2)),
+            originalCurrency: bookingDetails.currency || currency || 'INR',
+            razorpayOrderId: order_id,
+            razorpayPaymentId: payment_id,
+            razorpaySignature: signature,
+            paidAt: new Date(),
+            method: 'razorpay',
+            exchangeRate: 1,
+            amountInINR: parseFloat(finalAmount.toFixed(2)),
+            details: {
+                basePrice: parseFloat(basePrice.toFixed(2)),
+                cgst: parseFloat((gstAmount / 2).toFixed(2)),
+                sgst: parseFloat((gstAmount / 2).toFixed(2)),
+                totalGst: parseFloat(gstAmount.toFixed(2)),
+                finalAmount: parseFloat(finalAmount.toFixed(2))
+            },
+            __v: 0
+        };
+
+        // Prepare booking data
+        const bookingData = {
+            ...bookingDetails,
+            bookingId,
+            invoiceNumber,
+            price: parseFloat(basePrice.toFixed(2)),
+            finalAmount: parseFloat(finalAmount.toFixed(2)),
+            amountPaid: parseFloat(finalAmount.toFixed(2)),
+            cgst: parseFloat((gstAmount / 2).toFixed(2)),
+            sgst: parseFloat((gstAmount / 2).toFixed(2)),
+            payment: paymentDetails,
+            status: 'confirmed',
+            paymentStatus: 'paid',
+            confirmedAt: new Date(),
+            // Ensure accommodation type and numPersons are included
+            accommodationType: bookingDetails.accommodationType || '',
+            numPersons: parseInt(bookingDetails.numPersons) || '',
+            __v: 0
+        };
+
+        // Clean up undefined values and convert numbers
+        const cleanData = (obj) => {
+            Object.keys(obj).forEach(key => {
+                if (obj[key] === undefined) delete obj[key];
+                if (typeof obj[key] === 'object' && obj[key] !== null) cleanData(obj[key]);
+            });
+            return obj;
+        };
+
+        const cleanedData = cleanData(bookingData);
+
+        // Create booking with error handling
+        let booking;
+        try {
+            booking = await BookingDetails.create(cleanedData);
+            // console.log('Booking created:', booking._id);
+            // console.log('Payment details saved:', booking.payment);
+        } catch (error) {
+            console.error('Error creating booking:', error);
+            if (error.name === 'ValidationError') {
+                console.error('Validation errors:', Object.keys(error.errors).map(key => ({
+                    field: key,
+                    message: error.errors[key].message,
+                    value: error.errors[key].value
+                })));
             }
-        );
-        const paymentDetails = await paymentResponse.json();
-        if (paymentResponse.ok) {
-            order.bank = paymentDetails.bank || null;
-            order.cardType = paymentDetails.card?.type || null;
+            throw error;
         }
-        // Always set email for online orders (on update)
-        if (user && user.email) {
-            order.email = user.email;
-        } else if (formFields && formFields.email) {
-            order.email = formFields.email;
-        } // else leave as-is if already present
-        order.agree = true; // Always set agree true for online orders (on update)
-        await order.save();
-        // Return user-facing orderId and payment details
+
+        // Update user's bookings if user is logged in
+        if (bookingDetails.userId) {
+            await User.findByIdAndUpdate(
+                bookingDetails.userId,
+                { $push: { bookings: booking._id } },
+                { new: true }
+            );
+        }
+
+        // Refresh the booking to get the latest data from DB
+        const savedBooking = await BookingDetails.findById(booking._id).lean();
+        
         return NextResponse.json({
             success: true,
-            orderId: order.orderId,
-            paymentId: razorpay_payment_id,
-            paymentMethod: paymentDetails.method,
-            paymentStatus: paymentDetails.status,
-            bank: paymentDetails.bank || null,
-            cardType: paymentDetails.card?.type || null,
+            booking: savedBooking
         });
+
     } catch (error) {
-        // console.error("Error verifying Razorpay payment:", error);
+        console.error('Payment verification error:', error);
         return NextResponse.json(
-            { success: false, error: error.message || "Payment verification failed" },
+            {
+                error: 'Failed to process booking',
+                details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+                ...(error.name === 'ValidationError' && {
+                    validationErrors: Object.keys(error.errors).reduce((acc, key) => {
+                        acc[key] = error.errors[key].message;
+                        return acc;
+                    }, {})
+                })
+            },
             { status: 500 }
         );
     }

@@ -108,18 +108,15 @@ export default function ProductDetailView({ product }) {
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, [showShareBox]);
-
   const [showFullDesc, setShowFullDesc] = React.useState(false);
+  const [showFullDesc2, setShowFullDesc2] = React.useState(false);
   const desc = product.description?.overview || "No Description";
+  const desc2 = product.description?.description || "No Description";
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [selectedPackages, setSelectedPackages] = useState(null);
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const words = desc.split(' ');
-
-
-
-
-
+  const words2 = desc2.split(' ');
   // Gather all images (main + sub) at the top-level
   // Gather all images, filter out empty/undefined/null, and fallback to placeholder if empty
   const allImagesRaw = [product.gallery?.mainImage?.url, ...(product.gallery?.subImages?.map(img => img.url) || [])];
@@ -146,7 +143,7 @@ export default function ProductDetailView({ product }) {
         {/* LEFT: Product Images */}
         <div className="w-full md:w-2/3 flex flex-col items-start md:px-10">
           {/* Main Image Carousel (QuickView style, embla-controlled) */}
-          <div className="w-full flex justify-center md:mb-4 ">
+          <div className="w-full flex justify-center md:mb-4">
             <div className="relative w-full md:max-w-[800px] h-[300px] md:h-[400px] flex items-center justify-center md:p-4">
               <Carousel
                 className="w-full h-full"
@@ -157,7 +154,7 @@ export default function ProductDetailView({ product }) {
                 <CarouselContent className="h-[300px] md:h-[400px]">
                   {allImages.map((img, idx) => (
                     <CarouselItem key={idx} className="flex items-center justify-center h-full">
-                      <div className="relative w-full h-[260px] md:h-[400px] flex items-center justify-center rounded-2xl overflow-hidden">
+                      <div className="relative w-full h-[260px] md:h-[450px] flex items-center justify-center rounded-2xl overflow-hidden">
                         <Image
                           src={img}
                           alt={`Product image ${idx}`}
@@ -187,7 +184,7 @@ export default function ProductDetailView({ product }) {
               <Carousel opts={{ align: 'center', loop: allImages.length > 5 }} className="w-full">
                 <CarouselContent>
                   {allImages.map((img, idx) => (
-                    <CarouselItem key={idx} className="flex justify-center md:basis-1/5 basis-1/4 md:max-w-[15%] min-w-0">
+                    <CarouselItem key={idx} className="flex justify-center md:basis-1/5 basis-1/4 md:max-w-24 min-w-0">
                       <button
                         className={`rounded-lg border-2 ${activeImageIdx === idx ? 'border-black' : 'border-gray-200'} focus:outline-none `}
                         onClick={() => carouselApi && carouselApi.scrollTo(idx)}
@@ -213,6 +210,36 @@ export default function ProductDetailView({ product }) {
               </Carousel>
             </div>
           )}
+
+          <div className="w-full flex flex-col p-5 ">
+            <div className="flex items-center gap-4 mb-1 justify-between">
+              <h1 className="md:text-2xl text-md font-bold">{product.description?.heading}</h1>
+            </div>
+            {(() => {
+
+              if (desc2 === "No Description") {
+                return <p className="text-gray-700 mb-4 max-w-lg">No Description</p>;
+              }
+              if (showFullDesc2 || words2.length <= 100) {
+                return (
+                  <div className="text-gray-700 my-6 text-md max-w-lg">
+                    <div dangerouslySetInnerHTML={{ __html: desc2 }} />
+                    {words2.length > 100 && (
+                      <>
+                      <button className="text-blue-600 underline ml-2" onClick={() => setShowFullDesc2(false)}>Close</button>
+                      </>
+                    )}
+                  </div>
+                );
+              }
+              return (
+                <div className="text-gray-700 my-2 text-md max-w-lg">
+                  <div dangerouslySetInnerHTML={{ __html: words2.slice(0, 20).join(' ') + '...' }} />
+                  <button className="text-blue-600 underline" onClick={() => setShowFullDesc2(true)}>Read more</button>
+                </div>
+              );
+            })()}
+          </div>
         </div>
         <div className="w-full lg:w-1/3 flex flex-col">
           <div className="">
@@ -269,7 +296,7 @@ export default function ProductDetailView({ product }) {
 
             {showExpertModal && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-             <div className="bg-white rounded-lg shadow-lg p-6 h-[80%] h-[90%] overflow-y-auto md:max-w-md relative animate-fade-in">
+                <div className="bg-white rounded-lg shadow-lg p-6 h-[80%] h-[90%] overflow-y-auto md:max-w-md relative animate-fade-in">
                   <button
                     className="absolute top-2 right-2 text-gray-500 hover:text-black text-4xl font-bold"
                     onClick={() => setShowExpertModal(false)}
@@ -497,7 +524,7 @@ export default function ProductDetailView({ product }) {
                         <DialogTitle>PDF Preview</DialogTitle>
                         {pdfPreviewUrl && (
                           <iframe
-                          className="h-[500px]"
+                            className="h-[500px]"
                             src={pdfPreviewUrl}
                             width="100%"
                             height="600px"

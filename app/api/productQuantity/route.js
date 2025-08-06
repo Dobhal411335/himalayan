@@ -10,12 +10,9 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const { packages, prices } = body;
-    console.log('Received packages:', packages);
-    console.log('Received prices:', prices, 'Type:', typeof prices, 'IsArray:', Array.isArray(prices));
     if (typeof prices === 'string') {
       try {
         const parsed = JSON.parse(prices);
-        console.log("Parsed stringified prices:", parsed);
       } catch (err) {
         console.error("Failed to parse prices:", prices);
       }

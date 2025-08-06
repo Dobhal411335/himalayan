@@ -312,7 +312,7 @@ const CheckOut = () => {
                   }
                   setShowConfirmationModal(true);
                   setRecentOrderId(orderId);
-                  console.log('[Razorpay Handler] Modal set: showConfirmationModal = true, recentOrderId =', orderId);
+                  // console.log('[Razorpay Handler] Modal set: showConfirmationModal = true, recentOrderId =', orderId);
                   return;
                 }
               } else {

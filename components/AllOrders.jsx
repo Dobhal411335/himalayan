@@ -36,7 +36,7 @@ const AllOrders = ({ onViewOrder,userId, onChatOrder, onBack }) => {
     const [error, setError] = useState(null);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const router = useRouter();
-    console.log(orders)
+    // console.log(orders)
     useEffect(() => {
         const fetchOrders = async () => {
             setLoading(true);
@@ -93,7 +93,7 @@ const AllOrders = ({ onViewOrder,userId, onChatOrder, onBack }) => {
                                     <th className="py-3 px-2 font-semibold text-sm text-[#333]">ORDER #</th>
                                     <th className="py-3 px-2 font-semibold text-sm text-[#333]">DATE PURCHASED</th>
                                     <th className="py-3 px-2 font-semibold text-sm text-[#333]">VIEW</th>
-                                    <th className="py-3 px-2 font-semibold text-sm text-[#333]">Enquiry Order</th>
+                                    {/* <th className="py-3 px-2 font-semibold text-sm text-[#333]">Enquiry Order</th> */}
                                 </tr>
                             </thead>
                             <tbody>
@@ -122,14 +122,14 @@ const AllOrders = ({ onViewOrder,userId, onChatOrder, onBack }) => {
                                                 View
                                             </button>
                                         </td>
-                                        <td className="py-3 px-2 text-sm">
+                                        {/* <td className="py-3 px-2 text-sm">
                                             <button
                                                 className="text-blue-600 hover:underline"
                                                 onClick={() => onChatOrder ? onChatOrder(order, onBack) : null}
                                             >
                                                 Chat
                                             </button>
-                                        </td>
+                                        </td> */}
                                     </tr>
                                 ))}
                             </tbody>

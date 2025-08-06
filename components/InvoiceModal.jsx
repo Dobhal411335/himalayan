@@ -3,6 +3,8 @@ import React, { useRef, useState } from 'react';
 import jsPDF from 'jspdf';
 const InvoiceModal = ({ open, onClose, booking, bookingId, bookingDate }) => {
   if (!open) return null;
+  // console.log(booking)
+  // console.log(bookingId)
 
   const invoiceRef = useRef(null);
   const exportRef = useRef(null);
@@ -16,7 +18,7 @@ const InvoiceModal = ({ open, onClose, booking, bookingId, bookingDate }) => {
   };
 
   // Data extraction
-  const roomName = booking?.roomName || booking?.room?.title || '';
+  const roomName = booking?.roomName || booking?.room?.title || booking?.packageName || '';
   // Person breakdown
   const numAdult = booking?.adult || 0;
   const numChild = booking?.child || 0;
@@ -33,27 +35,27 @@ const InvoiceModal = ({ open, onClose, booking, bookingId, bookingDate }) => {
   // Price breakdown (Room + Extra Bed)
   const main = booking?.priceBreakdown?.main || {};
   const extrabed = booking?.priceBreakdown?.extraBed || null;
-  const baseAmount = main?.amount || 0;
+  const baseAmount = booking?.finalAmount || booking?.payment?.amount;
   const extrabedAmount = extrabed?.amount || 0;
   const hasExtraBed = extrabedAmount > 0;
   const invoiceNumber = booking?.invoiceNumber;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 print:bg-transparent p-2 md:p-4" style={{overflowY:'auto'}}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 print:bg-transparent p-2 md:p-4" style={{ overflowY: 'auto' }}>
       <div
         ref={invoiceRef}
         className={`bg-white rounded-xl shadow-lg md:max-w-2xl w-full max-w-full p-3 md:p-8 relative text-black print:shadow-none print:p-0 print:bg-white ${isExportingPdf ? '' : 'max-h-[95vh] overflow-y-auto'}`}
         style={{ fontFamily: 'Barlow, Arial, sans-serif' }}
       >
         {/* Close Button */}
-        { !isExportingPdf && (
+        {!isExportingPdf && (
           <button
             className="absolute top-2 right-2 bg-gray-400 rounded-full text-white px-2 hover:text-gray-700 text-xl font-bold print:hidden"
             onClick={onClose}
           >
             <span style={{ fontSize: '1.2em' }}>×</span>
           </button>
-        ) }
+        )}
         {/* Header */}
         <div className="flex md:justify-between items-center md:items-start mb-2">
           <div>
@@ -94,27 +96,38 @@ const InvoiceModal = ({ open, onClose, booking, bookingId, bookingDate }) => {
           </div>
           <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Date Of Arrival</div>
           <div className="text-sm md:text-md py-2 px-3">{arrival}</div>
-          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Number Of Days</div>
-          <div className="text-sm md:text-md py-2 px-3">{days}</div>
-          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Number Of Room Required</div>
-          <div className="text-sm md:text-md py-2 px-3">{numRoom}</div>
-          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Room Price</div>
-          <div className="text-sm md:text-md py-2 px-3">Rs {baseAmount.toLocaleString()}</div>
-          {hasExtraBed && (
+          {booking.days && (
             <React.Fragment>
-              <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Extra Bed Price</div>
-              <div className="text-sm md:text-md py-2 px-3">Rs {extrabedAmount.toLocaleString()}</div>
+              <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Number Of Days</div>
+              <div className="text-sm md:text-md py-2 px-3">{days}</div>
             </React.Fragment>
           )}
+          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Number Of Room Required</div>
+          <div className="text-sm md:text-md py-2 px-3">{numRoom}</div>
+          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Price</div>
+          <div className="text-sm md:text-md py-2 px-3">Rs {baseAmount}</div>
+          {booking.accommodationType && (
+            <>
+              <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Accommodation Type</div>
+              <div className="text-sm md:text-md py-2 px-3">{booking.accommodationType}</div> <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">No of Person</div>
+              <div className="text-sm md:text-md py-2 px-3">{booking.numPersons}</div>
+            </>
+          )}
+          {hasExtraBed && (
+            <>
+              <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Extra Bed Price</div>
+              <div className="text-sm md:text-md py-2 px-3">Rs {extrabedAmount}</div>
+            </>
+          )}
         </div>
-       
+
         {/* Notice */}
         <div className="text-xs text-gray-800 mt-4 mb-2">
           Dear Guest,<br />We kindly request you to consider this invoice copy as your official booking voucher. Please keep it for your reference and present it at check-in, if required. Should you have any questions or need further assistance, feel free to reach out to our team.<br /><br />
           <span className="font-semibold">Please do not reply to this email. Emails sent to this address will not be answered.</span>
         </div>
         {/* Download PDF Button */}
-        { !isExportingPdf && (
+        {!isExportingPdf && (
           <div className="flex justify-end mt-2">
             <button
               className="bg-black text-white px-6 py-2 rounded font-semibold"
@@ -197,8 +210,15 @@ const InvoiceModal = ({ open, onClose, booking, bookingId, bookingDate }) => {
                 <div className="py-2 px-3">{days}</div>
                 <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3">Number Of Room Required</div>
                 <div className="py-2 px-3">{numRoom}</div>
-                <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3">Room Price</div>
+                <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3"> Price</div>
                 <div className="py-2 px-3">Rs {baseAmount.toLocaleString()}</div>
+                {booking.accommodationType && (
+                  <>
+                    <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Accommodation Type</div>
+                    <div className="text-sm md:text-md py-2 px-3">{booking.accommodationType}</div> <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">No of Person</div>
+                    <div className="text-sm md:text-md py-2 px-3">{booking.numPersons}</div>
+                  </>
+                )}
                 {hasExtraBed && (
                   <React.Fragment>
                     <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3">Extra Bed Price</div>

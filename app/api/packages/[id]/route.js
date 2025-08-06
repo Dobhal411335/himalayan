@@ -28,7 +28,6 @@ export async function GET(req, { params }) {
 
     // Strictly fetch by MongoDB _id
     let packages = await Packages.findById(id)
-    .populate('price')
     .populate('gallery')
     .populate('video')
     .populate('description')
