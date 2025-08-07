@@ -128,7 +128,7 @@ const CheckOut = () => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false); // Prevents double payment attempts
   const [error, setError] = useState(null);
   // Coupon state
-  console.log(checkoutData)
+  // console.log(checkoutData)
   const [couponInput, setCouponInput] = useState("");
   const [loadingCoupon, setLoadingCoupon] = useState(false);
   const [couponError, setCouponError] = useState("");

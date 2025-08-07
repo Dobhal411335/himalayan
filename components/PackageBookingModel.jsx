@@ -9,8 +9,6 @@ const stateList = [
 import toast from 'react-hot-toast';
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
-import { getExchangeRate } from '@/utils/exchangeRate';
 const PackageBookingModel = ({ packages, onClose, type }) => {
     // console.log(packages)
 
@@ -103,24 +101,17 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
     const [selectedCurrency, setSelectedCurrency] = useState('INR');
     const [convertedPrice, setConvertedPrice] = useState(null);
 
-    // 2. Add this effect to handle price conversion
+    // 2. Add this effect to handle price display (no conversion needed - use API prices directly)
     useEffect(() => {
-        const updatePrice = async () => {
+        const updatePrice = () => {
             const price = parseFloat(getSelectedPrice());
-            if (isNaN(price)) return;
-
-            if (selectedCurrency === 'INR') {
-                setConvertedPrice(price);
-            } else {
-                try {
-                    const rate = await getExchangeRate('USD');
-                    setConvertedPrice((price / rate).toFixed(2));
-                } catch (error) {
-                    console.error('Error converting price:', error);
-                    // Fallback to a default conversion rate
-                    setConvertedPrice((price / 83.25).toFixed(2));
-                }
+            if (isNaN(price)) {
+                setConvertedPrice('0.00');
+                return;
             }
+            // Use the price directly from API - no conversion needed
+            // getSelectedPrice already returns the correct currency value
+            setConvertedPrice(price.toFixed(2));
         };
 
         updatePrice();
@@ -728,7 +719,8 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                 </div>
             </>
         );
-    } else if (step === 5) {
+    } 
+    else if (step === 5) {
         stepContent = (
             <>
                 <div className="mb-6">
@@ -879,9 +871,6 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                     name: 'Himalayan Wellness Retreat',
                                     description: `Booking for ${packages?.title}`,
                                     order_id: orderData.id,
-                                    // In your Razorpay handler
-                                    // In your Razorpay handler
-                                    // In your Razorpay handler
                                     handler: async function (response) {
                                         try {
                                             // Format dates properly
@@ -908,7 +897,9 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                                     currency: selectedCurrency || 'INR',
                                                     originalCurrency: selectedCurrency || 'INR',
                                                     exchangeRate: 1,
-                                                    amountInINR: selectedPrice,
+                                                    // Only set amountInINR for INR payments, null for USD
+                                                    amountInINR: selectedCurrency === 'USD' ? null : selectedPrice,
+                                                    amountInOriginalCurrency: selectedPrice,
                                                     razorpayOrderId: orderData.id,
                                                     razorpayPaymentId: response.razorpay_payment_id,
                                                     razorpaySignature: response.razorpay_signature,

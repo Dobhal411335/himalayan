@@ -19,6 +19,7 @@ const OrderConfirm = ({ orderId}) => {
           width={320}
           height={200}
           className="mx-auto"
+          priority
         />
       </div>
 

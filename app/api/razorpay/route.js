@@ -24,24 +24,21 @@ export async function POST(request) {
             bookingDetails
         } = await request.json();
         // console.log('Creating order with:', { amount, currency, receipt });
-        // Convert amount to paise (smallest currency unit for INR)
-        let amountInPaise = Math.round(amount * 100);
+        // Convert amount to smallest currency unit (paise for INR, cents for USD)
+        let amountInSmallestUnit;
         let finalCurrency = currency;
+        
         if (currency === 'USD') {
-            try {
-                const amountInINR = await convertToINR(amount, 'USD');
-                amountInPaise = Math.round(amountInINR * 100);
-                finalCurrency = 'INR'; // Razorpay processes in INR
-            } catch (error) {
-                console.error('Currency conversion error:', error);
-                return NextResponse.json(
-                    { error: 'Currency conversion failed' },
-                    { status: 400 }
-                );
-            }
+            // For USD, convert to cents (no currency conversion, use USD amount directly)
+            amountInSmallestUnit = Math.round(amount * 100);
+            finalCurrency = 'USD';
+        } else {
+            // For INR, convert to paise
+            amountInSmallestUnit = Math.round(amount * 100);
+            finalCurrency = 'INR';
         }
         const options = {
-            amount: amountInPaise,
+            amount: amountInSmallestUnit,
             currency: finalCurrency,
             receipt: receipt,
             payment_capture: 1
@@ -59,20 +56,6 @@ export async function POST(request) {
 
         // Create Razorpay order (always in INR)
         const order = await razorpay.orders.create(options);
-            // amount: Math.round(amount * 100), // Convert to paise
-            // currency: 'INR',
-            // receipt: receipt || `rcpt_${Date.now()}`,
-            // payment_capture: 1,
-            // notes: {
-            //     customer_name: customer?.name,
-            //     customer_email: customer?.email,
-            //     customer_contact: customer?.contact,
-            //     booking_details: bookingDetails ? JSON.stringify(bookingDetails) : undefined
-            // }
-        // });
-
-        // console.log('Order created:', order.id);
-
         return NextResponse.json({
             id: order.id,
             currency: finalCurrency,
@@ -128,26 +111,26 @@ export async function PUT(request) {
 
         // Prepare payment details
         const finalAmount = parseFloat(bookingDetails.finalAmount || amount || 0);
-        const basePrice = parseFloat(bookingDetails.price || (finalAmount / 1.18).toFixed(2)); // Remove 18% GST
-        const gstAmount = finalAmount - basePrice;
+        const basePrice = parseFloat(bookingDetails.price); // 
 
         // Format payment details
+        const paymentCurrency = bookingDetails.currency || currency || 'INR';
         const paymentDetails = {
             status: 'paid',
             amount: parseFloat(finalAmount.toFixed(2)),
-            originalCurrency: bookingDetails.currency || currency || 'INR',
+            currency: paymentCurrency, // Store the actual payment currency
+            originalCurrency: paymentCurrency,
             razorpayOrderId: order_id,
             razorpayPaymentId: payment_id,
             razorpaySignature: signature,
             paidAt: new Date(),
             method: 'razorpay',
-            exchangeRate: 1,
-            amountInINR: parseFloat(finalAmount.toFixed(2)),
-            details: {
-                basePrice: parseFloat(basePrice.toFixed(2)),
-                cgst: parseFloat((gstAmount / 2).toFixed(2)),
-                sgst: parseFloat((gstAmount / 2).toFixed(2)),
-                totalGst: parseFloat(gstAmount.toFixed(2)),
+            exchangeRate: 1, // No conversion happening, so rate is 1
+            // Store amount in original currency (no conversion)
+            amountInOriginalCurrency: parseFloat(finalAmount.toFixed(2)),
+            // For USD payments, don't convert to INR
+            amountInINR: paymentCurrency === 'USD' ? null : parseFloat(finalAmount.toFixed(2)),
+            details: {       
                 finalAmount: parseFloat(finalAmount.toFixed(2))
             },
             __v: 0
@@ -161,8 +144,7 @@ export async function PUT(request) {
             price: parseFloat(basePrice.toFixed(2)),
             finalAmount: parseFloat(finalAmount.toFixed(2)),
             amountPaid: parseFloat(finalAmount.toFixed(2)),
-            cgst: parseFloat((gstAmount / 2).toFixed(2)),
-            sgst: parseFloat((gstAmount / 2).toFixed(2)),
+            currency: paymentCurrency, // Store the payment currency
             payment: paymentDetails,
             status: 'confirmed',
             paymentStatus: 'paid',

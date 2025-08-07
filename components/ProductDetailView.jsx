@@ -218,13 +218,13 @@ export default function ProductDetailView({ product }) {
             {(() => {
 
               if (desc2 === "No Description") {
-                return <p className="text-gray-700 mb-4 max-w-lg">No Description</p>;
+                return <p className="text-gray-700 mb-4">No Description</p>;
               }
-              if (showFullDesc2 || words2.length <= 100) {
+              if (showFullDesc2 || words2.length <= 500) {
                 return (
-                  <div className="text-gray-700 my-6 text-md max-w-lg">
+                  <div className="text-gray-700 my-6 text-md">
                     <div dangerouslySetInnerHTML={{ __html: desc2 }} />
-                    {words2.length > 100 && (
+                    {words2.length > 500 && (
                       <>
                       <button className="text-blue-600 underline ml-2" onClick={() => setShowFullDesc2(false)}>Close</button>
                       </>

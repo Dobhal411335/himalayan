@@ -63,7 +63,7 @@ export async function POST(req) {
         
         // Step 4: Save the product
         await product.save();
-        console.log('Successfully updated quantity for product:', productId, 'variant:', variantId);
+        // console.log('Successfully updated quantity for product:', productId, 'variant:', variantId);
       } catch (error) {
         console.error('Error updating quantity for product:', productId, 'variant:', variantId, error);
       }
