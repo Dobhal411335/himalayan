@@ -11,6 +11,7 @@ const PackagePriceSchema = new mongoose.Schema({
   onePerson: [PriceDetailSchema], // Array for 1 person
   twoPerson: [PriceDetailSchema], // Array for 2 persons
   eightPerson: [PriceDetailSchema], // Array for 8 persons (minimum up to 8)
+  tenPerson: [PriceDetailSchema], // Array for 10 persons (minimum up to 10)
 }, { timestamps: true });
 
 export default mongoose.models.PackagePrice || mongoose.model('PackagePrice', PackagePriceSchema);

@@ -13,7 +13,8 @@ import PackageHighlight from '@/models/PackageHighlight';
 // import Tax from '@/models/ProductTax';
 
 import { deleteFileFromCloudinary } from '@/utils/cloudinary';
-export async function GET(req, { params }) {
+export async function GET(req, context) {
+  const { params } = await context;
   // console.log(params.id)
   try {
     await connectDB();

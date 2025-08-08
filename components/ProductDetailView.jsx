@@ -226,7 +226,7 @@ export default function ProductDetailView({ product }) {
                     <div dangerouslySetInnerHTML={{ __html: desc2 }} />
                     {words2.length > 500 && (
                       <>
-                      <button className="text-blue-600 underline ml-2" onClick={() => setShowFullDesc2(false)}>Close</button>
+                        <button className="text-blue-600 underline ml-2" onClick={() => setShowFullDesc2(false)}>Close</button>
                       </>
                     )}
                   </div>
@@ -456,11 +456,11 @@ export default function ProductDetailView({ product }) {
                   {Array.isArray(packagePrice?.twoPerson) && packagePrice.twoPerson.length > 0 && (
                     <>
                       <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md">
-                        Base Price : 02 Person
+                        Base Price : 02 Person / Couple
                       </td>
                       </tr>
                       {packagePrice.twoPerson.map((item, idx) => (
-                        <tr key={`twoPerson-${idx}`} className="bg-blue-100 border-y-2 border-white">
+                        <tr key={`twoPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
                           <td className="px-3 py-2 font-bold">{item.type || "2 Person"}</td>
                           <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
                           <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
@@ -468,15 +468,45 @@ export default function ProductDetailView({ product }) {
                       ))}
                     </>
                   )}
+                  <tr>
+                    <td colSpan={3}>
+                      <p className="text-sm text-red-500 font-bold w-full">
+                        "The below-mentioned prices are applicable for a minimum group size of 8 persons. For AC Sharing Basis "
+                      </p>
+                    </td>
+                  </tr>
                   {/* Eight Person */}
                   {Array.isArray(packagePrice?.eightPerson) && packagePrice.eightPerson.length > 0 && (
                     <>
                       <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md">
-                        Base Price : 08 Person
+                        Base Price : 08 Person Minimum
                       </td>
                       </tr>
                       {packagePrice.eightPerson.map((item, idx) => (
-                        <tr key={`eightPerson-${idx}`} className="bg-blue-50 border-y-2 border-white">
+                        <tr key={`eightPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
+                          <td className="px-3 py-2 font-bold">{item.type || "8 Person"}</td>
+                          <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
+                          <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
+                        </tr>
+                      ))}
+                    </>
+                  )}
+                  <tr>
+                    <td colSpan={3}>
+                    <p className="text-sm text-red-500 font-bold w-full">
+                      "Prices below are applicable for a minimum of 10 persons, on Non-AC sharing basis."
+                    </p>
+                    </td>
+                  </tr>
+                  {/* Ten Person */}
+                  {Array.isArray(packagePrice?.tenPerson) && packagePrice.tenPerson.length > 0 && (
+                    <>
+                      <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md">
+                        Base Price : 10 Person Minimum
+                      </td>
+                      </tr>
+                      {packagePrice.tenPerson.map((item, idx) => (
+                        <tr key={`tenPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
                           <td className="px-3 py-2 font-bold">{item.type || "8 Person"}</td>
                           <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
                           <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>

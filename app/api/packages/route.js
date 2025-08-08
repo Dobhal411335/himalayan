@@ -43,7 +43,6 @@ export async function GET(req) {
     if (isDirectParam === 'true') {
       const filter = { isDirect: true, active: true };
       const packages = await Packages.find(filter)
-        .populate('price')
         .populate('gallery')
         .populate('video')
         .populate('description')

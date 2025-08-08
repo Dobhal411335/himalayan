@@ -9,6 +9,7 @@ const PackagePrice = ({productData, packageId }) => {
     one: [{ type: '', inr: '', usd: '' }],
     two: [{ type: '', inr: '', usd: '' }],
     eight: [{ type: '', inr: '', usd: '' }],
+    ten: [{ type: '', inr: '', usd: '' }],
   });
   const [loading, setLoading] = React.useState(false);
   const [editing, setEditing] = React.useState(false); // true if updating
@@ -18,11 +19,12 @@ const PackagePrice = ({productData, packageId }) => {
     fetch(`/api/packagePrice?packageId=${packageId}`)
       .then(res => res.json())
       .then(data => {
-        if (data && (data.onePerson || data.twoPerson || data.eightPerson)) {
-          setRows({
-            one: data.onePerson,
-            two: data.twoPerson,
-            eight: data.eightPerson,
+        if (data && (data.onePerson || data.twoPerson || data.eightPerson|| data.tenPerson)) {
+          setRows({ 
+            one: Array.isArray(data.onePerson) && data.onePerson.length > 0 ? data.onePerson : [{ type: '', inr: '', usd: '' }],
+            two: Array.isArray(data.twoPerson) && data.twoPerson.length > 0 ? data.twoPerson : [{ type: '', inr: '', usd: '' }],
+            eight: Array.isArray(data.eightPerson) && data.eightPerson.length > 0 ? data.eightPerson : [{ type: '', inr: '', usd: '' }],
+            ten: Array.isArray(data.tenPerson) && data.tenPerson.length > 0 ? data.tenPerson : [{ type: '', inr: '', usd: '' }],
           });
           setEditing(true);
         } else {
@@ -30,6 +32,7 @@ const PackagePrice = ({productData, packageId }) => {
             one: [{ type: '', inr: '', usd: '' }],
             two: [{ type: '', inr: '', usd: '' }],
             eight: [{ type: '', inr: '', usd: '' }],
+            ten: [{ type: '', inr: '', usd: '' }],
           });
           setEditing(false);
         }
@@ -69,6 +72,7 @@ const handleSave = async (e) => {
       onePerson: rows.one,
       twoPerson: rows.two,
       eightPerson: rows.eight,
+      tenPerson: rows.ten,
     };
     const method = editing ? 'PUT' : 'POST';
     const res = await fetch('/api/packagePrice', {
@@ -142,13 +146,11 @@ const handleSave = async (e) => {
         </div>
       {renderSection('Base Price: 01 Person', 'one')}
       {renderSection('Base Price: 02 Person', 'two')}
-      {renderSection('Base Price: 08 Person', 'eight', ' ( minimum up to 8 person )')}
+      {renderSection('Base Price: 08 Person', 'eight', ' ( Minimum up to 8 person )')}
+      {renderSection('Base Price: 10 Person', 'ten', ' ( Minimum up to 10 person )')}
       <Button type="submit" className="bg-black text-white font-bold py-2 px-10 rounded mb-8 mt-4">Data Save</Button>
     </form>
   );
 }
 
-
-// --- Render status message ---
-
-export default PackagePrice
+export default PackagePrice 
