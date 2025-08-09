@@ -119,11 +119,22 @@ const ContactUs = () => {
                             <h3 className="font-bold text-xl md:text-2xl mb-2">Call Us</h3>
                             <ul className="mb-2">
                                 <li className='flex flex-row gap-2'>
-                                    <a href="tel:+917351009107" className="hover:underline text-md md:text-xl">+91 9897515305</a>
-                                    <a href="tel:+919411571947" className="hover:underline text-md md:text-xl">+91 7060340176</a>
+                                    <a href="tel:+918800854549" className="hover:underline text-md md:text-xl">+91 8800854549</a>
+                                   
                                 </li>
                             </ul>
                         </div>
+  <div className="mb-4">
+                            <h3 className="font-bold text-xl md:text-2xl mb-2">What's App</h3>
+                            <ul className="mb-2">
+                                <li className='flex flex-row gap-2'>
+                                    <a href="tel:+917060340176" className="hover:underline text-md md:text-xl">+91 7060340176</a>
+                                   <a href="tel:+919897515305" className="hover:underline text-md md:text-xl">+91 9897515305</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        
                         <div className=''>
                             <h3 className="font-bold text-xl md:text-2xl mb-2 ">E-mail</h3>
                             <ul className="mb-2">
@@ -134,7 +145,7 @@ const ContactUs = () => {
                             </ul>
                         </div>
                         <div className='my-2'>
-                            <a href="https://maps.app.goo.gl/ZGJ9ivjmABr6rzkt9" className="hover:underline text-xl"><h3 className="font-bold text-md md:text-2xl mb-2 ">Google</h3></a>
+                            <a href="https://maps.app.goo.gl/ZGJ9ivjmABr6rzkt9" className="hover:underline text-xl"><h3 className="font-bold text-md md:text-2xl mb-2 ">Google https://share.google/OYCgclP5zh8SDEh1Q </h3></a>
                         </div>
                     </div>
                     {/* Contact Form */}
