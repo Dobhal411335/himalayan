@@ -199,7 +199,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
         let stepErrors = {};
         if (step === 1) {
             if (!form.arrival) stepErrors.arrival = 'Arrival date is required';
-            // if (!form.id) stepErrors.id = 'Government ID upload is required';
+            if (!form.id) stepErrors.id = 'Government ID upload is required';
         } else if (step === 2) {
             if (!form.firstName) stepErrors.firstName = 'First name is required';
             if (!form.lastName) stepErrors.lastName = 'Last name is required';

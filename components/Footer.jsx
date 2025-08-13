@@ -82,13 +82,13 @@ const Footer = () => {
                 <div className="flex flex-col gap-2">
                     <h1 className="font-semibold text-xl flex items-center gap-2 my-4"> More Inquiry</h1>
                     <div className="flex items-center gap-4">
-                        <Link href={'tel:+919897515305'} className="my-1 gap-2 block rounded-full font-barlow text-white flex items-center">
-                            <Phone size={20} className="text-blue-600 " />
-                            +91 9897515305
-                        </Link>
-                        <Link href={'tel:+917060340176'} className="my-1 gap-2 block rounded-full font-barlow text-white flex items-center">
-                            +91 7060340176
-                        </Link>
+                          <Link href={'tel:+91 8800854549'} className="my-1 gap-2 block rounded-full font-barlow text-white flex items-center">
+                        <Phone size={20} className="text-blue-600 " />
+                        +91 8800854549
+                    </Link>
+                    <Link href={'tel:+917060340176'} className="my-1 gap-2 block rounded-full font-barlow text-white flex items-center">
+                        Whats' app +91 7060340176 +91 9897515305
+                    </Link>
                     </div>
                     <Link href={'mailto:himalayanwellnessretreats@gmail.com'} className="my-1 gap-2 block rounded-full font-barlow text-white flex items-center">
                         <Send className="text-blue-600" size={20} />
@@ -98,7 +98,7 @@ const Footer = () => {
                         <MapPin className="text-blue-600" size={20} />
                         Balak Nath Temple Street, Upper Tapovan,
                         <br />
-                        Tehri Garhwal Rishikesh,Uttarakhand 249201
+                        Tehri Garhwal Rishikesh,Uttarakhand 249192
                     </p>
                 </div>
             </div>
@@ -126,12 +126,12 @@ const Footer = () => {
             <div className="md:hidden flex flex-col gap-1 px-5 py-5">
                 <h1 className="font-semibold text-xl mb-2 flex items-center gap-2"> More Inquiry</h1>
                 <div className="flex items-center gap-4">
-                    <Link href={'tel:+919897515305'} className="my-1 gap-2 block rounded-full font-barlow text-white flex items-center">
+                    <Link href={'tel:+91 8800854549'} className="my-1 gap-2 block rounded-full font-barlow text-white flex items-center">
                         <Phone size={20} className="text-blue-600 " />
-                        +91 9897515305
+                        +91 8800854549
                     </Link>
                     <Link href={'tel:+917060340176'} className="my-1 gap-2 block rounded-full font-barlow text-white flex items-center">
-                        +91 7060340176
+                        Whats' app +91 7060340176 +91 9897515305
                     </Link>
                 </div>
                 <Link href={'mailto:himalayanwellnessretreats@gmail.com'} className="my-1 gap-2 block rounded-full font-barlow text-white flex items-center">
@@ -142,7 +142,7 @@ const Footer = () => {
                     <MapPin className="text-blue-600" size={20} />
                     Balak Nath Temple Street, Upper Tapovan,
                     <br />
-                    Tehri Garhwal Rishikesh,Uttarakhand 249201
+                    Tehri Garhwal Rishikesh,Uttarakhand 249192
                 </p>
             </div>
 

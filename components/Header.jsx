@@ -111,8 +111,8 @@ const Header = () => {
                 </div>
                 <div className="border-r-2 border-black items-center flex h-6 pr-4">
                   <Phone size={18} />
-                  <Link href={"tel:+919897515305"}>
-                    <p className="text-sm font-semibold tracking-widest hover:underline"> +91 9897515305,7060340176</p>
+                  <Link href={"tel:+918800854549"}>
+                    <p className="text-sm font-semibold tracking-widest hover:underline"> +91 8800854549</p>
                   </Link>
                 </div>
               </div>

@@ -87,7 +87,7 @@ const RefundCancellation = () => {
               PAN Number :-  <br />
               GST Registration Number :-  <br />
               <br />
-              Phone Number : +91 9897515305, 9458340176 <br />
+              Phone Number : Call: +91 8800854549, What's App +91 7060340176 +91 9897515305 <br />
               Working Hours :           8:30 - 18:30 pm<br />
               Email Id:                         himalayanwellnessretreats@gmail.com<br />
               Address:Balak Nath Temple Street, Upper Tapovan, Tehri Garhwal Rishikesh, Uttarakhand 249192
