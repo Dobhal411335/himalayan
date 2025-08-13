@@ -430,12 +430,11 @@ export default function ProductDetailView({ product }) {
                   <tr className="bg-orange-100">
                     <th className="text-green-800 md:text-lg font-semibold px-3 py-2 text-left rounded-tl-lg">Accommodation Type</th>
                     <th className="text-green-800 md:text-lg font-semibold px-3 py-2 text-left">In INR</th>
-                    <th className="text-green-800 md:text-lg font-semibold px-3 py-2 text-left rounded-tr-lg">US Dollar</th>
+                    <th className="text-green-800 md:text-lg font-semibold px-2 py-2 text-left rounded-tr-lg">US Dollar</th>
                   </tr>
                 </thead>
                 <tbody>
                   {/* One Person */}
-
                   {Array.isArray(packagePrice?.onePerson) && packagePrice.onePerson.length > 0 && (
                     <>
                       <tr>

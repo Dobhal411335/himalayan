@@ -305,6 +305,8 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
             const payload = {
                 ...form,
                 specialReq: form.specialReq,
+                accommodationType: form.accommodationType,
+                numPersons: form.numPersons,
                 offers: form.offers,
                 bookingId: bookingData.bookingId || `HWR-${Date.now()}`,
                 invoiceNumber,
@@ -1214,7 +1216,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                                 Base Price : 11 to 14 Person Minimum
                                             </td>
                                             </tr>
-                                            {packagePrice.elevenToFourteenPerson.map((item, idx) => (
+                                            {packages?.packagePrice?.elevenToFourteenPerson.map((item, idx) => (
                                                 <tr key={`elevenToFourteenPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
                                                     <td className="px-3 py-2 font-bold">{item.type || "11 to 14 Person"}</td>
                                                     <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>

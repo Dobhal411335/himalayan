@@ -19,15 +19,17 @@ export default function BeautifulInvoice({ booking, bookingId, bookingDate,invoi
   // Example: you may want to adjust these fields to match your backend
   const items = [
     {
-      name: guest.roomName || guest.room?.title || "Room",
+      name: guest.packageName || guest.roomName || "Package/Room Name",
       days: `${guest.days || 1} Nights`,
-      amount:booking?.finalAmount || 0,
+      numPersons: guest.numPersons || guest.numPerson || 1,
+      amount: booking?.finalAmount || 0,
     },
     ...(booking?.priceBreakdown?.extraBed
       ? [
           {
             name: "Extra Bed",
             days: `Rs.${booking?.priceBreakdown?.extraBed?.amount}`,
+            numPersons: '',
             amount: booking?.priceBreakdown?.extraBed?.amount,
           },
         ]
