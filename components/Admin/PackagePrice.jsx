@@ -7,9 +7,10 @@ const PackagePrice = ({productData, packageId }) => {
   const productTitle = productData?.title || "";
   const [rows, setRows] = React.useState({
     one: [{ type: '', inr: '', usd: '' }],
-    two: [{ type: '', inr: '', usd: '' }],
     eight: [{ type: '', inr: '', usd: '' }],
     ten: [{ type: '', inr: '', usd: '' }],
+    elevenToFourteen: [{ type: '', inr: '', usd: '' }],
+    fifteenToTwentyEight: [{ type: '', inr: '', usd: '' }],
   });
   const [loading, setLoading] = React.useState(false);
   const [editing, setEditing] = React.useState(false); // true if updating
@@ -19,20 +20,22 @@ const PackagePrice = ({productData, packageId }) => {
     fetch(`/api/packagePrice?packageId=${packageId}`)
       .then(res => res.json())
       .then(data => {
-        if (data && (data.onePerson || data.twoPerson || data.eightPerson|| data.tenPerson)) {
+        if (data && (data.onePerson || data.eightPerson|| data.tenPerson || data.elevenToFourteenPerson || data.fifteenToTwentyEight)) {
           setRows({ 
             one: Array.isArray(data.onePerson) && data.onePerson.length > 0 ? data.onePerson : [{ type: '', inr: '', usd: '' }],
-            two: Array.isArray(data.twoPerson) && data.twoPerson.length > 0 ? data.twoPerson : [{ type: '', inr: '', usd: '' }],
             eight: Array.isArray(data.eightPerson) && data.eightPerson.length > 0 ? data.eightPerson : [{ type: '', inr: '', usd: '' }],
             ten: Array.isArray(data.tenPerson) && data.tenPerson.length > 0 ? data.tenPerson : [{ type: '', inr: '', usd: '' }],
+            elevenToFourteen: Array.isArray(data.elevenToFourteenPerson) && data.elevenToFourteenPerson.length > 0 ? data.elevenToFourteenPerson : [{ type: '', inr: '', usd: '' }],
+            fifteenToTwentyEight: Array.isArray(data.fifteenToTwentyEightPerson) && data.fifteenToTwentyEightPerson.length > 0 ? data.fifteenToTwentyEightPerson : [{ type: '', inr: '', usd: '' }],
           });
           setEditing(true);
         } else {
           setRows({
             one: [{ type: '', inr: '', usd: '' }],
-            two: [{ type: '', inr: '', usd: '' }],
             eight: [{ type: '', inr: '', usd: '' }],
             ten: [{ type: '', inr: '', usd: '' }],
+            elevenToFourteen: [{ type: '', inr: '', usd: '' }],
+            fifteenToTwentyEight: [{ type: '', inr: '', usd: '' }],
           });
           setEditing(false);
         }
@@ -70,10 +73,11 @@ const handleSave = async (e) => {
     const payload = {
       packageId,
       onePerson: rows.one,
-      twoPerson: rows.two,
       eightPerson: rows.eight,
       tenPerson: rows.ten,
-    };
+      elevenToFourteenPerson: rows.elevenToFourteen,
+      fifteenToTwentyEightPerson: rows.fifteenToTwentyEight,
+      };
     const method = editing ? 'PUT' : 'POST';
     const res = await fetch('/api/packagePrice', {
       method,
@@ -145,9 +149,10 @@ const handleSave = async (e) => {
           />
         </div>
       {renderSection('Base Price: 01 Person', 'one')}
-      {renderSection('Base Price: 02 Person', 'two')}
       {renderSection('Base Price: 08 Person', 'eight', ' ( Minimum up to 8 person )')}
       {renderSection('Base Price: 10 Person', 'ten', ' ( Minimum up to 10 person )')}
+      {renderSection('Base Price: 11 To 14 Person', 'elevenToFourteen', ' ( Minimum up to 14 person )')}
+      {renderSection('Base Price: 15 To 28 Person', 'fifteenToTwentyEight', ' ( Minimum up to 28 person )')}
       <Button type="submit" className="bg-black text-white font-bold py-2 px-10 rounded mb-8 mt-4">Data Save</Button>
     </form>
   );

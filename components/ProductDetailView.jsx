@@ -452,22 +452,6 @@ export default function ProductDetailView({ product }) {
                       ))}
                     </>
                   )}
-                  {/* Two Person */}
-                  {Array.isArray(packagePrice?.twoPerson) && packagePrice.twoPerson.length > 0 && (
-                    <>
-                      <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md">
-                        Base Price : 02 Person / Couple
-                      </td>
-                      </tr>
-                      {packagePrice.twoPerson.map((item, idx) => (
-                        <tr key={`twoPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
-                          <td className="px-3 py-2 font-bold">{item.type || "2 Person"}</td>
-                          <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
-                          <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
-                        </tr>
-                      ))}
-                    </>
-                  )}
                   <tr>
                     <td colSpan={3}>
                       <p className="text-sm text-red-500 font-bold w-full">
@@ -493,9 +477,9 @@ export default function ProductDetailView({ product }) {
                   )}
                   <tr>
                     <td colSpan={3}>
-                    <p className="text-sm text-red-500 font-bold w-full">
-                      "Prices below are applicable for a minimum of 10 persons, on Non-AC sharing basis."
-                    </p>
+                      <p className="text-sm text-red-500 font-bold w-full">
+                        "Prices below are applicable for a minimum of 10 persons, on Non-AC sharing basis."
+                      </p>
                     </td>
                   </tr>
                   {/* Ten Person */}
@@ -508,6 +492,38 @@ export default function ProductDetailView({ product }) {
                       {packagePrice.tenPerson.map((item, idx) => (
                         <tr key={`tenPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
                           <td className="px-3 py-2 font-bold">{item.type || "8 Person"}</td>
+                          <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
+                          <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
+                        </tr>
+                      ))}
+                    </>
+                  )}
+                  {/* Eleven To Fourteen Person */}
+                  {Array.isArray(packagePrice?.elevenToFourteenPerson) && packagePrice.elevenToFourteenPerson.length > 0 && (
+                    <>
+                      <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md">
+                        Base Price : 11 to 14 Person Minimum
+                      </td>
+                      </tr>
+                      {packagePrice.elevenToFourteenPerson.map((item, idx) => (
+                        <tr key={`elevenToFourteenPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
+                          <td className="px-3 py-2 font-bold">{item.type || "11 to 14 Person"}</td>
+                          <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
+                          <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
+                        </tr>
+                      ))}
+                    </>
+                  )}
+                  {/* Fifteen To Eighteen Person */}
+                  {Array.isArray(packagePrice?.fifteenToTwentyEightPerson) && packagePrice.fifteenToTwentyEightPerson.length > 0 && (
+                    <>
+                      <tr><td colSpan={3} className="font-semibold  text-black text-start px-2 py-1 text-sm md:text-md">
+                        Base Price : 15 to 28 Person Minimum
+                      </td>
+                      </tr>
+                      {packagePrice.fifteenToTwentyEightPerson.map((item, idx) => (
+                        <tr key={`fifteenToTwentyEightPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
+                          <td className="px-3 py-2 font-bold">{item.type || "15 to 28 Person"}</td>
                           <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
                           <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
                         </tr>

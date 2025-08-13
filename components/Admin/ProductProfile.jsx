@@ -170,7 +170,6 @@ const ProductProfile = ({ id }) => {
                     <thead>
                         <tr className="bg-gray-200">
                             <th className="py-2 px-4 text-center">Title</th>
-                           
                             <th className="py-2 px-4 text-center">URL</th>
                             <th className="py-2 px-4 text-center">Active</th>
                             <th className="py-2 px-4 text-center">Actions</th>

@@ -122,25 +122,21 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
     const [packagePrices, setPackagePrices] = useState({
         onePerson: [],
         twoPerson: [],
-        eightPerson: [],
-        tenPerson: []
+        threeToSeven: [],
+        eightToTen: [],
+        elevenToFourteen: [],
+        fifteenToTwentyEight: []
     });
 
 
     // Get accommodations based on number of persons
-    const getAvailableAccommodations = () => {
+    const getAvailableAccommodations = (num = form.numPersons) => {
         let accommodations = [];
-        const num = form.numPersons || 1;
-
-        if (num === 1) {
-            accommodations = packagePrices.onePerson || [];
-        } else if (num === 2) {
-            accommodations = packagePrices.twoPerson || [];
-        } else if (num === 8) {
-            accommodations = packagePrices.eightPerson || [];
-        } else if (num === 10) {
-            accommodations = packagePrices.tenPerson || [];
-        }
+        if (num >= 1 && num <= 7) accommodations = packagePrices.onePerson || [];
+        else if (num >= 8 && num <= 9) accommodations = packagePrices.eightPerson || [];
+        else if (num === 10) accommodations = packagePrices.tenPerson || [];
+        else if (num >= 11 && num <= 14) accommodations = packagePrices.elevenToFourteenPerson || [];
+        else if (num >= 15 && num <= 28) accommodations = packagePrices.fifteenToTwentyEightPerson || [];
         // If no accommodation is selected but we have options, select the first one
         if (accommodations.length > 0 && !form.accommodationType) {
             setForm(prev => ({
@@ -148,7 +144,6 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                 accommodationType: accommodations[0].type
             }));
         }
-
         return accommodations;
     };
 
@@ -165,9 +160,10 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
         if (packages?.packagePrice) {
             setPackagePrices({
                 onePerson: packages.packagePrice.onePerson || [],
-                twoPerson: packages.packagePrice.twoPerson || [],
                 eightPerson: packages.packagePrice.eightPerson || [],
-                tenPerson: packages.packagePrice.tenPerson || []
+                tenPerson: packages.packagePrice.tenPerson || [],
+                elevenToFourteenPerson: packages.packagePrice.elevenToFourteenPerson || [],
+                fifteenToTwentyEightPerson: packages.packagePrice.fifteenToTwentyEightPerson || [],
             });
         }
     }, [packages]);
@@ -321,6 +317,8 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                     twoPerson: Array.isArray(packages?.packagePrice?.twoPerson) ? packages.packagePrice.twoPerson : [],
                     eightPerson: Array.isArray(packages?.packagePrice?.eightPerson) ? packages.packagePrice.eightPerson : [],
                     tenPerson: Array.isArray(packages?.packagePrice?.tenPerson) ? packages.packagePrice.tenPerson : [],
+                    elevenToFourteenPerson: Array.isArray(packages?.packagePrice?.elevenToFourteenPerson) ? packages.packagePrice.elevenToFourteenPerson : [],
+                    fifteenToTwentyEightPerson: Array.isArray(packages?.packagePrice?.fifteenToTwentyEightPerson) ? packages.packagePrice.fifteenToTwentyEightPerson : [],
                 },
                 packageIdImage: uploadedID || null,
                 paymentStatus: 'paid',
@@ -752,18 +750,18 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                 handleNumPersonsChange(val);
                                 // Reset accommodation type to first available for this group
                                 let accs = [];
-                                if (val === 1) accs = packagePrices.onePerson || [];
-                                else if (val === 2) accs = packagePrices.twoPerson || [];
-                                else if (val === 8) accs = packagePrices.eightPerson || [];
+                                if (val >= 1 && val <= 7) accs = packagePrices.onePerson || [];
+                                else if (val >= 8 && val <= 9) accs = packagePrices.eightPerson || [];
                                 else if (val === 10) accs = packagePrices.tenPerson || [];
+                                else if (val >= 11 && val <= 14) accs = packagePrices.elevenToFourteenPerson || [];
+                                else if (val >= 15 && val <= 28) accs = packagePrices.fifteenToTwentyEightPerson || [];
                                 setForm(prev => ({ ...prev, accommodationType: accs[0]?.type || '' }));
                             }}
                         >
                             <option value="">Select Number of Person</option>
-                            <option value={1}>1 Person</option>
-                            <option value={2}>2 Person</option>
-                            <option value={8}>8 Person</option>
-                            <option value={10}>10 Person</option>
+                            {Array.from({ length: 28 }, (_, i) => (
+                                <option key={i + 1} value={i + 1}>{i + 1} Person{i + 1 > 1 ? 's' : ''}</option>
+                            ))}
                         </select>
                     </div>
 
@@ -791,24 +789,13 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                             Package Price
                         </label>
                         <div className="text-xl font-bold text-gold-900">
-                            {(form.numPersons === 8 || form.numPersons === 10) ? (
-                                <>
-                                    {selectedCurrency === 'INR' ? '₹' : '$'}
-                                    {(() => {
-                                        const perPerson = parseFloat(getSelectedPrice()) || 0;
-                                        return perPerson.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
-                                    })()}
-                                    × {form.numPersons} = {selectedCurrency === 'INR' ? '₹' : '$'}
-                                    {convertedPrice ? Number(convertedPrice).toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : '0.00'}
-                                    <span className="text-sm font-normal text-gray-500 ml-2">({selectedCurrency})</span>
-                                </>
-                            ) : (
-                                <>
-                                    {selectedCurrency === 'INR' ? '₹' : '$'}
-                                    {convertedPrice ? Number(convertedPrice).toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 }) : '0.00'}
-                                    <span className="text-sm font-normal text-gray-500 ml-2">({selectedCurrency})</span>
-                                </>
-                            )}
+                            {selectedCurrency === 'INR' ? '₹' : '$'}
+                            {(() => {
+                                const perPerson = parseFloat(getSelectedPrice()) || 0;
+                                const numPersons = Number(form.numPersons) || 1;
+                                return `${perPerson.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 })} × ${numPersons} = ${(perPerson * numPersons).toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`;
+                            })()}
+                            <span className="text-sm font-normal text-gray-500 ml-2">({selectedCurrency})</span>
                         </div>
                     </div>
                     <div className="mb-4">
@@ -856,10 +843,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                     return;
                                 }
                                 // Create Razorpay order
-                                // In your onClick handler, update the fetch call:
-                                const totalAmount = (form.numPersons === 8 || form.numPersons === 10)
-                                    ? selectedPrice * form.numPersons
-                                    : selectedPrice;
+                                const totalAmount = selectedPrice * (Number(form.numPersons) || 1); // always total price
 
                                 const response = await fetch('/api/razorpay', {
                                     method: 'POST',
@@ -903,9 +887,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                             };
 
 
-                                            const totalAmount = (form.numPersons === 8 || form.numPersons === 10)
-                                                ? selectedPrice * form.numPersons
-                                                : selectedPrice;
+                                            const totalAmount = selectedPrice * (Number(form.numPersons) || 1);
 
                                             const bookingData = {
                                                 ...form,
@@ -1193,22 +1175,6 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                             ))}
                                         </>
                                     )}
-                                    {/* Two Person */}
-                                    {Array.isArray(packages?.packagePrice?.twoPerson) && packages?.packagePrice.twoPerson.length > 0 && (
-                                        <>
-                                            <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm">
-                                                Base Price : 02 Person
-                                            </td>
-                                            </tr>
-                                            {packages?.packagePrice.twoPerson.map((item, idx) => (
-                                                <tr key={`twoPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
-                                                    <td className="px-3 py-1">{item.type || "2 Person"}</td>
-                                                    <td className="px-3 py-1 border-l-2 border-red-500">{item.inr}</td>
-                                                    <td className="px-3 py-1 border-l-2 border-red-500">{item.usd}</td>
-                                                </tr>
-                                            ))}
-                                        </>
-                                    )}
                                     {/* Eight Person */}
                                     {Array.isArray(packages?.packagePrice?.eightPerson) && packages?.packagePrice.eightPerson.length > 0 && (
                                         <>
@@ -1229,10 +1195,10 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                     {Array.isArray(packages?.packagePrice?.tenPerson) && packages?.packagePrice.tenPerson.length > 0 && (
                                         <>
                                             <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md">
-                                                Base Price : 10 Person
+                                                Base Price : 10 Person Minimum
                                             </td>
                                             </tr>
-                                            {packages?.packagePrice.tenPerson.map((item, idx) => (
+                                            {packages?.packagePrice?.tenPerson.map((item, idx) => (
                                                 <tr key={`tenPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
                                                     <td className="px-3 py-2 font-bold">{item.type || "8 Person"}</td>
                                                     <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
@@ -1241,6 +1207,39 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                             ))}
                                         </>
                                     )}
+                                    {/* Eleven To Fourteen Person */}
+                                    {Array.isArray(packages?.packagePrice?.elevenToFourteenPerson) && packages?.packagePrice.elevenToFourteenPerson.length > 0 && (
+                                        <>
+                                            <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md">
+                                                Base Price : 11 to 14 Person Minimum
+                                            </td>
+                                            </tr>
+                                            {packagePrice.elevenToFourteenPerson.map((item, idx) => (
+                                                <tr key={`elevenToFourteenPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
+                                                    <td className="px-3 py-2 font-bold">{item.type || "11 to 14 Person"}</td>
+                                                    <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
+                                                    <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
+                                                </tr>
+                                            ))}
+                                        </>
+                                    )}
+                                    {/* Fifteen To Eighteen Person */}
+                                    {Array.isArray(packages?.packagePrice?.fifteenToTwentyEightPerson) && packages?.packagePrice.fifteenToTwentyEightPerson.length > 0 && (
+                                        <>
+                                            <tr><td colSpan={3} className="font-semibold  text-black text-start px-2 py-1 text-sm md:text-md">
+                                                Base Price : 15 to 28 Person Minimum
+                                            </td>
+                                            </tr>
+                                            {packages?.packagePrice?.fifteenToTwentyEightPerson.map((item, idx) => (
+                                                <tr key={`fifteenToTwentyEightPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
+                                                    <td className="px-3 py-2 font-bold">{item.type || "15 to 28 Person"}</td>
+                                                    <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
+                                                    <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
+                                                </tr>
+                                            ))}
+                                        </>
+                                    )}
+
                                 </tbody>
                             </table>
                         </div>
