@@ -71,9 +71,6 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
         state: '',
         arrival: '',
         departure: '',
-        adult: 1,
-        child: 0,
-        infant: 0,
         specialReq: '',
         offers: [],
         type: type || 'packages',
@@ -209,7 +206,6 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
             if (!form.city) stepErrors.city = 'City is required';
             if (!form.district) stepErrors.district = 'District is required';
             if (!form.state) stepErrors.state = 'State is required';
-            if (!form.adult) stepErrors.adult = 'Number of adults is required';
         } else if (step === 3) {
             // No required fields in step 3, but you can add if needed
         }
@@ -538,8 +534,6 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                     }
                                 }}
                             />
-
-
                         </div>
                     </div>
                     <hr className="my-2 border-gray-300" />
@@ -579,23 +573,6 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                         </div>
                     </div>
                     <hr className="my-2 border-gray-300" />
-                    <div className="font-bold text-md text-[#8a6a2f] mb-2">Total Number Of Person</div>
-                    <div className="flex gap-4 mb-1">
-                        <div className="w-[30%]">
-                            <label htmlFor="adult" className="block text-xs font-medium text-gray-700 mb-1">Adult</label>
-                            <input id="adult" type='number' placeholder="Adult" className="w-full bg-gray-200 rounded-full px-5 py-1 text-md" value={form.adult} onChange={e => handleChange('adult', e.target.value)} />
-                            {errors.adult && <div className="text-red-600 text-xs mt-1">{errors.adult}</div>}
-                        </div>
-                        <div className="w-[30%]">
-                            <label htmlFor="infant" className="block text-xs font-medium text-gray-700 mb-1">Infant</label>
-                            <input id="infant" type='number' placeholder="Infant" className="w-full bg-gray-200 rounded-full px-5 py-1 text-md" value={form.infant} onChange={e => handleChange('infant', e.target.value)} />
-                            {/* No validation for infant, but keep structure for consistency */}
-                        </div>
-                        <div className="w-[30%]">
-                            <label htmlFor="child" className="block text-xs font-medium text-gray-700 mb-1">Child</label>
-                            <input id="child" type='number' placeholder="Child" className="w-full bg-gray-200 rounded-full px-5 py-1 text-md" value={form.child} onChange={e => handleChange('child', e.target.value)} />
-                        </div>
-                    </div>
                     <div className="text-xs text-gray-700 my-2">Disclaimer: All rooms are based on a minimum double occupancy (2 persons). Extra beds are subject to availability and may incur additional charges depending on occupancy. Room configuration and amenities may vary.</div>
                     <div className="text-xs text-gray-700 my-2">Child Policy: Children up to 6 years stay complimentary when sharing bed with parents. Children above 6 years will be considered as adults and charged accordingly.</div>
                     <div className="flex gap-2 mt-6">
@@ -671,7 +648,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
             {
                 key: 'persons',
                 label: 'Total Number Of Person',
-                value: form.adult + ' Adult ' + (form.child ? form.child + ' Child ' : '') + (form.infant ? form.infant + ' Infant' : '') || 'Not set',
+                value: form.numPersons || 'Not set',
             },
             {
                 key: 'specialReq',
@@ -745,7 +722,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                             Select Number Of Person
                         </label>
                         <select
-                            className="w-full max-w-xs bg-gray-100 rounded-full px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-[#8a6a2f] focus:border-transparent"
+                            className="w-full max-w-xs bg-gray-100 rounded-md px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-[#8a6a2f] focus:border-transparent"
                             value={form.numPersons || ''}
                             onChange={e => {
                                 const val = Number(e.target.value);
@@ -753,7 +730,7 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                 // Reset accommodation type to first available for this group
                                 let accs = [];
                                 if (val >= 1 && val <= 7) accs = packagePrices.onePerson || [];
-                                else if (val >= 8 && val <= 9) accs = packagePrices.eightPerson || [];
+                                else if (val === 8) accs = packagePrices.eightPerson || [];
                                 else if (val === 10) accs = packagePrices.tenPerson || [];
                                 else if (val >= 11 && val <= 14) accs = packagePrices.elevenToFourteenPerson || [];
                                 else if (val >= 15 && val <= 28) accs = packagePrices.fifteenToTwentyEightPerson || [];
@@ -761,8 +738,8 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                             }}
                         >
                             <option value="">Select Number of Person</option>
-                            {Array.from({ length: 28 }, (_, i) => (
-                                <option key={i + 1} value={i + 1}>{i + 1} Person{i + 1 > 1 ? 's' : ''}</option>
+                            {[...Array.from({ length: 8 }, (_, i) => i + 1), ...Array.from({ length: 19 }, (_, i) => i + 10)].map(num => (
+                                <option key={num} value={num}>{num} Person{num > 1 ? 's' : ''}</option>
                             ))}
                         </select>
                     </div>
@@ -927,9 +904,6 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                                 userId: session?.user?.id || null,
                                                 arrival: formatDate(form.arrival),
                                                 departure: formatDate(form.departure) || null,
-                                                adult: Number(form.adult) || 1,
-                                                child: Number(form.child) || 0,
-                                                infant: Number(form.infant) || 0,
                                                 firstName: form.firstName || 'Guest',
                                                 lastName: form.lastName || 'User',
                                                 email: form.email || '',
@@ -1150,29 +1124,28 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                         <div className="mb-6">
                             {/* Package Price Table */}
                             <div className="text-green-800 font-bold text-sm mb-1 text-right">Package Price: Base Rate</div>
-                            <table className="w-full border-separate border-spacing-0">
+                            <table className="w-full border-separate border p-2 border-black">
                                 <thead>
                                     <tr className="bg-orange-100">
-                                        <th className="text-green-800 text-sm font-semibold px-3 py-2 text-left rounded-tl-sm">Accommodation Type</th>
-                                        <th className="text-green-800 text-sm font-semibold px-3 py-2 text-left">In INR</th>
-                                        <th className="text-green-800 text-sm font-semibold px-3 py-2 text-left rounded-tr-lg">US Dollar</th>
+                                        <th className="text-green-800 text-sm font-semibold px-2 py-2 text-left rounded-tl-sm border border-black">Accommodation Type</th>
+                                        <th className="text-green-800 text-sm font-semibold px-2 py-2 text-left border border-black">In INR</th>
+                                        <th className="text-green-800 text-sm font-semibold px-1 py-2 text-left rounded-tr-lg border border-black">US Dollar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {/* One Person */}
-
                                     {Array.isArray(packages?.packagePrice?.onePerson) && packages?.packagePrice.onePerson.length > 0 && (
                                         <>
                                             <tr>
-                                                <td colSpan={3} className="font-semibold text-sm text-black text-start px-2">
+                                                <td colSpan={3} className="font-semibold text-sm text-black text-start px-2 border border-black">
                                                     Base Price : 01 Person
                                                 </td>
                                             </tr>
                                             {packages?.packagePrice.onePerson.map((item, idx) => (
-                                                <tr key={`onePerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
-                                                    <td className="px-3 py-1">{item.type || "1 Person"}</td>
-                                                    <td className="px-3 py-1 border-l-2 border-red-500">{item.inr}</td>
-                                                    <td className="px-3 py-1 border-l-2 border-red-500">{item.usd}</td>
+                                                <tr key={`onePerson-${idx}`} className="bg-blue-200">
+                                                    <td className="px-3 py-1 border border-black">{item.type || "1 Person"}</td>
+                                                    <td className="px-3 py-1 border border-black">{item.inr}</td>
+                                                    <td className="px-3 py-1 border border-black">{item.usd}</td>
                                                 </tr>
                                             ))}
                                         </>
@@ -1180,15 +1153,15 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                     {/* Eight Person */}
                                     {Array.isArray(packages?.packagePrice?.eightPerson) && packages?.packagePrice.eightPerson.length > 0 && (
                                         <>
-                                            <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm">
+                                            <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm border border-black">
                                                 Base Price : 08 Person
                                             </td>
                                             </tr>
                                             {packages?.packagePrice.eightPerson.map((item, idx) => (
-                                                <tr key={`eightPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
-                                                    <td className="px-3 py-1">{item.type || "8 Person"}</td>
-                                                    <td className="px-3 py-1 border-l-2 border-red-500">{item.inr}</td>
-                                                    <td className="px-3 py-1 border-l-2 border-red-500">{item.usd}</td>
+                                                <tr key={`eightPerson-${idx}`} className="bg-blue-200">
+                                                    <td className="px-3 py-1 border border-black">{item.type || "8 Person"}</td>
+                                                    <td className="px-3 py-1 border border-black">{item.inr}</td>
+                                                    <td className="px-3 py-1 border border-black">{item.usd}</td>
                                                 </tr>
                                             ))}
                                         </>
@@ -1196,15 +1169,15 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                     {/* Ten Person */}
                                     {Array.isArray(packages?.packagePrice?.tenPerson) && packages?.packagePrice.tenPerson.length > 0 && (
                                         <>
-                                            <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md">
+                                            <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md border border-black">
                                                 Base Price : 10 Person Minimum
                                             </td>
                                             </tr>
                                             {packages?.packagePrice?.tenPerson.map((item, idx) => (
-                                                <tr key={`tenPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
-                                                    <td className="px-3 py-2 font-bold">{item.type || "8 Person"}</td>
-                                                    <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
-                                                    <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
+                                                <tr key={`tenPerson-${idx}`} className="bg-blue-200">
+                                                    <td className="px-3 py-2 font-bold border border-black">{item.type || "8 Person"}</td>
+                                                    <td className="px-3 py-2 border border-black">{item.inr}</td>
+                                                    <td className="px-3 py-2 border border-black">{item.usd}</td>
                                                 </tr>
                                             ))}
                                         </>
@@ -1212,15 +1185,15 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                     {/* Eleven To Fourteen Person */}
                                     {Array.isArray(packages?.packagePrice?.elevenToFourteenPerson) && packages?.packagePrice.elevenToFourteenPerson.length > 0 && (
                                         <>
-                                            <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md">
+                                            <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md border border-black">
                                                 Base Price : 11 to 14 Person Minimum
                                             </td>
                                             </tr>
                                             {packages?.packagePrice?.elevenToFourteenPerson.map((item, idx) => (
-                                                <tr key={`elevenToFourteenPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
-                                                    <td className="px-3 py-2 font-bold">{item.type || "11 to 14 Person"}</td>
-                                                    <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
-                                                    <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
+                                                <tr key={`elevenToFourteenPerson-${idx}`} className="bg-blue-200">
+                                                    <td className="px-3 py-2 font-bold border border-black">{item.type || "11 to 14 Person"}</td>
+                                                    <td className="px-3 py-2 border border-black">{item.inr}</td>
+                                                    <td className="px-3 py-2 border border-black">{item.usd}</td>
                                                 </tr>
                                             ))}
                                         </>
@@ -1228,20 +1201,19 @@ const PackageBookingModel = ({ packages, onClose, type }) => {
                                     {/* Fifteen To Eighteen Person */}
                                     {Array.isArray(packages?.packagePrice?.fifteenToTwentyEightPerson) && packages?.packagePrice.fifteenToTwentyEightPerson.length > 0 && (
                                         <>
-                                            <tr><td colSpan={3} className="font-semibold  text-black text-start px-2 py-1 text-sm md:text-md">
+                                            <tr><td colSpan={3} className="font-semibold  text-black text-start px-2 py-1 text-sm md:text-md border border-black">
                                                 Base Price : 15 to 28 Person Minimum
                                             </td>
                                             </tr>
                                             {packages?.packagePrice?.fifteenToTwentyEightPerson.map((item, idx) => (
-                                                <tr key={`fifteenToTwentyEightPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
-                                                    <td className="px-3 py-2 font-bold">{item.type || "15 to 28 Person"}</td>
-                                                    <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
-                                                    <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
+                                                <tr key={`fifteenToTwentyEightPerson-${idx}`} className="bg-blue-200">
+                                                    <td className="px-3 py-2 font-bold border border-black">{item.type || "15 to 28 Person"}</td>
+                                                    <td className="px-3 py-2 border border-black">{item.inr}</td>
+                                                    <td className="px-3 py-2 border border-black">{item.usd}</td>
                                                 </tr>
                                             ))}
                                         </>
                                     )}
-
                                 </tbody>
                             </table>
                         </div>

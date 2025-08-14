@@ -19,9 +19,6 @@ const BookingDetailsSchema = new mongoose.Schema({
   city: { type: String, required: true },
   district: { type: String, required: true },
   state: { type: String, required: true },
-  adult: { type: Number, required: true },
-  child: { type: Number },
-  infant: { type: Number },
   price: { type: Number },
   // Room summary details
   roomName: { type: String },

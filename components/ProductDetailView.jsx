@@ -425,12 +425,12 @@ export default function ProductDetailView({ product }) {
             <div className="my-4">
               {/* Package Price Table */}
               <div className="text-green-800 font-bold md:text-md mb-1 text-center">Package Price: Base Rate</div>
-              <table className="w-full border-separate border-spacing-0">
+              <table className="w-full border-separate border border-black p-2">
                 <thead>
                   <tr className="bg-orange-100">
-                    <th className="text-green-800 md:text-lg font-semibold px-3 py-2 text-left rounded-tl-lg">Accommodation Type</th>
-                    <th className="text-green-800 md:text-lg font-semibold px-3 py-2 text-left">In INR</th>
-                    <th className="text-green-800 md:text-lg font-semibold px-2 py-2 text-left rounded-tr-lg">US Dollar</th>
+                    <th className="text-green-800 md:text-md font-semibold px-2 py-2 text-left rounded-tl-lg border border-black">Accommodation Type</th>
+                    <th className="text-green-800 md:text-md font-semibold px-2 py-2 text-left border border-black">In INR</th>
+                    <th className="text-green-800 md:text-md font-semibold px-1 py-2 text-left rounded-tr-lg border border-black">US Dollar</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -438,61 +438,61 @@ export default function ProductDetailView({ product }) {
                   {Array.isArray(packagePrice?.onePerson) && packagePrice.onePerson.length > 0 && (
                     <>
                       <tr>
-                        <td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md">
+                        <td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md border border-black">
                           Base Price : 01 Person
                         </td>
                       </tr>
                       {packagePrice.onePerson.map((item, idx) => (
-                        <tr key={`onePerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
-                          <td className="px-3 py-2 font-bold">{item.type || "1 Person"}</td>
-                          <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
-                          <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
+                        <tr key={`onePerson-${idx}`} className="bg-blue-200">
+                          <td className="px-3 py-2 font-bold border border-black">{item.type || "1 Person"}</td>
+                          <td className="px-3 py-2 border border-black">{item.inr}</td>
+                          <td className="px-3 py-2 border border-black">{item.usd}</td>
                         </tr>
                       ))}
                     </>
                   )}
                   <tr>
-                    <td colSpan={3}>
+                    <td colSpan={3} className="border border-black">
                       <p className="text-sm text-red-500 font-bold w-full">
-                        "The below-mentioned prices are applicable for a minimum group size of 8 persons. For AC Sharing Basis "
+                        "Prices below are per person (AC sharing), applicable for a minimum group of 8."
                       </p>
                     </td>
                   </tr>
                   {/* Eight Person */}
                   {Array.isArray(packagePrice?.eightPerson) && packagePrice.eightPerson.length > 0 && (
                     <>
-                      <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md">
-                        Base Price : 08 Person Minimum
+                      <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md border border-black">
+                        Base Price applicable for per person basis  : 08 Person
                       </td>
                       </tr>
                       {packagePrice.eightPerson.map((item, idx) => (
-                        <tr key={`eightPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
-                          <td className="px-3 py-2 font-bold">{item.type || "8 Person"}</td>
-                          <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
-                          <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
+                        <tr key={`eightPerson-${idx}`} className="bg-blue-200">
+                          <td className="px-3 py-2 font-bold border border-black">{item.type || "8 Person"}</td>
+                          <td className="px-3 py-2 border border-black">{item.inr}</td>
+                          <td className="px-3 py-2 border border-black">{item.usd}</td>
                         </tr>
                       ))}
                     </>
                   )}
                   <tr>
-                    <td colSpan={3}>
+                    <td colSpan={3} className="border border-black">
                       <p className="text-sm text-red-500 font-bold w-full">
-                        "Prices below are applicable for a minimum of 10 persons, on Non-AC sharing basis."
+                        "Prices below are per person, based on non-AC sharing, applicable for groups of 10 persons and above."
                       </p>
                     </td>
                   </tr>
                   {/* Ten Person */}
                   {Array.isArray(packagePrice?.tenPerson) && packagePrice.tenPerson.length > 0 && (
                     <>
-                      <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md">
-                        Base Price : 10 Person Minimum
+                      <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md border border-black">
+                        Base Price applicable for per person basis  : 10 Person
                       </td>
                       </tr>
                       {packagePrice.tenPerson.map((item, idx) => (
-                        <tr key={`tenPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
-                          <td className="px-3 py-2 font-bold">{item.type || "8 Person"}</td>
-                          <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
-                          <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
+                        <tr key={`tenPerson-${idx}`} className="bg-blue-200">
+                          <td className="px-3 py-2 font-bold border border-black">{item.type || "8 Person"}</td>
+                          <td className="px-3 py-2 border border-black">{item.inr}</td>
+                          <td className="px-3 py-2 border border-black">{item.usd}</td>
                         </tr>
                       ))}
                     </>
@@ -500,15 +500,15 @@ export default function ProductDetailView({ product }) {
                   {/* Eleven To Fourteen Person */}
                   {Array.isArray(packagePrice?.elevenToFourteenPerson) && packagePrice.elevenToFourteenPerson.length > 0 && (
                     <>
-                      <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md">
+                      <tr><td colSpan={3} className="font-semibold text-black text-start px-2 py-1 text-sm md:text-md border border-black">
                         Base Price : 11 to 14 Person Minimum
                       </td>
                       </tr>
                       {packagePrice.elevenToFourteenPerson.map((item, idx) => (
-                        <tr key={`elevenToFourteenPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
-                          <td className="px-3 py-2 font-bold">{item.type || "11 to 14 Person"}</td>
-                          <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
-                          <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
+                        <tr key={`elevenToFourteenPerson-${idx}`} className="bg-blue-200">
+                          <td className="px-3 py-2 font-bold border border-black">{item.type || "11 to 14 Person"}</td>
+                          <td className="px-3 py-2 border border-black">{item.inr}</td>
+                          <td className="px-3 py-2 border border-black">{item.usd}</td>
                         </tr>
                       ))}
                     </>
@@ -516,15 +516,15 @@ export default function ProductDetailView({ product }) {
                   {/* Fifteen To Eighteen Person */}
                   {Array.isArray(packagePrice?.fifteenToTwentyEightPerson) && packagePrice.fifteenToTwentyEightPerson.length > 0 && (
                     <>
-                      <tr><td colSpan={3} className="font-semibold  text-black text-start px-2 py-1 text-sm md:text-md">
+                      <tr><td colSpan={3} className="font-semibold  text-black text-start px-2 py-1 text-sm md:text-md border border-black">
                         Base Price : 15 to 28 Person Minimum
                       </td>
                       </tr>
                       {packagePrice.fifteenToTwentyEightPerson.map((item, idx) => (
-                        <tr key={`fifteenToTwentyEightPerson-${idx}`} className="bg-blue-200 border-y-2 border-white">
-                          <td className="px-3 py-2 font-bold">{item.type || "15 to 28 Person"}</td>
-                          <td className="px-3 py-2 border-l-2 border-black">{item.inr}</td>
-                          <td className="px-3 py-2 border-l-2 border-black">{item.usd}</td>
+                        <tr key={`fifteenToTwentyEightPerson-${idx}`} className="bg-blue-200">
+                          <td className="px-3 py-2 font-bold border border-black">{item.type || "15 to 28 Person"}</td>
+                          <td className="px-3 py-2 border border-black">{item.inr}</td>
+                          <td className="px-3 py-2 border border-black">{item.usd}</td>
                         </tr>
                       ))}
                     </>

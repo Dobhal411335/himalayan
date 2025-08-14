@@ -88,12 +88,6 @@ const InvoiceModal = ({ open, onClose, booking, bookingId, bookingDate }) => {
         <div className="grid grid-cols-2 gap-0 border border-gray-400 mt-4 mb-2 w-full">
           <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Room Name</div>
           <div className="text-sm md:text-md py-2 px-3">{roomName}</div>
-          <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">No Of Person</div>
-          <div className="text-sm md:text-md py-2 px-3">
-            {numAdult > 0 && <div>Adult: {numAdult}</div>}
-            {numChild > 0 && <div>Child: {numChild}</div>}
-            {numInfant > 0 && <div>Infant: {numInfant}</div>}
-          </div>
           <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Date Of Arrival</div>
           <div className="text-sm md:text-md py-2 px-3">{arrival}</div>
           {booking.days && (
@@ -109,7 +103,8 @@ const InvoiceModal = ({ open, onClose, booking, bookingId, bookingDate }) => {
           {booking.accommodationType && (
             <>
               <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">Accommodation Type</div>
-              <div className="text-sm md:text-md py-2 px-3">{booking.accommodationType}</div> <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">No of Person</div>
+              <div className="text-sm md:text-md py-2 px-3">{booking.accommodationType}</div>
+              <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3 text-sm md:text-md">No of Person</div>
               <div className="text-sm md:text-md py-2 px-3">{booking.numPersons}</div>
             </>
           )}
@@ -198,12 +193,7 @@ const InvoiceModal = ({ open, onClose, booking, bookingId, bookingDate }) => {
               <div className="grid grid-cols-2 gap-0 border-t border-b border-gray-400 mt-4 mb-2">
                 <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3">Room Name</div>
                 <div className="py-2 px-3">{roomName}</div>
-                <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3">No Of Person</div>
-                <div className="py-2 px-3">
-                  {numAdult > 0 && <div>Adult: {numAdult}</div>}
-                  {numChild > 0 && <div>Child: {numChild}</div>}
-                  {numInfant > 0 && <div>Infant: {numInfant}</div>}
-                </div>
+             
                 <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3">Date Of Arrival</div>
                 <div className="py-2 px-3">{arrival}</div>
                 <div className="bg-[#f5e9d9] font-bold border-r border-gray-400 py-2 px-3">Number Of Days</div>
